@@ -76,14 +76,7 @@ WSGI_APPLICATION = 'vibecheck.wsgi.application'
 
 DATABASES = {
     #Paste Database config Details below
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'team1vibecheck',
-        'HOST': 'db.rndwvilajbirenkbpccu.supabase.co',
-        'PORT': '5432',
-    }
+    
 }
 
 
