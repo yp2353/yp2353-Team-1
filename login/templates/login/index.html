@@ -4,8 +4,3 @@
     {% csrf_token %}
     <input type="submit" value="Login with Spotify">
 </form>
-
-<form action="{% url 'login:logout_view' %}" method="post">
-    {% csrf_token %}
-    <input type="submit" value="Logout">
-</form>

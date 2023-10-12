@@ -1,10 +1,10 @@
-<<<<<<< HEAD
 <h1>User's Top Tracks</h1>
 
 {% for track in tracks %}
     <p>{{ track.name }} - {{ track.artists }} ({{ track.album }})</p>
 {% endfor %}
-=======
-<h2>Dashboard</h2>
 
->>>>>>> upstream/develop
+<form action="{% url 'dashboard:logout' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Logout">
+</form>
