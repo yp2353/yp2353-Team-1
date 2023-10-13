@@ -5,3 +5,4 @@ for supabse and postgres client run, install
 
 for Spotify API usage install
 ```pip install spotipy```
+

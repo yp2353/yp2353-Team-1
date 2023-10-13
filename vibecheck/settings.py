@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['vcheck-app-env.eba-eai754zm.us-west-2.elasticbeanstalk.com', '
 
 INSTALLED_APPS = [
     'login',
+    'dashboard',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,3 +129,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # Use database-backed sessions
+SESSION_CACHE_ALIAS = 'default'  # Use the default cache (can be adjusted based on your caching settings)
+
