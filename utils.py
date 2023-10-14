@@ -1,7 +1,13 @@
 from spotipy.oauth2 import SpotifyOAuth
+import os
+from dotenv import load_dotenv
 
-#CLIENT_ID = ''
-#CLIENT_SECRET = ''
+# Load variables from .env
+load_dotenv()
+
+CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
+CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
+
 REDIRECT_URI = 'http://127.0.0.1:8000/login/callback'
 SCOPE = "user-top-read"
 sp_oauth = SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SCOPE, show_dialog=True)
