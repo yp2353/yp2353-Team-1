@@ -1,14 +1,19 @@
 # Team Project repo
 
+## Setup: Configure Python Environment
+
 for supabse and postgres client run, install
 ```pip install psycogp2_binary```
 
 for Spotify API usage install
 ```pip install spotipy```
 
+```
+pip install django psycogp2_binary spotipy lyricsgenius python-dotenv
+```
+
 ## Setup: Managing Environment Variables
 
-### Overview
 This project utilizes environment variables to securely manage sensitive information such as API keys, ensuring they are not exposed or tracked within the version control system.
 
 ### Using .env File for Local Development
@@ -50,3 +55,25 @@ If you're collaborating on this project, ensure to create your own `.env` file a
 
 ### Deployment Note
 When deploying the application, make sure to set the `CLIENT_ID` and `CLIENT_SECRET` directly in your production environment’s configuration (not using the `.env` file) to ensure the security of your API credentials.
+
+## Interact with Genius API
+
+Genius API is the Lyrics provider for this project.
+
+We are interacting using [lyricsgenius](https://lyricsgenius.readthedocs.io/en/master/index.html) API.
+
+Replace the `GENIUS_CLIENT_ACCESS_TOKEN` in .env file.
+
+An example to use:
+```python
+import lyricsgenius
+from dotenv import load_dotenv
+
+
+load_dotenv()
+token = os.getenv('GENIUS_CLIENT_ACCESS_TOKEN')
+
+genius = lyricsgenius.Genius(token)
+song = genius.search_song("Fairy Fountain (Link to the Past)", "Juke Remix")
+print(song.lyrics)
+```
