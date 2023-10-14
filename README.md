@@ -1,79 +1,82 @@
-# Team Project repo
+# Team Project Repository
 
-## Setup: Configure Python Environment
+This repository contains the codebase for our team project, which involves interacting with the Spotify and Genius APIs to create a music-related application.
 
-for supabse and postgres client run, install
-```pip install psycogp2_binary```
+## Getting Started
 
-for Spotify API usage install
-```pip install spotipy```
+### Prerequisites
 
+Ensure you have Python and pip installed. The following packages are required:
+
+- `django`: Web framework.
+- `psycopg2_binary`: PostgreSQL adapter for Python.
+- `spotipy`: A lightweight Python library for the Spotify Web API.
+- `lyricsgenius`: A Python client for the Genius.com API.
+- `python-dotenv`: A Python module that allows you to specify environment variables in traditional UNIX-like `.env` files.
+
+Install the prerequisites using pip:
+
+```bash
+pip install django psycopg2_binary spotipy lyricsgenius python-dotenv
 ```
-pip install django psycogp2_binary spotipy lyricsgenius python-dotenv
-```
 
-## Setup: Managing Environment Variables
+### Configuring API Credentials
 
-This project utilizes environment variables to securely manage sensitive information such as API keys, ensuring they are not exposed or tracked within the version control system.
+#### Spotify API
 
-### Using .env File for Local Development
-1. **Create .env File:**
-   Create a file named `.env` in the root of your project directory.
+1. **Retrieve API Credentials:**
+   Obtain the `CLIENT_ID` and `CLIENT_SECRET` from your Spotify Developer Dashboard.
 
-2. **Add Variables:**
-   Inside the `.env` file, specify the `CLIENT_ID` and `CLIENT_SECRET` from the Spotify API.
+2. **Local Development:**
+   - Create a `.env` file in the project root and add your Spotify API credentials:
+     ```env
+     SPOTIPY_CLIENT_ID=your_client_id
+     SPOTIPY_CLIENT_SECRET=your_client_secret
+     ```
+   - Ensure `.env` is listed in your `.gitignore` file to prevent it from being tracked by Git.
 
-   ```env
-   SPOTIPY_CLIENT_ID=your_client_id
-   SPOTIPY_CLIENT_SECRET=your_client_secret
+   Example usage in code:
+   ```python
+   import os
+   from dotenv import load_dotenv
+
+   load_dotenv()
+
+   CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
+   CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
    ```
 
-   Replace `your_client_id` and `your_client_secret` with your actual Spotify API credentials.
+3. **Production Deployment:**
+   Set the `CLIENT_ID` and `CLIENT_SECRET` directly in your production environment’s configuration.
 
-3. **Ensure .env Is Ignored:**
-   Make sure that your `.gitignore` file includes the `.env` file to prevent it from being tracked by Git.
+#### Genius API
 
-   ```gitignore
-   .env
+1. Replace the `GENIUS_CLIENT_ACCESS_TOKEN` in your `.env` file.
+
+   Example usage:
+   ```python
+   import lyricsgenius
+   import os
+   from dotenv import load_dotenv
+
+   load_dotenv()
+   token = os.getenv('GENIUS_CLIENT_ACCESS_TOKEN')
+
+   genius = lyricsgenius.Genius(token)
+   song = genius.search_song("Fairy Fountain (Link to the Past)", "Juke Remix")
+   print(song.lyrics)
    ```
-
-### In Your Code
-The application is configured to load these variables from the `.env` file using the `python-dotenv` package. If set up correctly, you should not need to make any adjustments in the codebase for local development.
-
-```python
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
-CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
-```
 
 ### For Collaborators
-If you're collaborating on this project, ensure to create your own `.env` file and populate it with your own Spotify API credentials.
 
-### Deployment Note
-When deploying the application, make sure to set the `CLIENT_ID` and `CLIENT_SECRET` directly in your production environment’s configuration (not using the `.env` file) to ensure the security of your API credentials.
+Ensure to create your own `.env` file and populate it with your own Spotify and Genius API credentials.
 
-## Interact with Genius API
+## Development and Usage
 
-Genius API is the Lyrics provider for this project.
+### Running the Django Application
 
-We are interacting using [lyricsgenius](https://lyricsgenius.readthedocs.io/en/master/index.html) API.
+[Include steps on running the Django app, applying migrations, creating a superuser, etc.]
 
-Replace the `GENIUS_CLIENT_ACCESS_TOKEN` in .env file.
+### Interacting with APIs
 
-An example to use:
-```python
-import lyricsgenius
-from dotenv import load_dotenv
-
-
-load_dotenv()
-token = os.getenv('GENIUS_CLIENT_ACCESS_TOKEN')
-
-genius = lyricsgenius.Genius(token)
-song = genius.search_song("Fairy Fountain (Link to the Past)", "Juke Remix")
-print(song.lyrics)
-```
+[Details regarding API interactions, endpoints utilized, and any additional configurations or considerations should be documented here.]
