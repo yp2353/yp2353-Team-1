@@ -2,7 +2,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 #CLIENT_ID = ''
 #CLIENT_SECRET = ''
-REDIRECT_URI = 'http://127.0.0.1:8000/login/callback'
+REDIRECT_URI = 'http://vcheck-env-1014.eba-megnbk6g.us-west-2.elasticbeanstalk.com/login/callback'
 SCOPE = "user-top-read"
 sp_oauth = SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SCOPE, show_dialog=True)
 
