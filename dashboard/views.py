@@ -15,25 +15,36 @@ def index(request):
 
         top_tracks = sp.current_user_top_tracks(limit=5, time_range='short_term')
         # Fetch top tracks and artists for the currently authenticated user
-        top_artists = sp.current_user_top_artists(limit=2)
+        #top_artists = sp.current_user_top_artists(limit=2)
 
         # Extract seed tracks, artists, and genres
         seed_tracks = [track['id'] for track in top_tracks['items']]
         #seed_artists = [artist['id'] for artist in top_artists['items']]
-        seed_genres = list(set(genre for artist in top_artists['items'] for genre in artist['genres']))
+        #seed_genres = list(set(genre for artist in top_artists['items'] for genre in artist['genres']))
         recommendations = sp.recommendations(seed_tracks=seed_tracks)
 
 
         tracks = []
-        for track in recommendations["tracks"]:
+        for track in top_tracks["items"]:
             tracks.append({
                 'name': track['name'],
                 'artists': ', '.join([artist['name'] for artist in track['artists']]),
                 'album': track['album']['name'],
                 'uri': track['uri']
             })
+        
+        recommendedtracks = []
+        for track in recommendations["tracks"]:
+            recommendedtracks.append({
+                'name': track['name'],
+                'artists': ', '.join([artist['name'] for artist in track['artists']]),
+                'album': track['album']['name'],
+                'uri': track['uri']
+            })
+
         context = {
-            'tracks': tracks
+            'tracks': tracks,
+            'recommendedtracks': recommendedtracks
         }
 
         return render(request, 'dashboard/index.html', context)
