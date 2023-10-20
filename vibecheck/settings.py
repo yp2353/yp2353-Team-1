@@ -38,6 +38,7 @@ ALLOWED_HOSTS = ['vcheck-app-env.eba-eai754zm.us-west-2.elasticbeanstalk.com', '
 INSTALLED_APPS = [
     'login',
     'dashboard',
+    'profile_app',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
