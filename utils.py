@@ -8,9 +8,10 @@ load_dotenv()
 CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
 CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
 
-REDIRECT_URI = 'http://vcheck-env-1014.eba-megnbk6g.us-west-2.elasticbeanstalk.com/login/callback'
+#REDIRECT_URI = 'http://vcheck-env-1014.eba-megnbk6g.us-west-2.elasticbeanstalk.com/login/callback'
+REDIRECT_URI = 'http://127.0.0.1:8000/login/callback'
 
-SCOPE = "user-top-read"
+SCOPE = "user-top-read user-read-recently-played"
 sp_oauth = SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SCOPE, show_dialog=True)
 
 def get_spotify_token(request):
