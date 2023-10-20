@@ -131,6 +131,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "login/static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # Use database-backed sessions
 SESSION_CACHE_ALIAS = 'default'  # Use the default cache (can be adjusted based on your caching settings)
 
