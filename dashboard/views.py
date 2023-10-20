@@ -118,8 +118,6 @@ def extract_tracks(sp):
     with open('day_data.json', 'w') as f:
         json.dump(day_json, f)
 
-    import shutil
-
     shutil.move("hour_data.json", "login/static/login/hour_data.json")
     shutil.move("day_data.json", "login/static/login/day_data.json")
 
