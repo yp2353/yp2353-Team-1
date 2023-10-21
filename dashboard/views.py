@@ -6,6 +6,9 @@ from datetime import datetime
 from collections import Counter
 import json
 import shutil
+import lyricsgenius
+import openai
+import time
 
 
 
@@ -28,6 +31,9 @@ def index(request):
         # seed_artists = [artist['id'] for artist in top_artists['items']]
         # seed_genres = list(set(genre for artist in top_artists['items'] for genre in artist['genres']))
         recommendations = sp.recommendations(seed_tracks=seed_tracks)
+        track_names = [track['name'] for track in top_tracks['items']]
+
+        check_vibe(track_names)
 
         tracks = []
         for track in top_tracks["items"]:
@@ -88,8 +94,6 @@ def extract_tracks(sp):
                            font=dict(color='white')
                                      )
 
-    # Save as HTML
-    hour_fig.write_html("hour_plot.html")
 
     # Plot by Day of Week
     days_labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -120,6 +124,38 @@ def extract_tracks(sp):
 
     shutil.move("hour_data.json", "login/static/login/hour_data.json")
     shutil.move("day_data.json", "login/static/login/day_data.json")
+
+
+def check_vibe(track_names):
+    genius = lyricsgenius.Genius("")
+    lyrics_data = {}
+
+    for track in track_names:
+        song = genius.search_song(track)
+        if song:
+            lyrics_data[track] = song.lyrics
+
+    openai.api_key = ''
+
+    for track, lyrics in lyrics_data.items():
+        short_lyrics = lyrics[:2048]
+        print("hola")
+        try:
+            print("Processing song:", track)
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user",
+                     "content": f"Analyze the vibe of the song based on these lyrics and return only the 3 top vibes separated by commas: '{short_lyrics}'"}
+                ])
+            vibe = response.choices[0].message['content'].strip()
+            print(f"The vibe for {track} is: {vibe}")
+        except Exception as e:
+            print(f"Error processing the vibe for {track}: {e}")
+
+            # Ensure you don't exceed the rate limits
+        time.sleep(20)
 
 
 
