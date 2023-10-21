@@ -8,5 +8,12 @@ class User(models.Model):
     total_followers = models.IntegerField()
     profile_image_url = models.URLField(null=True)
     user_country = models.CharField(max_length=200, null=True)
-    user_vibe = models.CharField(110)
     user_last_login = models.DateTimeField()
+
+
+#storing User vibe
+class Vibe(models.Model):
+    user_id = models.CharField(max_length=250)
+    user_vibe = models.CharField(max_length=100)
+    vibe_time = models.DateTimeField()
+
