@@ -9,6 +9,11 @@ import shutil
 import lyricsgenius
 import openai
 import time
+from dotenv import load_dotenv
+import os
+
+# Load variables from .env
+load_dotenv()
 
 
 
@@ -127,7 +132,7 @@ def extract_tracks(sp):
 
 
 def check_vibe(track_names):
-    genius = lyricsgenius.Genius("")
+    genius = lyricsgenius.Genius(os.getenv('GENIUS_TOKEN'))
     lyrics_data = {}
 
     for track in track_names:
@@ -135,7 +140,7 @@ def check_vibe(track_names):
         if song:
             lyrics_data[track] = song.lyrics
 
-    openai.api_key = ''
+    openai.api_key = os.getenv('OPEN_AI_TOKEN')
 
     for track, lyrics in lyrics_data.items():
         short_lyrics = lyrics[:2048]
