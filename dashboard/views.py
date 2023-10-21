@@ -11,13 +11,15 @@ import openai
 import time
 from dotenv import load_dotenv
 import os
+import numpy as np
+from gensim.models import KeyedVectors
 
 # Load variables from .env
 load_dotenv()
 
-
-
 # Create your views here.
+model = KeyedVectors.load_word2vec_format('dashboard/GoogleNews-vectors-negative300.bin', binary=True)
+
 
 def index(request):
     token_info = get_spotify_token(request)
@@ -134,6 +136,7 @@ def extract_tracks(sp):
 def check_vibe(track_names):
     genius = lyricsgenius.Genius(os.getenv('GENIUS_TOKEN'))
     lyrics_data = {}
+    vibes = []
 
     for track in track_names:
         song = genius.search_song(track)
@@ -152,9 +155,10 @@ def check_vibe(track_names):
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
                     {"role": "user",
-                     "content": f"Analyze the vibe of the song based on these lyrics and return only the 3 top vibes separated by commas: '{short_lyrics}'"}
+                     "content": f"You are a mood analyzer that can only return a single word. Based on these song lyrics, return a single word that matches this song's mood: '{short_lyrics}'"}
                 ])
             vibe = response.choices[0].message['content'].strip()
+            vibes.append(vibe)
             print(f"The vibe for {track} is: {vibe}")
         except Exception as e:
             print(f"Error processing the vibe for {track}: {e}")
@@ -162,5 +166,27 @@ def check_vibe(track_names):
             # Ensure you don't exceed the rate limits
         time.sleep(20)
 
+    vectorize(vibes)
 
+def vectorize(vibes):
+    avg_vibe = average_vector(vibes, model)
+    final_vibe = vector_to_word(avg_vibe, model)
+    print("The final vibe is:", final_vibe)
 
+def get_vector(word, model):
+    """Get the word vector from the model."""
+    try:
+        return model[word]
+    except KeyError:
+        return np.zeros(model.vector_size)
+
+def average_vector(words, model):
+    """Compute the average vector for a list of words."""
+    vectors = [get_vector(word, model) for word in words]
+    return np.mean(vectors, axis=0)
+
+def vector_to_word(vector, model):
+    """Find the closest word in the embedding for the given vector."""
+    # most_similar returns [(word, similarity score), ...]
+    # We just want the word, so we pick [0][0]
+    return model.most_similar(positive=[vector], topn=1)[0][0]
