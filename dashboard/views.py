@@ -13,12 +13,13 @@ from dotenv import load_dotenv
 import os
 import numpy as np
 from gensim.models import KeyedVectors
+from gensim.models import FastText
 
 # Load variables from .env
 load_dotenv()
 
 # Create your views here.
-model = KeyedVectors.load_word2vec_format('dashboard/GoogleNews-vectors-negative300.bin', binary=True)
+model = FastText.load_fasttext_format('dashboard/cc.en.300.bin')
 
 
 def index(request):
@@ -29,7 +30,7 @@ def index(request):
         # Initialize Spotipy with stored access token
         sp = spotipy.Spotify(auth=token_info['access_token'])
 
-        top_tracks = sp.current_user_top_tracks(limit=5, time_range='short_term')
+        top_tracks = sp.current_user_top_tracks(limit=10, time_range='short_term')
         # Fetch top tracks and artists for the currently authenticated user
         # top_artists = sp.current_user_top_artists(limit=2)
 
@@ -37,10 +38,15 @@ def index(request):
         seed_tracks = [track['id'] for track in top_tracks['items']]
         # seed_artists = [artist['id'] for artist in top_artists['items']]
         # seed_genres = list(set(genre for artist in top_artists['items'] for genre in artist['genres']))
-        recommendations = sp.recommendations(seed_tracks=seed_tracks)
-        track_names = [track['name'] for track in top_tracks['items']]
+        recommendations = sp.recommendations(seed_tracks=seed_tracks[:4])
+        recently_played = sp.current_user_recently_played(limit=25)
 
-        check_vibe(track_names)
+        track_names = [track['track']['name'] for track in recently_played['items']]
+        track_ids = [track['track']['id'] for track in recently_played['items']]
+
+        audio_features_list = sp.audio_features(track_ids)
+
+        check_vibe(track_names, audio_features_list)
 
         tracks = []
         for track in top_tracks["items"]:
@@ -99,8 +105,7 @@ def extract_tracks(sp):
                            plot_bgcolor='black',  # Background color of the plotting area
                            paper_bgcolor='black',  # Background color of the entire paper
                            font=dict(color='white')
-                                     )
-
+                           )
 
     # Plot by Day of Week
     days_labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -133,10 +138,12 @@ def extract_tracks(sp):
     shutil.move("day_data.json", "login/static/login/day_data.json")
 
 
-def check_vibe(track_names):
+def check_vibe(track_names, audio_features_list):
     genius = lyricsgenius.Genius(os.getenv('GENIUS_TOKEN'))
     lyrics_data = {}
     vibes = []
+
+    emotion = deduce_emotion(audio_features_list)
 
     for track in track_names:
         song = genius.search_song(track)
@@ -147,7 +154,6 @@ def check_vibe(track_names):
 
     for track, lyrics in lyrics_data.items():
         short_lyrics = lyrics[:2048]
-        print("hola")
         try:
             print("Processing song:", track)
             response = openai.ChatCompletion.create(
@@ -164,29 +170,81 @@ def check_vibe(track_names):
             print(f"Error processing the vibe for {track}: {e}")
 
             # Ensure you don't exceed the rate limits
-        time.sleep(20)
 
-    vectorize(vibes)
+    vectorize(vibes, emotion)
 
-def vectorize(vibes):
+
+def vectorize(vibes, emotion):
     avg_vibe = average_vector(vibes, model)
+    avg_emotion = average_vector(emotion, model)
+    final_emotion = vector_to_word(avg_emotion, model)
     final_vibe = vector_to_word(avg_vibe, model)
-    print("The final vibe is:", final_vibe)
+    print("The final vibe is:", str(final_emotion) + " " + str(final_vibe))
+
 
 def get_vector(word, model):
     """Get the word vector from the model."""
     try:
-        return model[word]
+        return model.wv[word]
     except KeyError:
         return np.zeros(model.vector_size)
+
 
 def average_vector(words, model):
     """Compute the average vector for a list of words."""
     vectors = [get_vector(word, model) for word in words]
     return np.mean(vectors, axis=0)
 
+
 def vector_to_word(vector, model):
     """Find the closest word in the embedding for the given vector."""
     # most_similar returns [(word, similarity score), ...]
     # We just want the word, so we pick [0][0]
-    return model.most_similar(positive=[vector], topn=1)[0][0]
+    return model.wv.most_similar(positive=[vector], topn=1)[0][0]
+
+
+def deduce_emotion(audio_features_list):
+    num_tracks = len(audio_features_list)
+
+    valence = sum([track["valence"] for track in audio_features_list]) / num_tracks
+    energy = sum([track["energy"] for track in audio_features_list]) / num_tracks
+    danceability = sum([track["danceability"] for track in audio_features_list]) / num_tracks
+    acousticness = sum([track["acousticness"] for track in audio_features_list]) / num_tracks
+    instrumentalness = sum([track["instrumentalness"] for track in audio_features_list]) / num_tracks
+    tempo = sum([track["tempo"] for track in audio_features_list]) / num_tracks
+    loudness = sum([track["loudness"] for track in audio_features_list]) / num_tracks
+
+    emotions = []
+
+    # High-level categories based on valence and energy
+    if valence > 0.5 and energy > 0.5:
+        emotions.append("joyful")
+    elif valence > 0.5 and energy <= 0.5:
+        emotions.append("content")
+    elif valence <= 0.5 and energy > 0.5:
+        emotions.append("frustrated")
+        emotions.append("angry")
+    else:
+        emotions.append("sad")
+        emotions.append("melancholic")
+
+    # Refine based on other attributes
+    if danceability > 0.7:
+        emotions.append("dancey")
+
+    if acousticness > 0.7:
+        emotions.append("nostalgic")
+
+    if instrumentalness > 0.7:
+        emotions.append("reflective")
+
+    if tempo > 120:  # 120 BPM is taken as a generic "fast" threshold
+        emotions.append("energetic")
+    else:
+        emotions.append("relaxed")
+
+    if loudness > -5:  # -5 dB is taken as a generic "loud" threshold
+        emotions.append("intense")
+
+
+    return emotions
