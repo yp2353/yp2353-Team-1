@@ -14,6 +14,7 @@ python-dotenv = "*"
 lyricsgenius = "*"
 django = "==3.2.22"
 psycopg2-binary = "*"
+python-decouple = "*"
 
 [dev-packages]
 
