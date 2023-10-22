@@ -20,15 +20,15 @@ script:
   - coverage run --source=login,static,dashboard,vibecheck manage.py test
 
 
-# deploy:
-#   provider: elasticbeanstalk
-#   access_key_id: $AWS_ACCESS_KEY_ID
-#   secret_access_key: $AWS_SECRET_ACCESS_KEY
-#   region: "us-west-2"
-#   app: "swe1-app"
-#   env: "hw1-app-env"
-#   bucket_name: "elasticbeanstalk-us-west-2-284687301079"
-#   bucket_path: "swe1-app/"
-#   on:
-#     repo: Joshua-Alfred/swe1-app
-#     branch: main
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: "us-west-2"
+  app: "vcheck-app-1016"
+  env: "vcheck-env-1016"
+  bucket_name: "elasticbeanstalk-us-west-2-284687301079"
+  bucket_path: "vcheck-app-1016/"
+  on:
+    repo: gcivil-nyu-org/Wednesday-Fall2023-Team-1
+    branch: joshua-master
