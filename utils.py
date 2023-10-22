@@ -8,7 +8,7 @@ load_dotenv()
 CLIENT_ID = config("SPOTIPY_CLIENT_ID")
 CLIENT_SECRET = config("SPOTIPY_CLIENT_SECRET")
 
-REDIRECT_URI = "https://vcheck-env-1014.eba-megnbk6g.us-west-2.elasticbeanstalk.com/login/callback"
+REDIRECT_URI = "http://vcheck-env-1014.eba-megnbk6g.us-west-2.elasticbeanstalk.com/login/callback"
 
 SCOPE = "user-top-read"
 sp_oauth = SpotifyOAuth(
