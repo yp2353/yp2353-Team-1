@@ -16,7 +16,7 @@ after_script:
 script:
   - black --check .  
   - flake8 .
-  - coverage run coverage run --source=login,static,dashboard,vibecheck manage.py test
+  - coverage run --source=login,static,dashboard,vibecheck manage.py test
 
 
 # deploy:
