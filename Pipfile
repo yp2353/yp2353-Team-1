@@ -4,6 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+black = "==23.3.0"
+flake8 = "==5.0.4"
+coverage = "==5.5"
+coveralls = "==1.11.1"
+urllib3 = "==1.26.6"
+spotipy = "*"
+python-dotenv = "*"
+lyricsgenius = "*"
+django = "==3.2.22"
+psycopg2-binary = "*"
 
 [dev-packages]
 

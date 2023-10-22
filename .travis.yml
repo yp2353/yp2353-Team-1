@@ -1,0 +1,33 @@
+language: python
+python:
+  - "3.8"  
+
+cache: pip
+
+install:
+  - pip install -r requirements.txt  
+
+before_script:
+  
+
+after_script:
+  - coveralls
+
+script:
+  - black --check .  
+  - flake8 .
+  - coverage run --source=mysite,polls manage.py test
+
+
+# deploy:
+#   provider: elasticbeanstalk
+#   access_key_id: $AWS_ACCESS_KEY_ID
+#   secret_access_key: $AWS_SECRET_ACCESS_KEY
+#   region: "us-west-2"
+#   app: "swe1-app"
+#   env: "hw1-app-env"
+#   bucket_name: "elasticbeanstalk-us-west-2-284687301079"
+#   bucket_path: "swe1-app/"
+#   on:
+#     repo: Joshua-Alfred/swe1-app
+#     branch: main
