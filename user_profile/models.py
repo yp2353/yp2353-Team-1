@@ -12,15 +12,13 @@ class User(models.Model):
     user_bio = models.TextField(null=True)
     user_city = models.CharField(max_length=255, null=True)
     user_total_friends = models.IntegerField(null=True)
-    
 
     def __str__(self) -> str:
         return f"User -> {self.user_id} ->  {self.username}"
 
 
-#storing User vibe
+# storing User vibe
 class Vibe(models.Model):
     user_id = models.CharField(max_length=250)
     user_vibe = models.CharField(max_length=100)
     vibe_time = models.DateTimeField()
-
