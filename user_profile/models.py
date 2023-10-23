@@ -9,6 +9,13 @@ class User(models.Model):
     profile_image_url = models.URLField(null=True)
     user_country = models.CharField(max_length=200, null=True)
     user_last_login = models.DateTimeField()
+    user_bio = models.TextField(null=True)
+    user_city = models.CharField(max_length=255, null=True)
+    user_total_friends = models.IntegerField(null=True)
+    
+
+    def __str__(self) -> str:
+        return f"User -> {self.user_id} ->  {self.username}"
 
 
 #storing User vibe

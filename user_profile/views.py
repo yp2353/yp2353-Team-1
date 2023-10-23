@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+import supabase
 
 # Create your views here.
 from django.shortcuts import redirect, render
@@ -70,9 +72,51 @@ def check_and_store_profile(request):
         context = {
             "user": user,
             "vibe": vibe,
+            "default_image_path": 'user_profile/blank_user_profile_image.jpeg'
         }
         return render(request, "user_profile/user_profile.html", context)
     else:
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
         return redirect("login:index")
+
+def update_user_profile(request):
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        user = User.objects.filter(user_id=user_id).first()
+        context = {
+            "user" : user
+        }
+        return render(request, "user_profile/update_profile.html", context)
+
+
+
+def update(request):
+    print("Updating....")
+    user_id = request.POST.get('user_id')
+    user = User.objects.filter(user_id=user_id).first()
+    user.user_bio = request.POST.get('user_bio')
+    user.user_city = request.POST.get('user_city')
+    new_profile_image = request.POST.get('profile_image')
+    print(new_profile_image)
+
+    print(f"user-> {user.user_bio}")
+    print(f"city-> {user.user_city}")
+
+    user.save()
+
+    context = {
+            "user" : user
+    }
+    return redirect("user_profile:profile_page")
+
+def upload_user_image(user, image_file):
+    # Upload the image to Supabase storage
+    response = supabase.storage.from_path(f'users/{user.user_id}/profile_image', image_file)
+    if response.get('error'):
+        raise Exception(f"Failed to upload image: {response['error']}")
+
+    # Store the URL in the user's profile_image_url field
+    user.profile_image_url = response['data']['URL']
+    user.save()

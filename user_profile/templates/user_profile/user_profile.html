@@ -6,15 +6,43 @@
     <title>Document</title>
 </head>
 <body>
+    {% load static %}
     <h1>User Profile</h1>
+   
+    <form action="{% url 'user_profile:update_profile' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="user_id" value="{{ user.user_id }}">
+        <input type="submit" value="Edit">
+    </form>
     
+    {% if user.profile_image_url %}
+        <img src="{{ user.profile_image_url }}" alt="User Image">
+    {% else %}
+        <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Default Image">
+    {% endif %}
     
     <p>Username: {{ user.username }}</p>
     <p>Total Followers: {{ user.total_followers}}</p>
     <p>Current Vibe: {{ vibe.user_vibe }}</p>
+    
     {% if user.user_country %}
     <p>Country: {{ user.user_country }}</p>    
+    {% else %}
+    <p>Country: Not Specified</p>    
     {% endif %}
+    
+    {% if user.user_bio %}
+    <p>Bio:<br> {{ user.user_bio }}</p>    
+    {% else %}
+    <p>Bio:<br> Not Available</p>    
+    {% endif %}
+
+    {% if user.user_city %}
+    <p>City:<br> {{ user.user_city }}</p>    
+    {% else %}
+    <p>Bio:<br> Not Available</p>    
+    {% endif %}
+
 
     
 </body>
