@@ -30,7 +30,7 @@ def index(request):
         # Initialize Spotipy with stored access token
         sp = spotipy.Spotify(auth=token_info['access_token'])
 
-        top_tracks = sp.current_user_top_tracks(limit=10, time_range='short_term')
+        top_tracks = sp.current_user_top_tracks(limit=30, time_range='short_term')
         # Fetch top tracks and artists for the currently authenticated user
         # top_artists = sp.current_user_top_artists(limit=2)
 
@@ -41,8 +41,8 @@ def index(request):
         recommendations = sp.recommendations(seed_tracks=seed_tracks[:4])
         recently_played = sp.current_user_recently_played(limit=25)
 
-        track_names = [track['track']['name'] for track in recently_played['items']]
-        track_ids = [track['track']['id'] for track in recently_played['items']]
+        track_names = [track['name'] for track in top_tracks['items']]
+        track_ids = [track['id'] for track in top_tracks['items']]
 
         audio_features_list = sp.audio_features(track_ids)
 
@@ -179,6 +179,19 @@ def vectorize(vibes, emotion):
     avg_emotion = average_vector(emotion, model)
     final_emotion = vector_to_word(avg_emotion, model)
     final_vibe = vector_to_word(avg_vibe, model)
+    #final_vibe_multiplied = np.multiply(avg_vibe, avg_emotion)
+    #final_vibe_su = np.add(avg_vibe, avg_emotion)
+    #dot_product = np.dot(avg_vibe, avg_emotion)
+    #b_norm_squared = np.dot(avg_emotion, avg_emotion)
+    #projection = (dot_product / b_norm_squared) * avg_emotion
+    #normalized_multiplied = vector_to_word(normalize(final_vibe_multiplied), model)
+    #normalized_vibe_sum = vector_to_word(normalize(final_vibe_su), model)
+    #normalized_projection = vector_to_word(normalize(projection), model)
+
+
+   # print("the final vibe is: ", normalized_multiplied, normalized_vibe_sum, normalized_projection,
+   #" avg output: ", final_emotion, final_vibe)
+
     print("The final vibe is:", str(final_emotion) + " " + str(final_vibe))
 
 
@@ -218,33 +231,38 @@ def deduce_emotion(audio_features_list):
 
     # High-level categories based on valence and energy
     if valence > 0.5 and energy > 0.5:
-        emotions.append("joyful")
+        emotions.append("Joyful")
     elif valence > 0.5 and energy <= 0.5:
-        emotions.append("content")
+        emotions.append("Content")
     elif valence <= 0.5 and energy > 0.5:
-        emotions.append("frustrated")
-        emotions.append("angry")
+        emotions.append("Frustrated")
     else:
-        emotions.append("sad")
-        emotions.append("melancholic")
+        emotions.append("Sad")
 
     # Refine based on other attributes
     if danceability > 0.7:
-        emotions.append("dancey")
+        emotions.append("Dancey")
 
     if acousticness > 0.7:
-        emotions.append("nostalgic")
+        emotions.append("Nostalgic")
 
     if instrumentalness > 0.7:
-        emotions.append("reflective")
+        emotions.append("Reflective")
 
     if tempo > 120:  # 120 BPM is taken as a generic "fast" threshold
-        emotions.append("energetic")
+        emotions.append("Energetic")
     else:
-        emotions.append("relaxed")
+        emotions.append("Relaxed")
 
     if loudness > -5:  # -5 dB is taken as a generic "loud" threshold
-        emotions.append("intense")
+        emotions.append("Intense")
 
 
     return emotions
+
+
+def normalize(vector):
+    magnitude = np.linalg.norm(vector)
+    if magnitude == 0:
+        return vector
+    return vector / magnitude
