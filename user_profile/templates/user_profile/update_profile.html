@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <script src="{% static 'user_profile/js/cityList.js' %}"></script>
+    <title>Update Profile</title>
+</head>
+<body>
+    
+    <h1> Update User Profile</h1>
+
+    <!-- Readonly Fields -->
+
+    <div>
+        <label for="username">Username:</label>
+        <span>{{ user.username }}</span>
+    </div>
+
+    <div>
+        <label for="total_followers">Total Followers:</label>
+        <span>{{ user.total_followers }}</span> 
+    </div>
+
+    <div>
+        <label for="user_country">User Country:</label>
+        <span>{{ user.user_country }}</span> 
+    </div>
+
+
+
+    <form method="post" enctype="multipart/form-data" action="{% url 'user_profile:update' %}">
+        {% csrf_token %}
+
+        <div>
+            {% if user.profile_image_url %}
+                <img src="{{ user.profile_image_url }}" alt="User Image">
+            {% else %}
+                <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Default Image">
+            {% endif %}
+        </div>
+        
+        <!-- Editable Fields -->
+        <div>
+            <label for="user_bio">User Bio:</label>
+            <textarea id="user_bio" name="user_bio">{{ user.user_bio }}</textarea>
+        </div>
+
+        <div>
+            <label for="user_city">User City:</label>
+            <input type="text" id="city_search" placeholder="Search for a city">
+            <select id="user_city" name="user_city">
+                <option value=""></option>
+            </select>
+        </div>
+
+        <div>
+            <label for="profile_image">Profile Image:</label>
+            <input type="file" id="profile_image" name="profile_image">
+        </div>
+
+        <input type="hidden" name="user_id" value="{{ user.user_id }}">
+        
+
+        <!-- Save Button -->
+        <div>
+            <button type="submit">Save</button>
+        </div>
+    </form>
+    
+</body>
+</html>
