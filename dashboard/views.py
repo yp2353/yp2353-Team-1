@@ -12,8 +12,8 @@ import time
 from dotenv import load_dotenv
 import os
 import numpy as np
-from gensim.models import KeyedVectors
 from gensim.models import FastText
+from django.http import JsonResponse
 
 # Load variables from .env
 load_dotenv()
@@ -30,23 +30,18 @@ def index(request):
         # Initialize Spotipy with stored access token
         sp = spotipy.Spotify(auth=token_info['access_token'])
 
-        top_tracks = sp.current_user_top_tracks(limit=30, time_range='short_term')
-        # Fetch top tracks and artists for the currently authenticated user
-        # top_artists = sp.current_user_top_artists(limit=2)
+        top_tracks = sp.current_user_top_tracks(limit=10, time_range='short_term')
 
         # Extract seed tracks, artists, and genres
         seed_tracks = [track['id'] for track in top_tracks['items']]
+        recommendations = sp.recommendations(seed_tracks=seed_tracks[:4])
+
+
+        #EXTRA STUFF
+        # top_artists = sp.current_user_top_artists(limit=2)
         # seed_artists = [artist['id'] for artist in top_artists['items']]
         # seed_genres = list(set(genre for artist in top_artists['items'] for genre in artist['genres']))
-        recommendations = sp.recommendations(seed_tracks=seed_tracks[:4])
-        recently_played = sp.current_user_recently_played(limit=25)
 
-        track_names = [track['name'] for track in top_tracks['items']]
-        track_ids = [track['id'] for track in top_tracks['items']]
-
-        audio_features_list = sp.audio_features(track_ids)
-
-        check_vibe(track_names, audio_features_list)
 
         tracks = []
         for track in top_tracks["items"]:
@@ -78,6 +73,40 @@ def index(request):
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
         return redirect('login:index')
+
+
+def calculate_vibe(request):
+    token_info = get_spotify_token(request)
+
+    if token_info:
+        sp = spotipy.Spotify(auth=token_info['access_token'])
+
+        recent_tracks = sp.current_user_recently_played(limit=15)
+
+        track_names = []
+        track_artists = []
+        track_ids = []
+
+        for track in recent_tracks['items']:
+            track_names.append(track['track']['name'])
+            track_artists.append(track['track']['artists'][0]['name'])
+            track_ids.append(track['track']['id'])
+
+        #IF TESTING WITH TOP TRACKS INSTEAD OF RECENT
+        """ top_tracks = sp.current_user_top_tracks(limit=10, time_range='short_term')
+        for track in top_tracks['items']:
+            track_names.append(track['name'])
+            track_artists.append(track['artists'][0]['name'])
+            track_ids.append(track['id']) """
+
+        audio_features_list = sp.audio_features(track_ids)
+
+        vibe_result = check_vibe(track_names, track_artists, track_ids, audio_features_list)
+    else:
+        vibe_result = "Error"
+    
+    return JsonResponse({'result': vibe_result})
+
 
 
 def logout(request):
@@ -138,24 +167,41 @@ def extract_tracks(sp):
     shutil.move("day_data.json", "login/static/login/day_data.json")
 
 
-def check_vibe(track_names, audio_features_list):
+def check_vibe(track_names, track_artists, track_ids, audio_features_list):
+    
+    lyrics_vibes = deduce_lyrics(track_names, track_artists, track_ids)
+
+    audio_vibes = deduce_audio(audio_features_list)
+    #CURRENTLY USING deduce_audio, REPLACE WITH MOOD MODEL.
+    #SAVE INTO TRACK DATABASE AS WELL WITH ID?
+
+
+    return vectorize(lyrics_vibes, audio_vibes)
+
+
+def deduce_lyrics(track_names, track_artists, track_ids):
     genius = lyricsgenius.Genius(os.getenv('GENIUS_TOKEN'))
+
+    lyrics_vibes = []
+
+    # CHECK TRACK DATABASE BASED ON ID, ADD TRACK VIBE TO LYRICS_VIBES IF ALREADY IN DATABASE!!!
+
     lyrics_data = {}
-    vibes = []
+    for track, artist, id in zip(track_names, track_artists, track_ids):
+        #SKIP TRACKS ALRDY IN DATABASE!!!
 
-    emotion = deduce_emotion(audio_features_list)
-
-    for track in track_names:
-        song = genius.search_song(track)
-        if song:
-            lyrics_data[track] = song.lyrics
+        query = f'"{track}" "{artist}"'
+        song = genius.search_song(query)
+        if song and song.title.lower() == track.lower() and song.artist.lower() == artist.lower():
+                lyrics_data[(track, artist, id)] = song.lyrics
 
     openai.api_key = os.getenv('OPEN_AI_TOKEN')
 
-    for track, lyrics in lyrics_data.items():
+    for (track, artist, id), lyrics in lyrics_data.items():
         short_lyrics = lyrics[:2048]
         try:
-            print("Processing song:", track)
+            print(f"Processing song. Track: {track}, Artist: {artist}, ID: {id}")
+            print(f"Lyrics: {short_lyrics[:200]}")
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
@@ -164,21 +210,22 @@ def check_vibe(track_names, audio_features_list):
                      "content": f"You are a mood analyzer that can only return a single word. Based on these song lyrics, return a single word that matches this song's mood: '{short_lyrics}'"}
                 ])
             vibe = response.choices[0].message['content'].strip()
-            vibes.append(vibe)
+            checkLength = vibe.split()
+            if len(checkLength) == 1:
+                lyrics_vibes.append(vibe)
             print(f"The vibe for {track} is: {vibe}")
+
+            # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
+
         except Exception as e:
             print(f"Error processing the vibe for {track}: {e}")
-
-            # Ensure you don't exceed the rate limits
-
-    vectorize(vibes, emotion)
+    
+    return lyrics_vibes
 
 
-def vectorize(vibes, emotion):
-    avg_vibe = average_vector(vibes, model)
-    avg_emotion = average_vector(emotion, model)
-    final_emotion = vector_to_word(avg_emotion, model)
-    final_vibe = vector_to_word(avg_vibe, model)
+
+def vectorize(lyrics_vibes, audio_vibes):
+    #TESTING, to be deleted
     #final_vibe_multiplied = np.multiply(avg_vibe, avg_emotion)
     #final_vibe_su = np.add(avg_vibe, avg_emotion)
     #dot_product = np.dot(avg_vibe, avg_emotion)
@@ -187,13 +234,21 @@ def vectorize(vibes, emotion):
     #normalized_multiplied = vector_to_word(normalize(final_vibe_multiplied), model)
     #normalized_vibe_sum = vector_to_word(normalize(final_vibe_su), model)
     #normalized_projection = vector_to_word(normalize(projection), model)
+    # print("the final vibe is: ", normalized_multiplied, normalized_vibe_sum, normalized_projection,
+    #" avg output: ", final_emotion, final_vibe)
 
+    avg_aud_vibe = average_vector(audio_vibes, model)
+    final_aud_vibe = vector_to_word(avg_aud_vibe, model)
 
-   # print("the final vibe is: ", normalized_multiplied, normalized_vibe_sum, normalized_projection,
-   #" avg output: ", final_emotion, final_vibe)
-
-    print("The final vibe is:", str(final_emotion) + " " + str(final_vibe))
-
+    if lyrics_vibes:
+        avg_lyr_vibe = average_vector(lyrics_vibes, model)
+        final_lyr_vibe = vector_to_word(avg_lyr_vibe, model)
+        print("The final lyric audio vibe is:", str(final_aud_vibe) + " " + str(final_lyr_vibe))
+        return str(final_aud_vibe) + " " + str(final_lyr_vibe)
+    else:
+        print("The final audio vibe is:", str(final_aud_vibe))
+        return str(final_aud_vibe)
+    
 
 def get_vector(word, model):
     """Get the word vector from the model."""
@@ -216,7 +271,8 @@ def vector_to_word(vector, model):
     return model.wv.most_similar(positive=[vector], topn=1)[0][0]
 
 
-def deduce_emotion(audio_features_list):
+
+def deduce_audio(audio_features_list):
     num_tracks = len(audio_features_list)
 
     valence = sum([track["valence"] for track in audio_features_list]) / num_tracks
@@ -262,6 +318,7 @@ def deduce_emotion(audio_features_list):
 
 
 def normalize(vector):
+    #Used for testing only for now
     magnitude = np.linalg.norm(vector)
     if magnitude == 0:
         return vector
