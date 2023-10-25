@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 import os
 import numpy as np
 from gensim.models import FastText
+from django.http import JsonResponse
 
 # Load variables from .env
 load_dotenv()
@@ -30,36 +31,17 @@ def index(request):
         sp = spotipy.Spotify(auth=token_info['access_token'])
 
         top_tracks = sp.current_user_top_tracks(limit=10, time_range='short_term')
-        recent_tracks = sp.current_user_recently_played(limit=15)
 
         # Extract seed tracks, artists, and genres
         seed_tracks = [track['id'] for track in top_tracks['items']]
         recommendations = sp.recommendations(seed_tracks=seed_tracks[:4])
 
-        track_names = []
-        track_artists = []
-        track_ids = []
-
-        for track in recent_tracks['items']:
-            track_names.append(track['track']['name'])
-            track_artists.append(track['track']['artists'][0]['name'])
-            track_ids.append(track['track']['id'])
-
-        #IF TESTING WITH TOP TRACKS INSTEAD OF RECENT
-        """ for track in top_tracks['items']:
-            track_names.append(track['name'])
-            track_artists.append(track['artists'][0]['name'])
-            track_ids.append(track['id']) """
-
-        audio_features_list = sp.audio_features(track_ids)
 
         #EXTRA STUFF
         # top_artists = sp.current_user_top_artists(limit=2)
         # seed_artists = [artist['id'] for artist in top_artists['items']]
         # seed_genres = list(set(genre for artist in top_artists['items'] for genre in artist['genres']))
 
-
-        final_vibe = check_vibe(track_names, track_artists, track_ids, audio_features_list)
 
         tracks = []
         for track in top_tracks["items"]:
@@ -91,6 +73,40 @@ def index(request):
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
         return redirect('login:index')
+
+
+def calculate_vibe(request):
+    token_info = get_spotify_token(request)
+
+    if token_info:
+        sp = spotipy.Spotify(auth=token_info['access_token'])
+
+        recent_tracks = sp.current_user_recently_played(limit=15)
+
+        track_names = []
+        track_artists = []
+        track_ids = []
+
+        for track in recent_tracks['items']:
+            track_names.append(track['track']['name'])
+            track_artists.append(track['track']['artists'][0]['name'])
+            track_ids.append(track['track']['id'])
+
+        #IF TESTING WITH TOP TRACKS INSTEAD OF RECENT
+        """ top_tracks = sp.current_user_top_tracks(limit=10, time_range='short_term')
+        for track in top_tracks['items']:
+            track_names.append(track['name'])
+            track_artists.append(track['artists'][0]['name'])
+            track_ids.append(track['id']) """
+
+        audio_features_list = sp.audio_features(track_ids)
+
+        vibe_result = check_vibe(track_names, track_artists, track_ids, audio_features_list)
+    else:
+        vibe_result = "Error"
+    
+    return JsonResponse({'result': vibe_result})
+
 
 
 def logout(request):
