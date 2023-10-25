@@ -76,6 +76,8 @@ def index(request):
 
 
 def calculate_vibe(request):
+    #Check if user vibe exists already for today
+
     token_info = get_spotify_token(request)
 
     if token_info:
@@ -98,14 +100,20 @@ def calculate_vibe(request):
             track_names.append(track['name'])
             track_artists.append(track['artists'][0]['name'])
             track_ids.append(track['id']) """
+        
+        if recent_tracks:
+            audio_features_list = sp.audio_features(track_ids)
+            vibe_result = check_vibe(track_names, track_artists, track_ids, audio_features_list)
 
-        audio_features_list = sp.audio_features(track_ids)
+            #Add user vibe to vibe database
+        else:
+            vibe_result = "Null"
 
-        vibe_result = check_vibe(track_names, track_artists, track_ids, audio_features_list)
+        return JsonResponse({'result': vibe_result})
     else:
-        vibe_result = "Error"
-    
-    return JsonResponse({'result': vibe_result})
+        # No token, redirect to login again
+        # ERROR MESSAGE HERE?
+        return redirect('login:index')    
 
 
 

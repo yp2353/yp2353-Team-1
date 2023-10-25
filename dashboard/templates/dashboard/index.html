@@ -17,6 +17,7 @@
         .vibe-background{
             height: 45vh;   /*to be changed*/
             width: 50vw;    /*to be changed*/
+            text-align: center;
         }
 
         .vibe-loading{
@@ -89,11 +90,22 @@
                     url: calculateVibeUrl,
                     type: 'GET',
                     success: function(data) {
-                        var dataAsH1 = $('<h1>').text(data.result);
+                        if (data.result === "Null") {
+                            $('#vibe-status .vibe-loaded-text').text('No songs to analyze.').show();
+                            $('#vibe-status').removeClass('vibe-loading');
+                        } else {
+                            var dataAsH1 = $('<h1>').text(data.result);
+                            $('#vibe-status .vibe-loaded-text').append(dataAsH1).show();
+                            $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
+                        }
                         $('#vibe-status .vibe-loading-text').hide();
-                        $('#vibe-status .vibe-loaded-text').append(dataAsH1).show();
-                        $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
                         alert('Vibe calculation completed!');
+                    },
+                    error: function() {
+                        // If ajax function has error..
+                        $('#vibe-status .vibe-loaded-text').text('Error, please try again later.').show();
+                        $('#vibe-status').removeClass('vibe-loading');
+                        $('#vibe-status .vibe-loading-text').hide();
                     }
                 });
             });

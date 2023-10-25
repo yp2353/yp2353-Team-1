@@ -21,7 +21,7 @@ Ensure you have Python and pip installed. The following packages are required:
 Install the prerequisites using pip:
 
 ```bash
-pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai
+pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase
 ```
 
 ### Configuring API Credentials
@@ -71,9 +71,12 @@ pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly ope
    print(song.lyrics)
    ```
 
+#### OpenAI API
+1. Replace the `OPEN_AI_TOKEN` in your `.env` file.
+
 ### For Collaborators
 
-Ensure to create your own `.env` file and populate it with your own Spotify and Genius API credentials.
+Ensure to create your own `.env` file and populate it with your own Spotify, Genius, and OpenAI API credentials.
 
 ## Development and Usage
 
