@@ -204,7 +204,7 @@ Temporary Items
 #FastText file too big
 dashboard/cc.en.300.bin
 
-#Avoiding mrge conflicts
+#Avoiding merge conflicts
 hour_plot.html
 login/static/login/day_data.json
 login/static/login/hour_data.json
