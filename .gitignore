@@ -200,3 +200,7 @@ Temporary Items
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+
+#FastText file too big
+dashboard/cc.en.300.bin

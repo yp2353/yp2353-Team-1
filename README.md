@@ -13,12 +13,15 @@ Ensure you have Python and pip installed. The following packages are required:
 - `spotipy`: A lightweight Python library for the Spotify Web API.
 - `lyricsgenius`: A Python client for the Genius.com API.
 - `python-dotenv`: A Python module that allows you to specify environment variables in traditional UNIX-like `.env` files.
-- 'plotly': An interactive graphing library for Python
+- `plotly`: An interactive graphing library for Python
+- `openai`
+- `django-extensions`
+- `supabase`
 
 Install the prerequisites using pip:
 
 ```bash
-pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly
+pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai
 ```
 
 ### Configuring API Credentials
