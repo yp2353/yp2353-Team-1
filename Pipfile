@@ -68,9 +68,10 @@ tqdm = "==4.66.1"
 typing-extensions = "==4.8.0"
 websockets = "==10.4"
 yarl = "==1.9.2"
-gensim = "*"
+gensim = "==4.3.2"
 scipy = "==1.10.1"
-pyyaml = "*"
+pyyaml = "==6.0.1"
+smart-open = "==6.4.0"
 
 [dev-packages]
 
