@@ -1,0 +1,34 @@
+language: python
+python:
+  - "3.8"  
+
+cache: pip
+
+install:
+  - pip install -r requirements.txt  
+
+before_script:
+  
+
+after_script:
+  - coveralls
+
+script:
+  - black .
+  - black --check .  
+  - flake8 .
+  - coverage run --source=login,static,dashboard,vibecheck,user_profile manage.py test
+
+
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: "us-west-2"
+  app: "vcheck-app-1016"
+  env: "vcheck-env-1016"
+  bucket_name: "elasticbeanstalk-us-west-2-284687301079"
+  bucket_path: "vcheck-app-1016/"
+  on:
+    repo: gcivil-nyu-org/Wednesday-Fall2023-Team-1
+    branch: master
