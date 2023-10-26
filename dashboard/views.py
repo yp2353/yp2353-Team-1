@@ -200,7 +200,12 @@ def deduce_lyrics(track_names, track_artists, track_ids):
 
         query = f'"{track}" "{artist}"'
         song = genius.search_song(query)
-        if song and song.title.lower() == track.lower() and song.artist.lower() == artist.lower():
+        if song:
+            #Genius song object sometimes has trailing space, so need to strip
+            geniusTitle = song.title.lower().replace("\u200b", " ").strip()
+            geniusArtist = song.artist.lower().replace("\u200b", " ").strip()
+            if geniusTitle == track.lower() and geniusArtist == artist.lower():
+                print(f"Inputting lyrics..")
                 lyrics_data[(track, artist, id)] = song.lyrics
 
     openai.api_key = os.getenv('OPEN_AI_TOKEN')
