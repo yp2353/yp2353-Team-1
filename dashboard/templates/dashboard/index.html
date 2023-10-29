@@ -1,60 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Maven+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    {% load static %}
-    <style>
-        body.background-image {
-            background-color: black;
-            font-family: 'Inter', sans-serif;
-            color: white;
-        }
+{% extends 'base.html' %}
 
-        .vibe-background{
-            height: 45vh;   /*to be changed*/
-            width: 50vw;    /*to be changed*/
-            text-align: center;
-        }
+{% load static %}
+{% block body_class %}background-image{% endblock %}
 
-        .vibe-loading{
-            background-image: url("{% static 'dashboard/loading.gif' %}");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .vibe-loaded{
-            background-image: url("{% static 'dashboard/gradient.gif' %}");
-            background-size: cover;
-        }
-
-        #dayPlot {
-            width: 80%;
-                height: 100%;
-            margin: 20px auto;
-            box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
-        }
-
-        #hourPlot {
-            width: 80%;
-            height: 100%;
-            margin: 20px auto;
-            box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
-        }
-    </style>
-    
-    <title>Dashboard</title> 
-</head>
-<body class="background-image">
-
+{% block content %}
     <div class="container mt-5">
-        <h1>Dashboard</h1>
-
-        <br>
 
         <div id="vibe-status" data-calculate-vibe-url="{% url 'dashboard:calculate_vibe' %}" class="border border-white rounded d-flex justify-content-center align-items-center vibe-background">
             <div class="vibe-loading-text"><h3>Loading Vibe...</h3></div>
@@ -111,62 +61,52 @@
             });
         </script>
 
+        <!-- Container for the Hour of Day Plot -->
+        <div id="hourPlot"></div>
+
+        <!-- Container for the Day of Week Plot -->
+        <div id="dayPlot"></div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                fetch('{% static "login/day_data.json" %}')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const dayData = JSON.parse(data);
+                Plotly.newPlot('dayPlot', dayData.data, dayData.layout);
+            })
+            .catch(error => {
+                console.log('There was a problem with the fetch operation:', error.message);
+            });
+            // Your fetch and plot code here
+
+                fetch('{% static "login/hour_data.json" %}')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const hourData = JSON.parse(data);
+                Plotly.newPlot('hourPlot', hourData.data, hourData.layout);
+            })
+            .catch(error => {
+                console.log('There was a problem with the fetch operation:', error.message);
+            });
+        });
+        </script>
+
         <form action="{% url 'dashboard:logout' %}" method="post">
             {% csrf_token %}
             <input type="submit" value="Logout">
         </form>
     </div>
 
-    <!-- Container for the Hour of Day Plot -->
-    <div id="hourPlot"></div>
 
-    <!-- Container for the Day of Week Plot -->
-    <div id="dayPlot"></div>
-
-    {% load static %}
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            fetch('{% static "login/day_data.json" %}')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const dayData = JSON.parse(data);
-            Plotly.newPlot('dayPlot', dayData.data, dayData.layout);
-        })
-        .catch(error => {
-            console.log('There was a problem with the fetch operation:', error.message);
-        });
-        // Your fetch and plot code here
-
-            fetch('{% static "login/hour_data.json" %}')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const hourData = JSON.parse(data);
-            Plotly.newPlot('hourPlot', hourData.data, hourData.layout);
-        })
-        .catch(error => {
-            console.log('There was a problem with the fetch operation:', error.message);
-        });
-    });
-
-
-    </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-</body>
-</html>
-
-
-
+{% endblock %}
