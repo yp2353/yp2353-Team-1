@@ -8,17 +8,17 @@ import json
 import shutil
 import lyricsgenius
 import openai
-import time
 from dotenv import load_dotenv
 import os
 import numpy as np
 from gensim.models import FastText
 from django.http import JsonResponse
+from user_profile.models import Vibe
+from django.utils import timezone
 
 # Load variables from .env
 load_dotenv()
 
-# Create your views here.
 model = FastText.load_fasttext_format('dashboard/cc.en.300.bin')
 
 
@@ -76,12 +76,22 @@ def index(request):
 
 
 def calculate_vibe(request):
-    #Check if user vibe exists already for today
-
     token_info = get_spotify_token(request)
 
     if token_info:
         sp = spotipy.Spotify(auth=token_info['access_token'])
+
+        #Check if user vibe exists already for today
+        user_info = sp.current_user()
+        user_id = user_info["id"]
+        current_time = timezone.now()
+        time_difference = current_time - timezone.timedelta(hours=24)
+        recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
+        if recent_vibe:
+            vibe_result = recent_vibe.user_vibe
+            return JsonResponse({'result': vibe_result})
+        #Skips having to perform vibe calculations below
+        
 
         recent_tracks = sp.current_user_recently_played(limit=15)
 
@@ -106,6 +116,9 @@ def calculate_vibe(request):
             vibe_result = check_vibe(track_names, track_artists, track_ids, audio_features_list)
 
             #Add user vibe to vibe database
+            time = timezone.now()
+            vibe_data = Vibe(user_id=user_id, user_vibe=vibe_result, vibe_time=time)
+            vibe_data.save()
         else:
             vibe_result = "Null"
 
