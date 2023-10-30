@@ -11,10 +11,12 @@ import openai
 from dotenv import load_dotenv
 import os
 import numpy as np
+from utils import format_audio_features
 from gensim.models import FastText
 from django.http import JsonResponse
 from user_profile.models import Vibe
 from django.utils import timezone
+from django.apps import apps
 
 # Load variables from .env
 load_dotenv()
@@ -96,7 +98,7 @@ def calculate_vibe(request):
             vibe_result = recent_vibe.user_vibe
             return JsonResponse({'result': vibe_result})
         #Skips having to perform vibe calculations below
-        
+
 
         recent_tracks = sp.current_user_recently_played(limit=15)
 
@@ -115,7 +117,7 @@ def calculate_vibe(request):
             track_names.append(track['name'])
             track_artists.append(track['artists'][0]['name'])
             track_ids.append(track['id']) """
-        
+
         if recent_tracks:
             audio_features_list = sp.audio_features(track_ids)
             vibe_result = check_vibe(track_names, track_artists, track_ids, audio_features_list)
@@ -131,7 +133,7 @@ def calculate_vibe(request):
     else:
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
-        return redirect('login:index')    
+        return redirect('login:index')
 
 
 
@@ -194,13 +196,13 @@ def extract_tracks(sp):
 
 
 def check_vibe(track_names, track_artists, track_ids, audio_features_list):
-    
+
     lyrics_vibes = deduce_lyrics(track_names, track_artists, track_ids)
 
-    audio_vibes = deduce_audio(audio_features_list)
+    audio_vibes = deduce_audio_with_model(audio_features_list) #deduce_audio(audio_features_list)
     #CURRENTLY USING deduce_audio, REPLACE WITH MOOD MODEL.
     #SAVE INTO TRACK DATABASE AS WELL WITH ID?
-
+    # print("AUDIO VIBES: ", audio_vibes)
 
     return vectorize(lyrics_vibes, audio_vibes)
 
@@ -250,7 +252,7 @@ def deduce_lyrics(track_names, track_artists, track_ids):
 
         except Exception as e:
             print(f"Error processing the vibe for {track}: {e}")
-    
+
     return lyrics_vibes
 
 
@@ -279,7 +281,7 @@ def vectorize(lyrics_vibes, audio_vibes):
     else:
         print("The final audio vibe is:", str(final_aud_vibe))
         return str(final_aud_vibe)
-    
+
 
 def get_vector(word, model):
     """Get the word vector from the model."""
@@ -301,6 +303,19 @@ def vector_to_word(vector, model):
     # We just want the word, so we pick [0][0]
     return model.wv.most_similar(positive=[vector], topn=1)[0][0]
 
+
+def deduce_audio_with_model(audio_features_list):
+    formatted_data = format_audio_features(audio_features_list)
+    mood_dict = {
+        0: "Happy",
+        1: "Sad",
+        2: "Energetic",
+        3: "Calm"
+    }
+    model = apps.get_app_config('dashboard').model
+    pred = model.predict(formatted_data)
+    result = mood_dict.get(pred[0], "Unknown")
+    return result
 
 
 def deduce_audio(audio_features_list):

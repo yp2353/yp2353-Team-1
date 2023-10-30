@@ -1,5 +1,6 @@
 from spotipy.oauth2 import SpotifyOAuth
 import os
+import pandas as pd
 from dotenv import load_dotenv
 
 # Load variables from .env
@@ -34,3 +35,33 @@ def get_spotify_token(request):
     else:
         # Error getting saved token
         return None
+
+def format_audio_features(track_features):
+    """
+    Optimized function to format the Spotify audio features for model prediction.
+
+    Parameters:
+    - track_features: The audio features of the track as obtained from the Spotify API.
+
+    Returns:
+    - A formatted pandas DataFrame suitable for making predictions with the loaded model.
+    """
+    # Directly create the DataFrame with the desired column order and renaming
+    ordered_features = [
+        ('popularity', 1),  # Assuming popularity is a static placeholder
+        ('duration_ms', 'length'),  # Rename 'duration_ms' to 'length'
+        'danceability', 'acousticness', 'energy', 'instrumentalness',
+        'liveness', 'valence', 'loudness', 'speechiness', 'tempo',
+        'key', 'time_signature'
+    ]
+
+    # Prepare a dictionary for renaming and column order
+    rename_dict = {orig: new if isinstance(new, str) else orig
+                   for orig, new in ordered_features}
+    columns_order = [new if isinstance(new, str) else orig
+                     for orig, new in ordered_features]
+
+    # Select, rename, and reorder columns in one go
+    spotify_data = pd.DataFrame(track_features).rename(columns=rename_dict)[columns_order]
+
+    return spotify_data
