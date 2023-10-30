@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% block body_class %}background-image{% endblock %}
+{% block body_class %}background{% endblock %}
 
 {% block content %}
     <div class="container mt-5">
@@ -102,10 +102,12 @@
         });
         </script>
 
+        <!--
         <form action="{% url 'dashboard:logout' %}" method="post">
             {% csrf_token %}
             <input type="submit" value="Logout">
         </form>
+        -->
     </div>
 
 

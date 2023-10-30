@@ -61,9 +61,14 @@ def index(request):
                 'uri': track['uri']
             })
 
+        #Pass username to navbar
+        user_info = sp.current_user()
+        username = user_info["display_name"]
+
         context = {
             'tracks': tracks,
-            'recommendedtracks': recommendedtracks
+            'recommendedtracks': recommendedtracks,
+            'username': username
         }
 
         extract_tracks(sp)
