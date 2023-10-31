@@ -1,19 +1,16 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-import supabase, os
-from dotenv import load_dotenv
-
-# Load variables from .env
-load_dotenv()
-
 from django.shortcuts import redirect, render
 
+# from django.contrib.auth.decorators import login_required
+import supabase
+import os
+from dotenv import load_dotenv
 import spotipy
 from utils import get_spotify_token
 from django.utils import timezone
 from .models import User, Vibe
 
-# Create your views here.
+# Load variables from .env
+load_dotenv()
 
 
 def check_and_store_profile(request):
@@ -24,21 +21,21 @@ def check_and_store_profile(request):
         user = vibe = profile_image_url = None
 
         time = timezone.now()
-
         user_info = sp.current_user()
         user_id = user_info["id"]
         user_exists = User.objects.filter(user_id=user_id).first()
 
         if not user_exists:
+            profile_image_url = (
+                user_info["images"][0]["url"]
+                if ("images" in user_info and user_info["images"])
+                else None
+            )
             user = User(
                 user_id=user_id,
                 username=user_info["display_name"],
                 total_followers=user_info["followers"]["total"],
-                profile_image_url=(
-                    user_info["images"][0]["url"]
-                    if ("images" in user_info and user_info["images"])
-                    else None
-                ),
+                profile_image_url=profile_image_url,
                 user_country=user_info["country"],
                 user_last_login=time,
             )
