@@ -80,7 +80,9 @@ pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly ope
 
 ### For Collaborators
 
-Ensure to create your own `.env` file and populate it with your own Spotify, Genius, and OpenAI API credentials.
+- Ensure to create your own `.env` file and populate it with your own Spotify, Genius, and OpenAI API credentials.
+- Do check lines 11-15 in `vibecheck/settings.py` while working on your local machine.
+- Before pushing `develop` branch into `master`, make sure the AWS Elastic Beanstalk environment is restarted with `Health:OK`. 
 
 ## Development and Usage
 
