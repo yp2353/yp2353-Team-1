@@ -274,7 +274,9 @@ def vectorize(lyrics_vibes, audio_vibes):
     if lyrics_vibes:
         avg_lyr_vibe = average_vector(lyrics_vibes, model)
         final_lyr_vibe = vector_to_word(avg_lyr_vibe, model)
+        closest_emotion = find_closest_emotion(avg_lyr_vibe, model)
         print("The final lyric audio vibe is:", str(final_aud_vibe) + " " + str(final_lyr_vibe))
+        print("The closest emotion is:", closest_emotion)
         return str(final_aud_vibe) + " " + str(final_lyr_vibe)
     else:
         print("The final audio vibe is:", str(final_aud_vibe))
@@ -354,3 +356,29 @@ def normalize(vector):
     if magnitude == 0:
         return vector
     return vector / magnitude
+
+def find_closest_emotion(final_vibe, model):
+    emotion_words = [
+        "Happy", "Sad", "Angry", "Joyful", "Depressed", "Anxious", "Content",
+        "Excited", "Bored", "Nostalgic", "Frustrated", "Hopeful", "Afraid",
+        "Confident", "Jealous", "Grateful", "Lonely", "Overwhelmed", "Relaxed",
+        "Amused", "Curious", "Ashamed", "Sympathetic", "Disappointed", "Proud",
+        "Guilty", "Enthusiastic", "Empathetic", "Shocked", "Calm", "Inspired",
+        "Disgusted", "Indifferent", "Romantic", "Surprised", "Tense", "Euphoric",
+        "Melancholic", "Restless", "Serene"
+    ]
+
+    max_similarity = -1
+    closest_emotion = None
+    for word in emotion_words:
+        word_vec = get_vector(word, model)
+        similarity = cosine_similarity(final_vibe, word_vec)
+        if similarity > max_similarity:
+            max_similarity = similarity
+            closest_emotion = word
+    return closest_emotion
+
+
+def cosine_similarity(vec_a, vec_b):
+    return np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))
+
