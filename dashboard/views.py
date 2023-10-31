@@ -8,6 +8,7 @@ import json
 import shutil
 import lyricsgenius
 import openai
+# from dotenv import load_dotenv
 import os
 import numpy as np
 from gensim.models import FastText
