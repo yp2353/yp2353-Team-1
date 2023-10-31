@@ -2,6 +2,10 @@
 
 This repository contains the codebase for our team project, which involves interacting with the Spotify and Genius APIs to create a music-related application.
 
+[![Build Status](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-1.svg?branch=master)](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-1)
+
+[![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/Wednesday-Fall2023-Team-1/badge.svg?branch=joshua-master)](https://coveralls.io/github/gcivil-nyu-org/Wednesday-Fall2023-Team-1?branch=master)
+
 ## Getting Started
 
 ### Prerequisites
