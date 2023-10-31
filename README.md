@@ -23,6 +23,11 @@ Install the prerequisites using pip:
 ```bash
 pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase
 ```
+Install the Bootstrap-Icons using npm:
+
+```bash
+npm i bootstrap-icons
+```
 
 ### Configuring API Credentials
 

@@ -74,33 +74,33 @@ def check_and_store_profile(request):
         return redirect("login:index")
 
 
-def update_user_profile(request):
-    if request.method == "POST":
-        user_id = request.POST.get("user_id")
-        user = User.objects.filter(user_id=user_id).first()
-        context = {"user": user}
-        return render(request, "user_profile/update_profile.html", context)
+def update_user_profile(request, user_id):
+    user = User.objects.filter(user_id=user_id).first()
+    context = {"user": user}
+    return render(request, "user_profile/update_profile.html", context)
 
-
-def update(request):
-    user_id = request.POST.get("user_id")
+#Updates the profile return to User_profile Page
+def update(request, user_id):
+    
     user = User.objects.filter(user_id=user_id).first()
 
-    bio = request.POST.get("user_bio")
-    city = request.POST.get("user_city")
-    new_profile_image = request.FILES.get("profile_image")
-    print(new_profile_image)
-    if city:
-        user.user_city = city
-    if bio != user.user_bio:
-        user.user_bio = bio
-    if new_profile_image:
-        user.profile_image_url = upload_user_image(user, new_profile_image)
-        print(user.profile_image_url)
-    else:
-        print("No Image added")
-    user.save()
-
+    if request.method == 'POST':
+        print("Data is changed")
+        bio = request.POST.get("user_bio")
+        city = request.POST.get("user_city")
+        new_profile_image = request.FILES.get("profile_image")
+        # print(new_profile_image)
+        if city:
+            user.user_city = city
+        if bio != user.user_bio:
+            user.user_bio = bio
+        if new_profile_image:
+            user.profile_image_url = upload_user_image(user, new_profile_image)
+            # print(user.profile_image_url)
+        else:
+            print("No Image added")
+        user.save()
+    
     return redirect("user_profile:profile_page")
 
 
@@ -130,7 +130,7 @@ def upload_user_image(user, image_file):
         file_path, 20000
     )
 
-    print(response)
+    # print(response)
     if response.get("error"):
         raise Exception(f"Failed to upload image: {response['error']}")
     return response.get("signedURL")
@@ -149,7 +149,7 @@ def get_profile_image_url(user_id):
         file_path, 20000
     )
 
-    print(response)
+    # print(response)
     if response.get("error"):
         raise Exception(f"Failed to Get URL image: {response['error']}")
     return response.get("signedURL")
