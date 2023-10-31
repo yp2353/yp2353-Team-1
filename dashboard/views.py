@@ -16,8 +16,8 @@ from gensim.models import FastText
 from django.http import JsonResponse
 import boto3
 import tempfile
-from user_profile.models import Vibe
-from django.utils import timezone
+# from user_profile.models import Vibe
+# from django.utils import timezone
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
