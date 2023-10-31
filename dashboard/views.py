@@ -8,18 +8,37 @@ import json
 import shutil
 import lyricsgenius
 import openai
-# import time
-from dotenv import load_dotenv
 import os
 import numpy as np
 from gensim.models import FastText
 from django.http import JsonResponse
+import boto3
+import tempfile
 
-# Load variables from .env
-load_dotenv()
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
-# Create your views here.
-model = FastText.load_fasttext_format("dashboard/cc.en.300.bin")
+
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
+
+
+def load_model_from_s3():
+    with tempfile.NamedTemporaryFile() as tmp:
+        s3.download_file("vibecheck-storage", "cc.en.100.bin", tmp.name)
+        model = FastText.load_fasttext_format(tmp.name)
+    return model
+
+
+# Uncomment for loading from S3
+model = load_model_from_s3()
+
+
+# Uncomment for manual loading
+# model = FastText.load_fasttext_format("dashboard/cc.en.100.bin")
 
 
 def index(request):
@@ -199,7 +218,7 @@ def check_vibe(track_names, track_artists, track_ids, audio_features_list):
 
 
 def deduce_lyrics(track_names, track_artists, track_ids):
-    genius = lyricsgenius.Genius(os.getenv("GENIUS_TOKEN"))
+    genius = lyricsgenius.Genius(os.getenv("GENIUS_CLIENT_ACCESS_TOKEN"))
 
     lyrics_vibes = []
 
