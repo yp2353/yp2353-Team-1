@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Maven+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    {% load static %}
+    <style>
+        .background {
+            background-color: black;
+            font-family: 'Inter', sans-serif;
+            color: white;
+        }
+
+        /*DASHBOARD PAGE*/
+        .vibe-background{
+            height: 45vh;   /*to be changed*/
+            width: 50vw;    /*to be changed*/
+            text-align: center;
+        }
+
+        .vibe-loading{
+            background-image: url("{% static 'dashboard/loading.gif' %}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .vibe-loaded{
+            background-image: url("{% static 'dashboard/gradient.gif' %}");
+            background-size: cover;
+        }
+
+        #dayPlot {
+            width: 80%;
+                height: 100%;
+            margin: 20px auto;
+            box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
+        }
+
+        #hourPlot {
+            width: 80%;
+            height: 100%;
+            margin: 20px auto;
+            box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
+        }
+        /*DASHBOARD PAGE END*/
+
+        .navbar {
+            background-color: #000000;
+            border-bottom: 1px solid #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .navbar-brand {
+            font-family: 'Maven Pro', sans-serif;
+            font-size: x-large;
+        }
+
+        .navbar-toggler{
+            border: none;
+        }
+
+        .navbar-toggler:focus, .navbar-toggler:active {
+            box-shadow: none; 
+        }
+
+    </style>
+    
+</head>
+<body class="{% block body_class %}background-image{% endblock %}">
+    {% block navbar %}
+        <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">VibeCheck</span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                  <ul class="navbar-nav">
+                    <li class="nav-item">
+                      <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">Friends</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">Chatrooms</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">Search</a>
+                    </li>
+                  </ul>
+                  <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a class="dropdown-item" href="{% url 'user_profile:profile_page' %}">Profile</a></li>
+                          <li><a class="dropdown-item" href="{% url 'dashboard:logout' %}">Log Out</a></li>
+                        </ul>
+                    </li>
+                  </ul>
+                </div>
+            </div>
+        </nav>
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</body>
+</html>
