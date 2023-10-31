@@ -8,6 +8,7 @@ import json
 import shutil
 import lyricsgenius
 import openai
+
 # from dotenv import load_dotenv
 import os
 import numpy as np
@@ -15,6 +16,8 @@ from gensim.models import FastText
 from django.http import JsonResponse
 import boto3
 import tempfile
+from user_profile.models import Vibe
+from django.utils import timezone
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -103,6 +106,17 @@ def calculate_vibe(request):
 
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
+
+        # Check if user vibe exists already for today
+        # user_info = sp.current_user()
+        # user_id = user_info["id"]
+        # current_time = timezone.now()
+        # time_difference = current_time - timezone.timedelta(hours=24)
+        # recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
+        # if recent_vibe:
+        #     vibe_result = recent_vibe.user_vibe
+        #     return JsonResponse({'result': vibe_result})
+        # Skips having to perform vibe calculations below
 
         recent_tracks = sp.current_user_recently_played(limit=15)
 
