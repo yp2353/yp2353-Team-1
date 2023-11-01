@@ -11,14 +11,18 @@ import openai
 # from dotenv import load_dotenv
 import os
 import numpy as np
-from gensim.models import FastText
+# from gensim.models import FastText
 from django.http import JsonResponse
-import boto3
-import tempfile
+# import boto3
+# import tempfile
 from user_profile.models import Vibe
 from django.utils import timezone
+import spacy
 
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+# Load spaCy language model from the deployed location
+nlp = spacy.load('dashboard/en_core_web_md/en_core_web_md-3.7.0')
+
+""" AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 
@@ -37,7 +41,7 @@ def load_model_from_s3():
 
 
 # Uncomment for loading from S3
-model = load_model_from_s3()
+model = load_model_from_s3()"""
 
 
 # Uncomment for manual loading
@@ -141,7 +145,7 @@ def calculate_vibe(request):
             track_artists.append(track['artists'][0]['name'])
             track_ids.append(track['id']) """
 
-        if recent_tracks:
+        if track_ids:
             audio_features_list = sp.audio_features(track_ids)
             vibe_result = check_vibe(
                 track_names, track_artists, track_ids, audio_features_list
@@ -309,25 +313,34 @@ def vectorize(lyrics_vibes, audio_vibes):
     # print("the final vibe is: ", normalized_multiplied, normalized_vibe_sum, normalized_projection,
     # " avg output: ", final_emotion, final_vibe)
 
-    avg_aud_vibe = average_vector(audio_vibes, model)
-    final_aud_vibe = vector_to_word(avg_aud_vibe, model)
+    # avg_aud_vibe = average_vector(audio_vibes, model)
+    # final_aud_vibe = vector_to_word(avg_aud_vibe, model)
+
+    lyrics_constrain = [
+        "Happy", "Melancholic", "Romantic", "Upbeat", "Inspired", "Reflective",
+        "Rebellious", "Calm", "Playful", "Nostalgic", "Dark", "Optimistic",
+        "Mysterious", "Confident", "Seductive", "Regretful", "Detached"
+    ]
+
+    audio_constrain = [
+        "Gloomy", "Cheerful", "Calm", "Anxious", "Energetic", "Sad",
+        "Content", "Happy"
+    ]
+
+    closest_audio = spacy_vectorize(audio_vibes, audio_constrain)
 
     if lyrics_vibes:
-        avg_lyr_vibe = average_vector(lyrics_vibes, model)
+        # avg_lyr_vibe = average_vector(lyrics_vibes, model)
         # final_lyr_vibe = vector_to_word(avg_lyr_vibe, model)
-        closest_emotion = find_closest_emotion(avg_lyr_vibe, model)
-        print(
-            "The final lyric audio vibe is:",
-            str(final_aud_vibe) + " " + str(closest_emotion),
-        )
-        return str(final_aud_vibe) + " " + str(closest_emotion)
+        # closest_emotion = find_closest_emotion(avg_lyr_vibe, model)
+        closest_emotion = spacy_vectorize(lyrics_vibes, lyrics_constrain)
+        return str(closest_audio) + " " + str(closest_emotion)
     else:
-        print("The final audio vibe is:", str(final_aud_vibe))
-        return str(final_aud_vibe)
+        return str(closest_audio)
 
 
-def get_vector(word, model):
-    """Get the word vector from the model."""
+""" def get_vector(word, model):
+    # Get the word vector from the model.
     try:
         return model.wv[word]
     except KeyError:
@@ -335,16 +348,16 @@ def get_vector(word, model):
 
 
 def average_vector(words, model):
-    """Compute the average vector for a list of words."""
+    # Compute the average vector for a list of words.
     vectors = [get_vector(word, model) for word in words]
     return np.mean(vectors, axis=0)
 
 
 def vector_to_word(vector, model):
-    """Find the closest word in the embedding for the given vector."""
+    # Find the closest word in the embedding for the given vector.
     # most_similar returns [(word, similarity score), ...]
     # We just want the word, so we pick [0][0]
-    return model.wv.most_similar(positive=[vector], topn=1)[0][0]
+    return model.wv.most_similar(positive=[vector], topn=1)[0][0] """
 
 
 def deduce_audio(audio_features_list):
@@ -397,7 +410,7 @@ def deduce_audio(audio_features_list):
     return emotions
 
 
-def normalize(vector):
+""" def normalize(vector):
     # Used for testing only for now
     magnitude = np.linalg.norm(vector)
     if magnitude == 0:
@@ -427,4 +440,21 @@ def find_closest_emotion(final_vibe, model):
 
 
 def cosine_similarity(vec_a, vec_b):
-    return np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))
+    return np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b)) """
+
+
+def spacy_vectorize(vibe, constrain):
+    vibe_string = " ".join(vibe)
+    in_vocab_vibes = [token.text for token in nlp(vibe_string) if not token.is_oov]
+    in_vocab_tokens = nlp(" ".join(in_vocab_vibes))
+    
+    max_similarity = -1
+    closest_emotion = None
+    
+    for word in constrain:
+        similarity = nlp(word).similarity(in_vocab_tokens)
+        if similarity > max_similarity:
+            max_similarity = similarity
+            closest_emotion = word
+    
+    return closest_emotion
