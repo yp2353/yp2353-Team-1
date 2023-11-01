@@ -14,6 +14,9 @@ load_dotenv()
 
 # Create your views here.
 
+SUPABSE_URL = os.getenv("SUPABSE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase_client = supabase.Client(SUPABSE_URL, SUPABASE_KEY)
 
 def check_and_store_profile(request):
     token_info = get_spotify_token(request)
@@ -109,11 +112,6 @@ def upload_user_image(user, image_file):
     # Convert the Image to bytes
     image_bytes = image_file.read()
 
-    # Upload the image to Supabase storage
-    SUPABSE_URL = os.getenv("SUPABSE_URL")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-    supabase_client = supabase.Client(SUPABSE_URL, SUPABASE_KEY)
-
     bucket_name = "user_profile_pic"
     file_path = f"{bucket_name}/users/{user.user_id}"  # Define your own path as needed
 
@@ -131,15 +129,12 @@ def upload_user_image(user, image_file):
 
     # print(response)
     if response.get("error"):
-        raise Exception(f"Failed to upload image: {response['error']}")
+        # raise Exception(f"Failed to Get URL image: {response['error']}")
+        return None
     return response.get("signedURL")
 
 
 def get_profile_image_url(user_id):
-    # Upload the image to Supabase storage
-    SUPABSE_URL = os.getenv("SUPABSE_URL")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-    supabase_client = supabase.Client(SUPABSE_URL, SUPABASE_KEY)
 
     bucket_name = "user_profile_pic"
     file_path = f"{bucket_name}/users/{user_id}"  # Define your own path as needed
@@ -150,5 +145,6 @@ def get_profile_image_url(user_id):
 
     # print(response)
     if response.get("error"):
-        raise Exception(f"Failed to Get URL image: {response['error']}")
+        # raise Exception(f"Failed to Get URL image: {response['error']}")
+        return None
     return response.get("signedURL")
