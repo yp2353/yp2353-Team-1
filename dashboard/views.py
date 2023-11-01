@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 import spotipy
-from utils import get_spotify_token
 import plotly.graph_objects as go
 from datetime import datetime
 from collections import Counter
@@ -11,12 +10,11 @@ import openai
 from dotenv import load_dotenv
 import os
 import numpy as np
-from utils import format_audio_features
+from utils import get_spotify_token, deduce_audio_vibe
 from gensim.models import FastText
 from django.http import JsonResponse
 from user_profile.models import Vibe
 from django.utils import timezone
-from django.apps import apps
 
 # Load variables from .env
 load_dotenv()
@@ -94,9 +92,9 @@ def calculate_vibe(request):
         current_time = timezone.now()
         time_difference = current_time - timezone.timedelta(hours=24)
         recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
-        if recent_vibe:
-            vibe_result = recent_vibe.user_vibe
-            return JsonResponse({'result': vibe_result})
+        # if recent_vibe:
+        #     vibe_result = recent_vibe.user_vibe
+        #     return JsonResponse({'result': vibe_result})
         #Skips having to perform vibe calculations below
 
 
@@ -197,12 +195,13 @@ def extract_tracks(sp):
 
 def check_vibe(track_names, track_artists, track_ids, audio_features_list):
 
-    lyrics_vibes = deduce_lyrics(track_names, track_artists, track_ids)
+    audio_vibes = deduce_audio_vibe(audio_features_list)
 
-    audio_vibes = deduce_audio_with_model(audio_features_list) #deduce_audio(audio_features_list)
     #CURRENTLY USING deduce_audio, REPLACE WITH MOOD MODEL.
     #SAVE INTO TRACK DATABASE AS WELL WITH ID?
     # print("AUDIO VIBES: ", audio_vibes)
+
+    lyrics_vibes = deduce_lyrics(track_names, track_artists, track_ids)
 
     return vectorize(lyrics_vibes, audio_vibes)
 
@@ -257,7 +256,7 @@ def deduce_lyrics(track_names, track_artists, track_ids):
 
 
 
-def vectorize(lyrics_vibes, audio_vibes):
+def vectorize(lyrics_vibes, audio_vibe):
     #TESTING, to be deleted
     #final_vibe_multiplied = np.multiply(avg_vibe, avg_emotion)
     #final_vibe_su = np.add(avg_vibe, avg_emotion)
@@ -270,19 +269,19 @@ def vectorize(lyrics_vibes, audio_vibes):
     # print("the final vibe is: ", normalized_multiplied, normalized_vibe_sum, normalized_projection,
     #" avg output: ", final_emotion, final_vibe)
 
-    avg_aud_vibe = average_vector(audio_vibes, model)
-    final_aud_vibe = vector_to_word(avg_aud_vibe, model)
+    # avg_aud_vibe = average_vector(audio_vibe, model)
+    # final_aud_vibe = vector_to_word(avg_aud_vibe, model)
 
     if lyrics_vibes:
         avg_lyr_vibe = average_vector(lyrics_vibes, model)
         final_lyr_vibe = vector_to_word(avg_lyr_vibe, model)
         closest_emotion = find_closest_emotion(avg_lyr_vibe, model)
-        print("The final lyric audio vibe is:", str(final_aud_vibe) + " " + str(final_lyr_vibe))
+        print("The final lyric audio vibe is:", str(audio_vibe) + " " + str(final_lyr_vibe))
         print("The closest emotion is:", closest_emotion)
-        return str(final_aud_vibe) + " " + str(final_lyr_vibe)
+        return str(audio_vibe) + " " + str(final_lyr_vibe)
     else:
-        print("The final audio vibe is:", str(final_aud_vibe))
-        return str(final_aud_vibe)
+        print("The final audio vibe is:", str(audio_vibe))
+        return str(audio_vibe)
 
 
 def get_vector(word, model):
@@ -304,20 +303,6 @@ def vector_to_word(vector, model):
     # most_similar returns [(word, similarity score), ...]
     # We just want the word, so we pick [0][0]
     return model.wv.most_similar(positive=[vector], topn=1)[0][0]
-
-
-def deduce_audio_with_model(audio_features_list):
-    formatted_data = format_audio_features(audio_features_list)
-    mood_dict = {
-        0: "Happy",
-        1: "Sad",
-        2: "Energetic",
-        3: "Calm"
-    }
-    model = apps.get_app_config('dashboard').model
-    pred = model.predict(formatted_data)
-    result = mood_dict.get(pred[0], "Unknown")
-    return result
 
 
 def deduce_audio(audio_features_list):

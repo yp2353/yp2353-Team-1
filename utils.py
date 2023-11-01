@@ -1,6 +1,8 @@
 from spotipy.oauth2 import SpotifyOAuth
 import os
 import pandas as pd
+from collections import Counter
+from django.apps import apps
 from dotenv import load_dotenv
 
 # Load variables from .env
@@ -16,7 +18,6 @@ SCOPE = "user-top-read user-read-recently-played user-read-private"
 sp_oauth = SpotifyOAuth(
     CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SCOPE, show_dialog=True
 )
-
 
 def get_spotify_token(request):
     token_info = request.session.get("token_info", None)
@@ -36,32 +37,64 @@ def get_spotify_token(request):
         # Error getting saved token
         return None
 
-def format_audio_features(track_features):
+def deduce_audio_vibe(audio_features_list):
     """
-    Optimized function to format the Spotify audio features for model prediction.
+    Function to format the Spotify audio features and predict the most common mood
+    using the provided model.
 
     Parameters:
-    - track_features: The audio features of the track as obtained from the Spotify API.
+    - audio_features_list: The audio features of the tracks as obtained from the Spotify API.
 
     Returns:
-    - A formatted pandas DataFrame suitable for making predictions with the loaded model.
+    - The most common mood from the predictions.
     """
-    # Directly create the DataFrame with the desired column order and renaming
+
+    # Create a DataFrame from the list of audio features dictionaries
+    spotify_data = pd.DataFrame(audio_features_list)
+
+    # Rename 'duration_ms' to 'length' and normalize by dividing by the maximum value
+    spotify_data.rename(columns={'duration_ms': 'length'}, inplace=True)
+    if not spotify_data['length'].empty:
+        max_length = spotify_data['length'].max()
+        spotify_data['length'] = spotify_data['length'] / max_length
+
+    # Reorder columns based on the model's expectations
     ordered_features = [
-        ('popularity', 1),  # Assuming popularity is a static placeholder
-        ('duration_ms', 'length'),  # Rename 'duration_ms' to 'length'
-        'danceability', 'acousticness', 'energy', 'instrumentalness',
-        'liveness', 'valence', 'loudness', 'speechiness', 'tempo',
-        'key', 'time_signature'
+        'length',
+        'danceability',
+        'acousticness',
+        'energy',
+        'instrumentalness',
+        'liveness',
+        'valence',
+        'loudness',
+        'speechiness',
+        'tempo',
+        'key',
+        'time_signature'
     ]
 
-    # Prepare a dictionary for renaming and column order
-    rename_dict = {orig: new if isinstance(new, str) else orig
-                   for orig, new in ordered_features}
-    columns_order = [new if isinstance(new, str) else orig
-                     for orig, new in ordered_features]
+    # Ensure the DataFrame has all the required columns in the correct order
+    spotify_data = spotify_data[ordered_features]
 
-    # Select, rename, and reorder columns in one go
-    spotify_data = pd.DataFrame(track_features).rename(columns=rename_dict)[columns_order]
+    # Define the mood dictionary
+    mood_dict = {
+        0: "Happy",
+        1: "Sad",
+        2: "Energetic",
+        3: "Calm",
+        4: "Anxious",
+        5: "Cheerful",
+        6: "Gloomy",
+        7: "Content"
+    }
 
-    return spotify_data
+    # Predict the moods using the model
+    model = apps.get_app_config('dashboard').model
+    pred = model.predict(spotify_data)
+
+    # Find the most common mood prediction
+    most_common_pred = Counter(pred).most_common(1)[0][0]
+    audio_vibe = mood_dict.get(most_common_pred, "Unknown")
+
+    return audio_vibe

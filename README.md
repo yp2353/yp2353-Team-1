@@ -21,6 +21,7 @@ Ensure you have Python and pip installed. The following packages are required:
 - `gensim`
 - `joblib`
 - `pandas`
+- `imblearn`
 
 Install the prerequisites using pip:
 
