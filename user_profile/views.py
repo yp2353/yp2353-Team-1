@@ -1,17 +1,16 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-import supabase, os
+from django.shortcuts import render, redirect
+
+# from django.contrib.auth.decorators import login_required
+import supabase
+import os
 from dotenv import load_dotenv
-
-# Load variables from .env
-load_dotenv()
-
-from django.shortcuts import redirect, render
-
 import spotipy
 from utils import get_spotify_token
 from django.utils import timezone
 from .models import User, Vibe
+
+# Load variables from .env
+load_dotenv()
 
 # Create your views here.
 
@@ -79,12 +78,12 @@ def update_user_profile(request, user_id):
     context = {"user": user}
     return render(request, "user_profile/update_profile.html", context)
 
-#Updates the profile return to User_profile Page
+
+# Updates the profile return to User_profile Page
 def update(request, user_id):
-    
     user = User.objects.filter(user_id=user_id).first()
 
-    if request.method == 'POST':
+    if request.method == "POST":
         print("Data is changed")
         bio = request.POST.get("user_bio")
         city = request.POST.get("user_city")
@@ -100,7 +99,7 @@ def update(request, user_id):
         else:
             print("No Image added")
         user.save()
-    
+
     return redirect("user_profile:profile_page")
 
 
