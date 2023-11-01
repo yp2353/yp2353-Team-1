@@ -10,7 +10,7 @@ import lyricsgenius
 import openai
 # from dotenv import load_dotenv
 import os
-import numpy as np
+# import numpy as np
 # from gensim.models import FastText
 from django.http import JsonResponse
 # import boto3
@@ -447,14 +447,14 @@ def spacy_vectorize(vibe, constrain):
     vibe_string = " ".join(vibe)
     in_vocab_vibes = [token.text for token in nlp(vibe_string) if not token.is_oov]
     in_vocab_tokens = nlp(" ".join(in_vocab_vibes))
-    
+
     max_similarity = -1
     closest_emotion = None
-    
+
     for word in constrain:
         similarity = nlp(word).similarity(in_vocab_tokens)
         if similarity > max_similarity:
             max_similarity = similarity
             closest_emotion = word
-    
+
     return closest_emotion
