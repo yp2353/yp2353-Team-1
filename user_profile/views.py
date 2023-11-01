@@ -18,6 +18,7 @@ url: str = os.getenv("SUPABASE_URL")
 key: str = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
+
 def check_and_store_profile(request):
     token_info = get_spotify_token(request)
 
@@ -115,17 +116,13 @@ def upload_user_image(user, image_file):
     bucket_name = "user_profile_pic"
     file_path = f"{bucket_name}/users/{user.user_id}"  # Define your own path as needed
 
-    supabase.storage.from_(bucket_name).remove(
-        file_path
-    )  # delete previous image
+    supabase.storage.from_(bucket_name).remove(file_path)  # delete previous image
 
     supabase.storage.from_(bucket_name).upload(
         file_path, image_bytes
     )  # add new to Storage
 
-    response = supabase.storage.from_(bucket_name).create_signed_url(
-        file_path, 20000
-    )
+    response = supabase.storage.from_(bucket_name).create_signed_url(file_path, 20000)
 
     # print(response)
     if response.get("error"):
@@ -135,14 +132,11 @@ def upload_user_image(user, image_file):
 
 
 def get_profile_image_url(user_id):
-
     bucket_name = "user_profile_pic"
     file_path = f"{bucket_name}/users/{user_id}"  # Define your own path as needed
 
-    response = supabase.storage.from_(bucket_name).create_signed_url(
-        file_path, 20000
-    )
-    
+    response = supabase.storage.from_(bucket_name).create_signed_url(file_path, 20000)
+
     # print(response)
     if response.get("error"):
         # raise Exception(f"Failed to Get URL image: {response['error']}")

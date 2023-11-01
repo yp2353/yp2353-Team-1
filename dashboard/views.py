@@ -8,11 +8,14 @@ import json
 import shutil
 import lyricsgenius
 import openai
+
 # from dotenv import load_dotenv
 import os
+
 # import numpy as np
 # from gensim.models import FastText
 from django.http import JsonResponse
+
 # import boto3
 # import tempfile
 from user_profile.models import Vibe
@@ -20,7 +23,7 @@ from django.utils import timezone
 import spacy
 
 # Load spaCy language model from the deployed location
-nlp = spacy.load('dashboard/en_core_web_md/en_core_web_md-3.7.0')
+nlp = spacy.load("dashboard/en_core_web_md/en_core_web_md-3.7.0")
 
 """ AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -46,6 +49,7 @@ model = load_model_from_s3()"""
 
 # Uncomment for manual loading
 # model = FastText.load_fasttext_format("dashboard/cc.en.32.bin")
+
 
 def index(request):
     token_info = get_spotify_token(request)
@@ -317,14 +321,34 @@ def vectorize(lyrics_vibes, audio_vibes):
     # final_aud_vibe = vector_to_word(avg_aud_vibe, model)
 
     lyrics_constrain = [
-        "Happy", "Melancholic", "Romantic", "Upbeat", "Inspired", "Reflective",
-        "Rebellious", "Calm", "Playful", "Nostalgic", "Dark", "Optimistic",
-        "Mysterious", "Confident", "Seductive", "Regretful", "Detached"
+        "Happy",
+        "Melancholic",
+        "Romantic",
+        "Upbeat",
+        "Inspired",
+        "Reflective",
+        "Rebellious",
+        "Calm",
+        "Playful",
+        "Nostalgic",
+        "Dark",
+        "Optimistic",
+        "Mysterious",
+        "Confident",
+        "Seductive",
+        "Regretful",
+        "Detached",
     ]
 
     audio_constrain = [
-        "Gloomy", "Cheerful", "Calm", "Anxious", "Energetic", "Sad",
-        "Content", "Happy"
+        "Gloomy",
+        "Cheerful",
+        "Calm",
+        "Anxious",
+        "Energetic",
+        "Sad",
+        "Content",
+        "Happy",
     ]
 
     closest_audio = spacy_vectorize(audio_vibes, audio_constrain)
