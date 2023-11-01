@@ -31,4 +31,4 @@ deploy:
   bucket_path: "vcheck-app-1016/"
   on:
     repo: Joshua-Alfred/Wednesday-Fall2023-Team-1
-    branch: master
+    branch: develop
