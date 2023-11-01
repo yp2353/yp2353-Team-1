@@ -16,8 +16,8 @@ from gensim.models import FastText
 from django.http import JsonResponse
 import boto3
 import tempfile
-# from user_profile.models import Vibe
-# from django.utils import timezone
+from user_profile.models import Vibe
+from django.utils import timezone
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -90,7 +90,14 @@ def index(request):
                 }
             )
 
-        context = {"tracks": tracks, "recommendedtracks": recommendedtracks}
+        # Pass username to navbar
+        user_info = sp.current_user()
+        username = user_info["display_name"]
+        context = {
+            "tracks": tracks,
+            "recommendedtracks": recommendedtracks,
+            "username": username,
+        }
 
         extract_tracks(sp)
 
@@ -108,8 +115,8 @@ def calculate_vibe(request):
         sp = spotipy.Spotify(auth=token_info["access_token"])
 
         # Check if user vibe exists already for today
-        # user_info = sp.current_user()
-        # user_id = user_info["id"]
+        user_info = sp.current_user()
+        user_id = user_info["id"]
         # current_time = timezone.now()
         # time_difference = current_time - timezone.timedelta(hours=24)
         # recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
@@ -136,15 +143,23 @@ def calculate_vibe(request):
             track_artists.append(track['artists'][0]['name'])
             track_ids.append(track['id']) """
 
-        audio_features_list = sp.audio_features(track_ids)
+        if recent_tracks:
+            audio_features_list = sp.audio_features(track_ids)
+            vibe_result = check_vibe(
+                track_names, track_artists, track_ids, audio_features_list
+            )
+            # Add user vibe to vibe database
+            time = timezone.now()
+            vibe_data = Vibe(user_id=user_id, user_vibe=vibe_result, vibe_time=time)
+            vibe_data.save()
+        else:
+            vibe_result = "Null"
 
-        vibe_result = check_vibe(
-            track_names, track_artists, track_ids, audio_features_list
-        )
+        return JsonResponse({"result": vibe_result})
     else:
-        vibe_result = "Error"
-
-    return JsonResponse({"result": vibe_result})
+        # No token, redirect to login again
+        # ERROR MESSAGE HERE?
+        return redirect("login:index")
 
 
 def logout(request):
@@ -242,15 +257,15 @@ def deduce_lyrics(track_names, track_artists, track_ids):
     lyrics_data = {}
     for track, artist, id in zip(track_names, track_artists, track_ids):
         # SKIP TRACKS ALRDY IN DATABASE!!!
-
         query = f'"{track}" "{artist}"'
         song = genius.search_song(query)
-        if (
-            song
-            and song.title.lower() == track.lower()
-            and song.artist.lower() == artist.lower()
-        ):
-            lyrics_data[(track, artist, id)] = song.lyrics
+        if song:
+            # Genius song object sometimes has trailing space, so need to strip
+            geniusTitle = song.title.lower().replace("\u200b", " ").strip()
+            geniusArtist = song.artist.lower().replace("\u200b", " ").strip()
+            if geniusTitle == track.lower() and geniusArtist == artist.lower():
+                print("Inputting lyrics..")
+                lyrics_data[(track, artist, id)] = song.lyrics
 
     openai.api_key = os.getenv("OPEN_AI_TOKEN")
 
@@ -389,3 +404,27 @@ def normalize(vector):
     if magnitude == 0:
         return vector
     return vector / magnitude
+
+
+# def find_closest_emotion(final_vibe, model):
+#     emotion_words = [
+#         "Happy", "Sad", "Angry", "Joyful", "Depressed", "Anxious", "Content",
+#         "Excited", "Bored", "Nostalgic", "Frustrated", "Hopeful", "Afraid",
+#         "Confident", "Jealous", "Grateful", "Lonely", "Overwhelmed", "Relaxed",
+#         "Amused", "Curious", "Ashamed", "Sympathetic", "Disappointed", "Proud",
+#         "Guilty", "Enthusiastic", "Empathetic", "Shocked", "Calm", "Inspired",
+#         "Disgusted", "Indifferent", "Romantic", "Surprised", "Tense", "Euphoric",
+#         "Melancholic", "Restless", "Serene", "Sensual"
+#     ]
+#     max_similarity = -1
+#     closest_emotion = None
+#     for word in emotion_words:
+#         word_vec = get_vector(word, model)
+#         similarity = cosine_similarity(final_vibe, word_vec)
+#         if similarity > max_similarity:
+#             max_similarity = similarity
+#             closest_emotion = word
+#     return closest_emotion
+
+# def cosine_similarity(vec_a, vec_b):
+#     return np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))

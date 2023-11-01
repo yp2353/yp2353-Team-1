@@ -18,7 +18,7 @@ def check_and_store_profile(request):
 
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
-        user = vibe = profile_image_url = None
+        user = vibe = None
 
         time = timezone.now()
         user_info = sp.current_user()
@@ -26,16 +26,15 @@ def check_and_store_profile(request):
         user_exists = User.objects.filter(user_id=user_id).first()
 
         if not user_exists:
-            profile_image_url = (
-                user_info["images"][0]["url"]
-                if ("images" in user_info and user_info["images"])
-                else None
-            )
             user = User(
                 user_id=user_id,
                 username=user_info["display_name"],
                 total_followers=user_info["followers"]["total"],
-                profile_image_url=profile_image_url,
+                profile_image_url=(
+                    user_info["images"][0]["url"]
+                    if ("images" in user_info and user_info["images"])
+                    else None
+                ),
                 user_country=user_info["country"],
                 user_last_login=time,
             )
