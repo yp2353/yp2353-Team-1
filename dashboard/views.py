@@ -257,7 +257,7 @@ def deduce_lyrics(track_names, track_artists, track_ids):
 
 def vectorize(lyrics_vibes, audio_vibes):
     #TESTING, to be deleted
-    #final_vibe_multiplied = np.multiply(avg_vibe, avg_emotion)
+    #final_vibe_multiplied = np.multiply(avg_vibe, avg_ )
     #final_vibe_su = np.add(avg_vibe, avg_emotion)
     #dot_product = np.dot(avg_vibe, avg_emotion)
     #b_norm_squared = np.dot(avg_emotion, avg_emotion)
