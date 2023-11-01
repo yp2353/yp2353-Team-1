@@ -31,7 +31,7 @@ s3 = boto3.client(
 
 def load_model_from_s3():
     with tempfile.NamedTemporaryFile() as tmp:
-        s3.download_file("vibecheck-storage", "cc.en.32.bin", tmp.name)
+        s3.download_file("vibecheck-storage", "cc.en.12.bin", tmp.name)
         model = FastText.load_fasttext_format(tmp.name)
     return model
 
