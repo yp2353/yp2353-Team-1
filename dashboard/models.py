@@ -1,9 +1,8 @@
 from django.db import models
 
-
 # Create your models here.
 class Track(models.Model):
-    track_id = models.CharField(max_length=250, primary_key=True)
+    track_id =  models.CharField(max_length=250, primary_key=True)
     track_name = models.CharField(max_length=250)
     track_cover_url = models.TextField(null=True)
     artist_name = models.CharField(max_length=250)
@@ -15,10 +14,10 @@ class Track(models.Model):
     upvote_count = models.IntegerField(default=0)
     downvote_count = models.IntegerField(default=0)
     track_spotify_popularity = models.IntegerField(default=0)
-    track_acousticness = models.DecimalField(null=True, decimal_places=6, max_digits=10)
-    track_danceability = models.DecimalField(null=True, decimal_places=6, max_digits=10)
-    track_energy = models.DecimalField(null=True, decimal_places=6, max_digits=10)
-    track_loudness = models.DecimalField(null=True, decimal_places=6, max_digits=10)
-    track_instrumentalness = models.DecimalField(null=True, decimal_places=6, max_digits=10)
-    track_speechiness = models.DecimalField(null=True, decimal_places=6, max_digits=10)
-    track_valence = models.DecimalField(null=True, decimal_places=6, max_digits=10)
+    track_acousticness = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    track_danceability = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    track_energy = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    track_loudness = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    track_instrumentalness = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    track_speechiness = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    track_valence = models.DecimalField(null=True, max_digits=10, decimal_places=6)

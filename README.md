@@ -2,10 +2,6 @@
 
 This repository contains the codebase for our team project, which involves interacting with the Spotify and Genius APIs to create a music-related application.
 
-[![Build Status](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-1.svg?branch=master)](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-1)
-
-[![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/Wednesday-Fall2023-Team-1/badge.svg?branch=joshua-master)](https://coveralls.io/github/gcivil-nyu-org/Wednesday-Fall2023-Team-1?branch=master)
-
 ## Getting Started
 
 ### Prerequisites
@@ -26,6 +22,11 @@ Install the prerequisites using pip:
 
 ```bash
 pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase
+```
+Install the Bootstrap-Icons using npm:
+
+```bash
+npm i bootstrap-icons
 ```
 
 ### Configuring API Credentials
@@ -80,9 +81,7 @@ pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly ope
 
 ### For Collaborators
 
-- Ensure to create your own `.env` file and populate it with your own Spotify, Genius, and OpenAI API credentials.
-- Do check lines 11-15 in `vibecheck/settings.py` while working on your local machine.
-- Before pushing `develop` branch into `master`, make sure the AWS Elastic Beanstalk environment is restarted with `Health:OK`. 
+Ensure to create your own `.env` file and populate it with your own Spotify, Genius, and OpenAI API credentials.
 
 ## Development and Usage
 
