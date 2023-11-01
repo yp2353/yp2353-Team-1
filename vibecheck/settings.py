@@ -33,6 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "vcheck-app-env.eba-eai754zm.us-west-2.elasticbeanstalk.com",
     "127.0.0.1",
+    "172.31.44.88",
 ]
 
 
