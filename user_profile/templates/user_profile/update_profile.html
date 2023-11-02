@@ -1,14 +1,16 @@
+
+{% extends 'base.html' %}
+
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-    <script src="{% static 'user_profile/js/cityList.js' %}"></script>
-    <title>Update Profile</title>
-</head>
-<body>
-    
+{% block body_class %}background{% endblock %}
+
+{% block content%}
+
+<script src="{% static 'user_profile/js/cityList.js' %}"></script>
+
+    <div class="user-profile container-fluid col-md-8 ">
+        
+
     <h1> Update User Profile</h1>
 
     <!-- Readonly Fields -->
@@ -28,46 +30,114 @@
         <span>{{ user.user_country }}</span> 
     </div>
 
+    <div class="img-container container col-md-4 rounded-circle">
+        {% if user.profile_image_url %}
+            <img src="{{ user.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image">
+        {% else %}
+            <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image">
+        {% endif %}
+    </div>
 
 
-    <form method="post" enctype="multipart/form-data" action="{% url 'user_profile:update' %}">
-        {% csrf_token %}
-
-        <div>
-            {% if user.profile_image_url %}
-                <img src="{{ user.profile_image_url }}" alt="User Image">
-            {% else %}
-                <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Default Image">
-            {% endif %}
-        </div>
-        
-        <!-- Editable Fields -->
-        <div>
-            <label for="user_bio">User Bio:</label>
-            <textarea id="user_bio" name="user_bio">{{ user.user_bio }}</textarea>
-        </div>
-
-        <div>
-            <label for="user_city">User City:</label>
-            <input type="text" id="city_search" placeholder="Search for a city">
-            <select id="user_city" name="user_city">
-                <option value=""></option>
-            </select>
-        </div>
-
-        <div>
-            <label for="profile_image">Profile Image:</label>
-            <input type="file" id="profile_image" name="profile_image">
-        </div>
-
-        <input type="hidden" name="user_id" value="{{ user.user_id }}">
-        
-
-        <!-- Save Button -->
-        <div>
-            <button type="submit">Save</button>
-        </div>
-    </form>
+    <div class="editables container">
+        <form method="post" enctype="multipart/form-data" id="update-profile-form" action="{% url 'user_profile:update' user.user_id %}">
+            {% csrf_token %}
+            <!-- Editable Fields -->
+            <div>
+                <label for="user_bio">User Bio:</label>
+                <textarea id="user_bio" name="user_bio">{{ user.user_bio }}</textarea>
+            </div>
     
-</body>
-</html>
+            <div>
+                <label for="user_city">User City:</label>
+                <input type="text" id="city_search" placeholder="Search for a city">
+                <select id="user_city" name="user_city">
+                    <option value=""></option>
+                </select>
+            </div>
+    
+            <input type="hidden" name="user_id" value="{{ user.user_id }}">
+            
+    
+            <!-- Save Button -->
+            <div>
+                <button type="submit"><i class="bi bi-floppy2"></i>Save</button>
+            </div>
+        </form>
+    </div>
+        
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const updateForm = document.getElementById("update-profile-form");
+            const navbarSaveButton = document.getElementById("navbar-save-button");
+            console.log("Working --------")
+            navbarSaveButton.addEventListener("click", function () {
+                // Gather the form data
+                const formData = new FormData(updateForm);
+    
+                console.log(formData)
+                // Send a POST request with the form data to the server
+                fetch(updateForm.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    // Handle the response as needed
+                    console.log(response)
+                    if (response.status === 200) {
+                        // Redirect or display a success message
+                        console.log("All Well sent")
+                    }
+                })
+                .catch(error => {
+                    // Handle errors
+                    console.error(error);
+                });
+            });
+        });
+    </script>
+        
+        
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">VibeCheck</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Friends</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Chatrooms</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Search</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-gear-wide-connected" style="font-size: 2rem; color: white;"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a id="navbar-save-button" class="dropdown-item" href="{% url 'user_profile:update' user.user_id %}"><i class="bi bi-floppy2"></i> Save</a></li>
+                      <li><a class="dropdown-item" href="{% url 'dashboard:logout' %}">Log Out</a></li>
+                    </ul>
+                </li>
+              </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+
+
