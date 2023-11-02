@@ -30,20 +30,18 @@
         <span>{{ user.user_country }}</span> 
     </div>
 
+    <div class="img-container container col-md-4 rounded-circle">
+        {% if user.profile_image_url %}
+            <img src="{{ user.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image">
+        {% else %}
+            <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image">
+        {% endif %}
+    </div>
 
 
     <div class="editables container">
         <form method="post" enctype="multipart/form-data" id="update-profile-form" action="{% url 'user_profile:update' user.user_id %}">
             {% csrf_token %}
-    
-            <div class="img-container container col-md-4 rounded-circle">
-                {% if user.profile_image_url %}
-                    <img src="{{ user.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image">
-                {% else %}
-                    <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image">
-                {% endif %}
-            </div>
-            
             <!-- Editable Fields -->
             <div>
                 <label for="user_bio">User Bio:</label>
@@ -56,11 +54,6 @@
                 <select id="user_city" name="user_city">
                     <option value=""></option>
                 </select>
-            </div>
-    
-            <div>
-                <label for="profile_image">Profile Image:</label>
-                <input type="file" id="profile_image" name="profile_image">
             </div>
     
             <input type="hidden" name="user_id" value="{{ user.user_id }}">
