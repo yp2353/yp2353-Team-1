@@ -6,11 +6,16 @@ import spotipy
 from utils import get_spotify_token
 from django.utils import timezone
 from .models import User, Vibe
+# import os
 
 # Load variables from .env
 load_dotenv()
 
 # Create your views here.
+
+# url: str = os.getenv("SUPABASE_URL")
+# key: str = os.getenv("SUPABASE_KEY")
+# supabase: Client = create_client(url, key)
 
 
 def check_and_store_profile(request):
@@ -49,7 +54,7 @@ def check_and_store_profile(request):
                 user.username = user_info["display_name"]
             if user.total_followers != user_info["followers"]["total"]:
                 user.total_followers = user_info["followers"]["total"]
-            new_profile_image_url=(
+            new_profile_image_url = (
                 user_info["images"][0]["url"]
                 if ("images" in user_info and user_info["images"])
                 else None
