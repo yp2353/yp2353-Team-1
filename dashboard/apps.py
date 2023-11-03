@@ -2,8 +2,7 @@ from django.apps import AppConfig
 import joblib
 
 class DashboardConfig(AppConfig):
-    name = 'dashboard'
-
+    name = "dashboard"
     model = None  # Initialize the model attribute
 
     def ready(self):

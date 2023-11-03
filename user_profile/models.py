@@ -3,7 +3,7 @@ from django.db import models
 
 # Create your models here.
 class User(models.Model):
-    user_id = models.CharField(max_length=250)
+    user_id = models.CharField(max_length=250, primary_key=True)
     username = models.CharField(max_length=125)
     total_followers = models.IntegerField()
     profile_image_url = models.TextField(null=True)
