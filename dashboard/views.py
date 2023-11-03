@@ -8,6 +8,8 @@ import json
 import shutil
 import lyricsgenius
 import openai
+import time
+import requests
 
 # from dotenv import load_dotenv
 import os
@@ -21,6 +23,8 @@ from django.http import JsonResponse
 from user_profile.models import Vibe
 from django.utils import timezone
 import spacy
+
+MAX_RETRIES = 2
 
 # Load spaCy language model from the deployed location
 nlp = spacy.load("dashboard/en_core_web_md/en_core_web_md-3.7.0")
@@ -277,29 +281,43 @@ def deduce_lyrics(track_names, track_artists, track_ids):
 
     for (track, artist, id), lyrics in lyrics_data.items():
         short_lyrics = lyrics[:2048]
-        try:
-            print(f"Processing song. Track: {track}, Artist: {artist}, ID: {id}")
-            print(f"Lyrics: {short_lyrics[:200]}")
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {
-                        "role": "user",
-                        "content": f"You are a mood analyzer that can only return a single word. Based on these song lyrics, return a single word that matches this song's mood: '{short_lyrics}'",
-                    },
-                ],
-            )
-            vibe = response.choices[0].message["content"].strip()
-            checkLength = vibe.split()
-            if len(checkLength) == 1:
-                lyrics_vibes.append(vibe)
-            print(f"The vibe for {track} is: {vibe}")
+        retries = 0
+        while retries < MAX_RETRIES:
+            try:
+                print(f"Processing song. Track: {track}, Artist: {artist}, ID: {id}")
+                print(f"Lyrics: {short_lyrics[:200]}")
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant."},
+                        {
+                            "role": "user",
+                            "content": f"You are a mood analyzer that can only return a single word. Based on these song lyrics, return a single word that matches this song's mood: '{short_lyrics}'",
+                        },
+                    ],
+                    timeout = 5
+                )
+                vibe = response.choices[0].message["content"].strip()
+                checkLength = vibe.split()
+                if len(checkLength) == 1:
+                    lyrics_vibes.append(vibe)
+                print(f"The vibe for {track} is: {vibe}")
 
-            # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
+                # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
 
-        except Exception as e:
-            print(f"Error processing the vibe for {track}: {e}")
+                break
+            except requests.exceptions.Timeout:
+                print(f"Timeout processing the vibe for {track}.")
+                retries += 1
+            except Exception as e:
+                print(f"Error processing the vibe for {track}: {e}")
+                break
+
+            if retries >= MAX_RETRIES:
+                print(f"Retries maxed out processing the vibe for {track}.")
+                break
+            else:
+                time.sleep(1)
 
     return lyrics_vibes
 
@@ -322,19 +340,47 @@ def vectorize(lyrics_vibes, audio_vibes):
 
     lyrics_constrain = [
         "Happy",
-        "Melancholic",
-        "Romantic",
-        "Upbeat",
-        "Inspired",
-        "Reflective",
-        "Rebellious",
-        "Calm",
-        "Playful",
+        "Sad",
+        "Angry",
+        "Anxious",
+        "Content",
+        "Excited",
+        "Bored",
         "Nostalgic",
+        "Frustrated",
+        "Hopeful",
+        "Afraid",
+        "Confident",
+        "Jealous",
+        "Grateful",
+        "Lonely",
+        "Rebellious",
+        "Relaxed",
+        "Amused",
+        "Curious",
+        "Ashamed",
+        "Sympathetic",
+        "Disappointed",
+        "Proud",
+        "Guilty",
+        "Enthusiastic",
+        "Empathetic",
+        "Shocked",
+        "Calm",
+        "Inspired",
+        "Indifferent",
+        "Romantic",
+        "Tense",
+        "Euphoric",
+        "Melancholic",
+        "Restless",
+        "Serene",
+        "Sensual",
+        "Reflective",
+        "Playful",
         "Dark",
         "Optimistic",
         "Mysterious",
-        "Confident",
         "Seductive",
         "Regretful",
         "Detached",
