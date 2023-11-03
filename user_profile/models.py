@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 
 # Create your models here.
@@ -21,5 +22,30 @@ class User(models.Model):
 # storing User vibe
 class Vibe(models.Model):
     user_id = models.CharField(max_length=250)
-    user_vibe = models.CharField(max_length=100)
+    user_lyrics_vibe = models.CharField(max_length=250, null=True)
+    user_audio_vibe = models.CharField(max_length=250, null=True)
+    user_acousticness = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    user_danceability = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    user_energy = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    user_valence = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+    recent_track = ArrayField(
+        models.CharField(max_length=250),
+        size=20
+        )
+    recommended_tracks = ArrayField(
+        models.CharField(max_length=250),
+        size=20
+        )
+    top_track = ArrayField(
+        models.CharField(max_length=250),
+        size=20
+        )
+    top_artist = ArrayField(
+        models.CharField(max_length=250),
+        size=20
+        )
+    top_genre = ArrayField(
+        models.CharField(max_length=250),
+        size=20
+        )
     vibe_time = models.DateTimeField()
