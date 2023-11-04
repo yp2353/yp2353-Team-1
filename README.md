@@ -21,11 +21,16 @@ Ensure you have Python and pip installed. The following packages are required:
 - `openai`
 - `django-extensions`
 - `supabase`
+- `numpy`
+- `gensim`
+- `joblib`
+- `pandas`
+- `imblearn`
 
 Install the prerequisites using pip:
 
 ```bash
-pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase
+pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase numpy gensim joblib pandas
 ```
 Install the Bootstrap-Icons using npm:
 

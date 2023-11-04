@@ -41,7 +41,8 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "login",
-    "dashboard",
+    # "dashboard",
+    'dashboard.apps.DashboardConfig',
     "user_profile",
     "django.contrib.admin",
     "django.contrib.auth",
