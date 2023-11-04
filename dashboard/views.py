@@ -63,50 +63,25 @@ def index(request):
         # Initialize Spotipy with stored access token
         sp = spotipy.Spotify(auth=token_info["access_token"])
 
-        top_tracks = sp.current_user_top_tracks(limit=10, time_range="short_term")
-
-        # Extract seed tracks, artists, and genres
-        seed_tracks = [track["id"] for track in top_tracks["items"]]
-        recommendations = sp.recommendations(seed_tracks=seed_tracks[:4])
-
-        # EXTRA STUFF
-        # top_artists = sp.current_user_top_artists(limit=2)
-        # seed_artists = [artist['id'] for artist in top_artists['items']]
-        # seed_genres = list(set(genre for artist in top_artists['items'] for genre in artist['genres']))
-
-        tracks = []
-        for track in top_tracks["items"]:
-            tracks.append(
-                {
-                    "name": track["name"],
-                    "artists": ", ".join(
-                        [artist["name"] for artist in track["artists"]]
-                    ),
-                    "album": track["album"]["name"],
-                    "uri": track["uri"],
-                }
-            )
-
-        recommendedtracks = []
-        for track in recommendations["tracks"]:
-            recommendedtracks.append(
-                {
-                    "name": track["name"],
-                    "artists": ", ".join(
-                        [artist["name"] for artist in track["artists"]]
-                    ),
-                    "album": track["album"]["name"],
-                    "uri": track["uri"],
-                }
-            )
-
         # Pass username to navbar
         user_info = sp.current_user()
         username = user_info["display_name"]
+
+        # Get top tracks
+        top_tracks = get_top_tracks(sp)
+
+        # Get top artists and top genres based on artist
+        top_artists, top_genres = get_top_artist_and_genres(sp)
+
+        # Get recommendation based on tracks
+        recommendedtracks = get_recommendations(sp, top_tracks)
+
         context = {
-            "tracks": tracks,
-            "recommendedtracks": recommendedtracks,
             "username": username,
+            "top_tracks": top_tracks,
+            "top_artists": top_artists,
+            "top_genres": top_genres,
+            "recommendedtracks": recommendedtracks,
         }
 
         extract_tracks(sp)
@@ -118,6 +93,69 @@ def index(request):
         return redirect("login:index")
 
 
+def get_top_tracks(sp):
+    top_tracks = sp.current_user_top_tracks(limit=10, time_range="short_term")
+    tracks = []
+    for track in top_tracks["items"]:
+        tracks.append(
+            {
+                "name": track["name"],
+                "id": track["id"],
+                "artists": ", ".join(
+                    [artist["name"] for artist in track["artists"]]
+                ),
+                "album": track["album"]["name"],
+                "uri": track["uri"],
+                "large_album_cover": track['album']['images'][0]['url'] if len(track['album']['images']) >= 1 else None,
+                "medium_album_cover": track['album']['images'][1]['url'] if len(track['album']['images']) >= 2 else None,
+                "small_album_cover": track['album']['images'][2]['url'] if len(track['album']['images']) >= 3 else None,
+            }
+        )
+    return tracks
+
+
+def get_top_artist_and_genres(sp):
+    top_artists = sp.current_user_top_artists(limit=5, time_range='short_term')
+
+    user_top_artists = []
+    user_top_genres = set() #Set to store unique genres
+
+    for artist in top_artists['items']:
+        artist_info = {
+            'name': artist['name'],
+            'id': artist['id'],
+            'image_url': artist['images'][0]['url'] if artist['images'] else None
+        }
+        user_top_artists.append(artist_info)
+        user_top_genres.update(artist['genres']) 
+
+    return user_top_artists, list(user_top_genres)
+
+
+def get_recommendations(sp, top_tracks):
+    seed_tracks = [track["id"] for track in top_tracks[:5]]
+    recommendations = sp.recommendations(seed_tracks=seed_tracks, limit=5)
+
+    recommendedtracks = []
+    for track in recommendations["tracks"]:
+        recommendedtracks.append(
+            {
+                "name": track["name"],
+                "id": track["id"],
+                "artists": ", ".join(
+                    [artist["name"] for artist in track["artists"]]
+                ),
+                "album": track["album"]["name"],
+                "uri": track["uri"],
+                "large_album_cover": track['album']['images'][0]['url'] if len(track['album']['images']) >= 1 else None,
+                "medium_album_cover": track['album']['images'][1]['url'] if len(track['album']['images']) >= 2 else None,
+                "small_album_cover": track['album']['images'][2]['url'] if len(track['album']['images']) >= 3 else None,
+            }
+        )
+
+    return recommendedtracks
+
+
 def calculate_vibe(request):
     token_info = get_spotify_token(request)
 
@@ -127,12 +165,12 @@ def calculate_vibe(request):
         # Check if user vibe exists already for today
         user_info = sp.current_user()
         user_id = user_info["id"]
-        # current_time = timezone.now()
-        # time_difference = current_time - timezone.timedelta(hours=24)
-        # recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
-        # if recent_vibe:
-        #     vibe_result = recent_vibe.user_vibe
-        #     return JsonResponse({'result': vibe_result})
+        current_time = timezone.now()
+        time_difference = current_time - timezone.timedelta(hours=24)
+        recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
+        if recent_vibe:
+            vibe_result = recent_vibe.user_vibe
+            return JsonResponse({'result': vibe_result})
         # Skips having to perform vibe calculations below
 
         recent_tracks = sp.current_user_recently_played(limit=15)
@@ -528,3 +566,4 @@ def spacy_vectorize(vibe, constrain):
             closest_emotion = word
 
     return closest_emotion
+
