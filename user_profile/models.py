@@ -13,8 +13,7 @@ class User(models.Model):
     user_bio = models.TextField(null=True)
     user_city = models.CharField(max_length=255, null=True)
     user_total_friends = models.IntegerField(null=True)
-    user_genre = models.CharField(max_length=250, null=True)
-
+    
     def __str__(self) -> str:
         return f"User -> {self.user_id} ->  {self.username}"
 
@@ -30,22 +29,28 @@ class Vibe(models.Model):
     user_valence = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     recent_track = ArrayField(
         models.CharField(max_length=250),
-        size=20
+        size=20,
+        null=True
         )
     recommended_tracks = ArrayField(
         models.CharField(max_length=250),
-        size=20
+        size=20,
+        null=True
         )
     top_track = ArrayField(
         models.CharField(max_length=250),
-        size=20
+        size=20,
+        null=True
         )
     top_artist = ArrayField(
         models.CharField(max_length=250),
-        size=20
+        size=20,
+        null=True
         )
     top_genre = ArrayField(
         models.CharField(max_length=250),
-        size=20
+        size=20,
+        null=True
         )
     vibe_time = models.DateTimeField()
+    

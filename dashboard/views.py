@@ -75,6 +75,22 @@ def index(request):
         # Get recommendation based on tracks
         recommendedtracks = get_recommendations(sp, top_tracks)
 
+        user_id = user_info["id"]
+        current_time = timezone.now()
+        midnight = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+        recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=midnight).first()
+        if not recent_vibe:
+            # If no vibe for this user today, save new row to Vibe database
+            vibe_data = Vibe(
+                user_id=user_id,
+                vibe_time=timezone.now(),
+                top_track=[track["id"]for track in top_tracks],
+                top_artist=[artist["id"]for artist in top_artists],
+                top_genre=top_genres,
+                recommended_tracks=[track["id"]for track in recommendedtracks]
+            )
+            vibe_data.save()
+
         context = {
             "username": username,
             "top_tracks": top_tracks,
@@ -161,15 +177,17 @@ def calculate_vibe(request):
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
 
-        # Check if user vibe exists already for today
+        # Check if user vibe already been calculated for today
         user_info = sp.current_user()
         user_id = user_info["id"]
-        """ current_time = timezone.now()
+        current_time = timezone.now()
         time_difference = current_time - timezone.timedelta(hours=24)
         recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
-        if recent_vibe:
-            vibe_result = recent_vibe.user_vibe
-            return JsonResponse({'result': vibe_result}) """
+        if recent_vibe and recent_vibe.user_audio_vibe:
+            vibe_result = recent_vibe.user_audio_vibe
+            if recent_vibe.user_lyrics_vibe:
+                vibe_result += " " + recent_vibe.user_lyrics_vibe
+            return JsonResponse({'result': vibe_result})
         # Skips having to perform vibe calculations below
 
         recent_tracks = sp.current_user_recently_played(limit=15)
@@ -192,13 +210,29 @@ def calculate_vibe(request):
 
         if track_ids:
             audio_features_list = sp.audio_features(track_ids)
-            vibe_result = check_vibe(
+            audio_vibe, lyric_vibe = check_vibe(
                 track_names, track_artists, track_ids, audio_features_list
             )
-            # Add user vibe to vibe database
-            """ time = timezone.now()
-            vibe_data = Vibe(user_id=user_id, user_vibe=vibe_result, vibe_time=time)
-            vibe_data.save() """
+            vibe_result = audio_vibe
+            if lyric_vibe:
+                vibe_result += " " + lyric_vibe
+
+            # Find row in vibe database that is within 24 hours
+            current_time = timezone.now()
+            time_difference = current_time - timezone.timedelta(hours=24)
+            recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
+            if not recent_vibe:
+                print("Error, vibe row should already exist when loaded dashboard!")
+            else:
+                recent_vibe.user_lyrics_vibe = lyric_vibe
+                recent_vibe.user_audio_vibe = audio_vibe
+                recent_vibe.recent_track = track_ids
+                recent_vibe.user_acousticness = get_feature_average(audio_features_list, "acousticness")
+                recent_vibe.user_danceability = get_feature_average(audio_features_list, "danceability")
+                recent_vibe.user_energy = get_feature_average(audio_features_list, "energy")
+                recent_vibe.user_valence = get_feature_average(audio_features_list, "valence")
+            
+                recent_vibe.save()
         else:
             vibe_result = "Null"
 
@@ -291,7 +325,7 @@ def check_vibe(track_names, track_artists, track_ids, audio_features_list):
     lyrics_final_vibe = lyrics_vectorize(lyrics_vibes)
 
     if lyrics_final_vibe:
-        return audio_final_vibe + " " + lyrics_final_vibe
+        return audio_final_vibe, lyrics_final_vibe
     else:
         return audio_final_vibe
 
@@ -362,21 +396,6 @@ def deduce_lyrics(track_names, track_artists, track_ids):
 
 
 def lyrics_vectorize(lyrics_vibes):
-    # TESTING, to be deleted
-    # final_vibe_multiplied = np.multiply(avg_vibe, avg_emotion)
-    # final_vibe_su = np.add(avg_vibe, avg_emotion)
-    # dot_product = np.dot(avg_vibe, avg_emotion)
-    # b_norm_squared = np.dot(avg_emotion, avg_emotion)
-    # projection = (dot_product / b_norm_squared) * avg_emotion
-    # normalized_multiplied = vector_to_word(normalize(final_vibe_multiplied), model)
-    # normalized_vibe_sum = vector_to_word(normalize(final_vibe_su), model)
-    # normalized_projection = vector_to_word(normalize(projection), model)
-    # print("the final vibe is: ", normalized_multiplied, normalized_vibe_sum, normalized_projection,
-    # " avg output: ", final_emotion, final_vibe)
-
-    # avg_aud_vibe = average_vector(audio_vibes, model)
-    # final_aud_vibe = vector_to_word(avg_aud_vibe, model)
-
     lyrics_constrain = [
         "Happy",
         "Sad",
@@ -454,65 +473,7 @@ def vector_to_word(vector, model):
     # Find the closest word in the embedding for the given vector.
     # most_similar returns [(word, similarity score), ...]
     # We just want the word, so we pick [0][0]
-    return model.wv.most_similar(positive=[vector], topn=1)[0][0] """
-
-
-def deduce_audio(audio_features_list):
-    num_tracks = len(audio_features_list)
-
-    valence = sum([track["valence"] for track in audio_features_list]) / num_tracks
-    energy = sum([track["energy"] for track in audio_features_list]) / num_tracks
-    danceability = (
-        sum([track["danceability"] for track in audio_features_list]) / num_tracks
-    )
-    acousticness = (
-        sum([track["acousticness"] for track in audio_features_list]) / num_tracks
-    )
-    instrumentalness = (
-        sum([track["instrumentalness"] for track in audio_features_list]) / num_tracks
-    )
-    tempo = sum([track["tempo"] for track in audio_features_list]) / num_tracks
-    loudness = sum([track["loudness"] for track in audio_features_list]) / num_tracks
-
-    emotions = []
-
-    # High-level categories based on valence and energy
-    if valence > 0.5 and energy > 0.5:
-        emotions.append("Joyful")
-    elif valence > 0.5 and energy <= 0.5:
-        emotions.append("Content")
-    elif valence <= 0.5 and energy > 0.5:
-        emotions.append("Frustrated")
-    else:
-        emotions.append("Sad")
-
-    # Refine based on other attributes
-    if danceability > 0.7:
-        emotions.append("Dancey")
-
-    if acousticness > 0.7:
-        emotions.append("Nostalgic")
-
-    if instrumentalness > 0.7:
-        emotions.append("Reflective")
-
-    if tempo > 120:  # 120 BPM is taken as a generic "fast" threshold
-        emotions.append("Energetic")
-    else:
-        emotions.append("Relaxed")
-
-    if loudness > -5:  # -5 dB is taken as a generic "loud" threshold
-        emotions.append("Intense")
-
-    return emotions
-
-
-""" def normalize(vector):
-    # Used for testing only for now
-    magnitude = np.linalg.norm(vector)
-    if magnitude == 0:
-        return vector
-    return vector / magnitude
+    return model.wv.most_similar(positive=[vector], topn=1)[0][0] 
 
 
 def find_closest_emotion(final_vibe, model):
@@ -556,3 +517,7 @@ def spacy_vectorize(vibe, constrain):
 
     return closest_emotion
 
+def get_feature_average(list, feature):
+    total = sum(track[feature] for track in list)
+    average = total / len(list)
+    return average
