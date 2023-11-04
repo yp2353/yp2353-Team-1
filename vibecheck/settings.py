@@ -26,7 +26,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
-SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,6 +44,7 @@ INSTALLED_APPS = [
     # "dashboard",
     'dashboard.apps.DashboardConfig',
     "user_profile",
+    "chatroom",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -62,16 +62,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
 ]
 
-ROOT_URLCONF = "vibecheck.urls"
 ROOT_URLCONF = "vibecheck.urls"
 
 TEMPLATES = [
@@ -89,8 +82,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = "vibecheck.wsgi.application"
 WSGI_APPLICATION = "vibecheck.wsgi.application"
 
 
@@ -98,13 +89,6 @@ WSGI_APPLICATION = "vibecheck.wsgi.application"
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "team1vibecheck",
-        "HOST": "db.rndwvilajbirenkbpccu.supabase.co",
-        "PORT": "5432",
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "postgres",
@@ -122,18 +106,14 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
@@ -143,9 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "America/New_York"
 TIME_ZONE = "America/New_York"
 
 USE_I18N = True
