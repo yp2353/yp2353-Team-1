@@ -8,4 +8,4 @@ class DashboardConfig(AppConfig):
 
     def ready(self):
         if not self.model:
-            self.model = joblib.load('assets/Gradient_Boosting_Classifier.bin')
+            self.model = joblib.load("assets/Gradient_Boosting_Classifier.bin")

@@ -28,24 +28,9 @@ class Vibe(models.Model):
     user_danceability = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     user_energy = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     user_valence = models.DecimalField(null=True, max_digits=10, decimal_places=6)
-    recent_track = ArrayField(
-        models.CharField(max_length=250),
-        size=20
-        )
-    recommended_tracks = ArrayField(
-        models.CharField(max_length=250),
-        size=20
-        )
-    top_track = ArrayField(
-        models.CharField(max_length=250),
-        size=20
-        )
-    top_artist = ArrayField(
-        models.CharField(max_length=250),
-        size=20
-        )
-    top_genre = ArrayField(
-        models.CharField(max_length=250),
-        size=20
-        )
+    recent_track = ArrayField(models.CharField(max_length=250), size=20)
+    recommended_tracks = ArrayField(models.CharField(max_length=250), size=20)
+    top_track = ArrayField(models.CharField(max_length=250), size=20)
+    top_artist = ArrayField(models.CharField(max_length=250), size=20)
+    top_genre = ArrayField(models.CharField(max_length=250), size=20)
     vibe_time = models.DateTimeField()

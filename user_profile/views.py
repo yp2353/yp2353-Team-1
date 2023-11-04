@@ -6,6 +6,7 @@ import spotipy
 from utils import get_spotify_token
 from django.utils import timezone
 from .models import User, Vibe
+
 # import os
 
 # Load variables from .env
