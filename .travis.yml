@@ -30,5 +30,5 @@ deploy:
   bucket_name: "elasticbeanstalk-us-west-2-284687301079"
   bucket_path: "vcheck-app-1016/"
   on:
-    repo: Joshua-Alfred/Wednesday-Fall2023-Team-1
+    repo: gcivil-nyu-org/Wednesday-Fall2023-Team-1
     branch: develop

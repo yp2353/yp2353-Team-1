@@ -1,22 +1,21 @@
 from django.shortcuts import render, redirect
 
 # from django.contrib.auth.decorators import login_required
-from supabase import create_client, Client
-import os
 from dotenv import load_dotenv
 import spotipy
 from utils import get_spotify_token
 from django.utils import timezone
 from .models import User, Vibe
+# import os
 
 # Load variables from .env
 load_dotenv()
 
 # Create your views here.
 
-url: str = os.getenv("SUPABASE_URL")
-key: str = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+# url: str = os.getenv("SUPABASE_URL")
+# key: str = os.getenv("SUPABASE_KEY")
+# supabase: Client = create_client(url, key)
 
 
 def check_and_store_profile(request):
@@ -55,8 +54,13 @@ def check_and_store_profile(request):
                 user.username = user_info["display_name"]
             if user.total_followers != user_info["followers"]["total"]:
                 user.total_followers = user_info["followers"]["total"]
-            if user.profile_image_url:
-                user.profile_image_url = get_profile_image_url(user_id)
+            new_profile_image_url = (
+                user_info["images"][0]["url"]
+                if ("images" in user_info and user_info["images"])
+                else None
+            )
+            if user.profile_image_url != new_profile_image_url:
+                user.profile_image_url = new_profile_image_url
             if user.user_country != user_info["country"]:
                 user.user_country = user_info["country"]
 
@@ -91,54 +95,10 @@ def update(request, user_id):
         print("Data is changed")
         bio = request.POST.get("user_bio")
         city = request.POST.get("user_city")
-        new_profile_image = request.FILES.get("profile_image")
-        # print(new_profile_image)
         if city:
             user.user_city = city
         if bio != user.user_bio:
             user.user_bio = bio
-        if new_profile_image:
-            user.profile_image_url = upload_user_image(user, new_profile_image)
-            # print(user.profile_image_url)
-        else:
-            print("No Image added")
         user.save()
 
     return redirect("user_profile:profile_page")
-
-
-def upload_user_image(user, image_file):
-    print("image upload started...")
-
-    # Convert the Image to bytes
-    image_bytes = image_file.read()
-
-    bucket_name = "user_profile_pic"
-    file_path = f"{bucket_name}/users/{user.user_id}"  # Define your own path as needed
-
-    supabase.storage.from_(bucket_name).remove(file_path)  # delete previous image
-
-    supabase.storage.from_(bucket_name).upload(
-        file_path, image_bytes
-    )  # add new to Storage
-
-    response = supabase.storage.from_(bucket_name).create_signed_url(file_path, 20000)
-
-    # print(response)
-    if response.get("error"):
-        # raise Exception(f"Failed to Get URL image: {response['error']}")
-        return None
-    return response.get("signedURL")
-
-
-def get_profile_image_url(user_id):
-    bucket_name = "user_profile_pic"
-    file_path = f"{bucket_name}/users/{user_id}"  # Define your own path as needed
-
-    response = supabase.storage.from_(bucket_name).create_signed_url(file_path, 20000)
-
-    # print(response)
-    if response.get("error"):
-        # raise Exception(f"Failed to Get URL image: {response['error']}")
-        return None
-    return response.get("signedURL")
