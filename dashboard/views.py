@@ -58,6 +58,7 @@ def index(request):
     if token_info:
         # Initialize Spotipy with stored access token
         sp = spotipy.Spotify(auth=token_info["access_token"])
+        sp = spotipy.Spotify(auth=token_info["access_token"])
 
         top_tracks = sp.current_user_top_tracks(limit=10, time_range="short_term")
 
@@ -72,6 +73,17 @@ def index(request):
 
         tracks = []
         for track in top_tracks["items"]:
+            tracks.append(
+                {
+                    "name": track["name"],
+                    "artists": ", ".join(
+                        [artist["name"] for artist in track["artists"]]
+                    ),
+                    "album": track["album"]["name"],
+                    "uri": track["uri"],
+                }
+            )
+
             tracks.append(
                 {
                     "name": track["name"],
@@ -165,6 +177,7 @@ def calculate_vibe(request):
     else:
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
+        return redirect("login:index")
         return redirect("login:index")
 
 

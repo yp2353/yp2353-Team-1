@@ -1,6 +1,6 @@
 from spotipy.oauth2 import SpotifyOAuth
-import os
 from dotenv import load_dotenv
+from decouple import config
 
 # Load variables from .env
 load_dotenv()
@@ -25,10 +25,13 @@ sp_oauth = SpotifyOAuth(
 
 def get_spotify_token(request):
     token_info = request.session.get("token_info", None)
+    token_info = request.session.get("token_info", None)
     if token_info and sp_oauth.is_token_expired(token_info):
+        refresh_user_token = token_info.get("refresh_token")
         refresh_user_token = token_info.get("refresh_token")
         if refresh_user_token:
             new_token = sp_oauth.refresh_access_token(refresh_user_token)
+            request.session["token_info"] = new_token
             request.session["token_info"] = new_token
             return new_token
         else:

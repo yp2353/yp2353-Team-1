@@ -8,3 +8,4 @@ urlpatterns = [
     path("logout", views.logout, name="logout"),
     path("calculate_vibe", views.calculate_vibe, name="calculate_vibe"),
 ]
+
