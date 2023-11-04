@@ -34,7 +34,6 @@ ALLOWED_HOSTS = [
     "vcheck-app-env.eba-eai754zm.us-west-2.elasticbeanstalk.com",
     "vcheck-env-1014.eba-megnbk6g.us-west-2.elasticbeanstalk.com",
     "127.0.0.1",
-    "172.31.44.49",
 ]
 
 
@@ -42,13 +41,16 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "login",
-    "dashboard",
+    # "dashboard",
+    'dashboard.apps.DashboardConfig',
+    "user_profile",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -66,7 +68,7 @@ ROOT_URLCONF = "vibecheck.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -134,8 +136,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "login/static")]
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "login/static"),
+    os.path.join(BASE_DIR, "dashboard/static"),
+    os.path.join(BASE_DIR, "user_profile/static"),
+]
+
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 SESSION_ENGINE = (
     "django.contrib.sessions.backends.cache"  # Use database-backed sessions
 )
