@@ -164,12 +164,12 @@ def calculate_vibe(request):
         # Check if user vibe exists already for today
         user_info = sp.current_user()
         user_id = user_info["id"]
-        current_time = timezone.now()
+        """ current_time = timezone.now()
         time_difference = current_time - timezone.timedelta(hours=24)
         recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
         if recent_vibe:
             vibe_result = recent_vibe.user_vibe
-            return JsonResponse({'result': vibe_result})
+            return JsonResponse({'result': vibe_result}) """
         # Skips having to perform vibe calculations below
 
         recent_tracks = sp.current_user_recently_played(limit=15)
@@ -196,9 +196,9 @@ def calculate_vibe(request):
                 track_names, track_artists, track_ids, audio_features_list
             )
             # Add user vibe to vibe database
-            time = timezone.now()
+            """ time = timezone.now()
             vibe_data = Vibe(user_id=user_id, user_vibe=vibe_result, vibe_time=time)
-            vibe_data.save()
+            vibe_data.save() """
         else:
             vibe_result = "Null"
 
@@ -285,11 +285,15 @@ def extract_tracks(sp):
 
 
 def check_vibe(track_names, track_artists, track_ids, audio_features_list):
-    audio_vibes = deduce_audio_vibe(audio_features_list)
+    audio_final_vibe = deduce_audio_vibe(audio_features_list)
 
     lyrics_vibes = deduce_lyrics(track_names, track_artists, track_ids)
+    lyrics_final_vibe = lyrics_vectorize(lyrics_vibes)
 
-    return vectorize(lyrics_vibes, audio_vibes)
+    if lyrics_final_vibe:
+        return audio_final_vibe + " " + lyrics_final_vibe
+    else:
+        return audio_final_vibe
 
 
 def deduce_lyrics(track_names, track_artists, track_ids):
@@ -357,7 +361,7 @@ def deduce_lyrics(track_names, track_artists, track_ids):
     return lyrics_vibes
 
 
-def vectorize(lyrics_vibes, audio_vibes):
+def lyrics_vectorize(lyrics_vibes):
     # TESTING, to be deleted
     # final_vibe_multiplied = np.multiply(avg_vibe, avg_emotion)
     # final_vibe_su = np.add(avg_vibe, avg_emotion)
@@ -421,27 +425,14 @@ def vectorize(lyrics_vibes, audio_vibes):
         "Detached",
     ]
 
-    audio_constrain = [
-        "Gloomy",
-        "Cheerful",
-        "Calm",
-        "Anxious",
-        "Energetic",
-        "Sad",
-        "Content",
-        "Happy",
-    ]
-
-    closest_audio = spacy_vectorize(audio_vibes, audio_constrain)
-
     if lyrics_vibes:
         # avg_lyr_vibe = average_vector(lyrics_vibes, model)
         # final_lyr_vibe = vector_to_word(avg_lyr_vibe, model)
         # closest_emotion = find_closest_emotion(avg_lyr_vibe, model)
         closest_emotion = spacy_vectorize(lyrics_vibes, lyrics_constrain)
-        return str(closest_audio) + " " + str(closest_emotion)
+        return str(closest_emotion)
     else:
-        return str(closest_audio)
+        return None
 
 
 """
