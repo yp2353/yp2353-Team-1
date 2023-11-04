@@ -25,6 +25,7 @@ sp_oauth = SpotifyOAuth(
     CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SCOPE, show_dialog=True
 )
 
+
 def get_spotify_token(request):
     token_info = request.session.get("token_info", None)
     if token_info and sp_oauth.is_token_expired(token_info):
@@ -43,6 +44,7 @@ def get_spotify_token(request):
         # Error getting saved token
         return None
 
+
 def deduce_audio_vibe(audio_features_list):
     """
     Function to format the Spotify audio features and predict the most common mood
@@ -59,25 +61,25 @@ def deduce_audio_vibe(audio_features_list):
     spotify_data = pd.DataFrame(audio_features_list)
 
     # Rename 'duration_ms' to 'length' and normalize by dividing by the maximum value
-    spotify_data.rename(columns={'duration_ms': 'length'}, inplace=True)
-    if not spotify_data['length'].empty:
-        max_length = spotify_data['length'].max()
-        spotify_data['length'] = spotify_data['length'] / max_length
+    spotify_data.rename(columns={"duration_ms": "length"}, inplace=True)
+    if not spotify_data["length"].empty:
+        max_length = spotify_data["length"].max()
+        spotify_data["length"] = spotify_data["length"] / max_length
 
     # Reorder columns based on the model's expectations
     ordered_features = [
-        'length',
-        'danceability',
-        'acousticness',
-        'energy',
-        'instrumentalness',
-        'liveness',
-        'valence',
-        'loudness',
-        'speechiness',
-        'tempo',
-        'key',
-        'time_signature'
+        "length",
+        "danceability",
+        "acousticness",
+        "energy",
+        "instrumentalness",
+        "liveness",
+        "valence",
+        "loudness",
+        "speechiness",
+        "tempo",
+        "key",
+        "time_signature",
     ]
 
     # Ensure the DataFrame has all the required columns in the correct order
@@ -92,11 +94,11 @@ def deduce_audio_vibe(audio_features_list):
         4: "Anxious",
         5: "Cheerful",
         6: "Gloomy",
-        7: "Content"
+        7: "Content",
     }
 
     # Predict the moods using the model
-    model = apps.get_app_config('dashboard').model
+    model = apps.get_app_config("dashboard").model
     pred = model.predict(spotify_data)
 
     # Find the most common mood prediction

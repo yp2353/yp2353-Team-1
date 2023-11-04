@@ -12,12 +12,9 @@ import requests
 
 # from dotenv import load_dotenv
 import os
-# import numpy as np
 
 # from gensim.models import FastText
-import numpy as np
 from utils import get_spotify_token, deduce_audio_vibe
-from gensim.models import FastText
 from django.http import JsonResponse
 
 # import boto3
@@ -135,8 +132,7 @@ def calculate_vibe(request):
         # if recent_vibe:
         #     vibe_result = recent_vibe.user_vibe
         #     return JsonResponse({'result': vibe_result})
-        #Skips having to perform vibe calculations below
-
+        # Skips having to perform vibe calculations below
 
         recent_tracks = sp.current_user_recently_played(limit=15)
 
@@ -172,7 +168,7 @@ def calculate_vibe(request):
     else:
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
-        return redirect('login:index')
+        return redirect("login:index")
 
 
 def logout(request):
@@ -296,7 +292,7 @@ def deduce_lyrics(track_names, track_artists, track_ids):
                             "content": f"You are a mood analyzer that can only return a single word. Based on these song lyrics, return a single word that matches this song's mood: '{short_lyrics}'",
                         },
                     ],
-                    timeout = 5
+                    timeout=5,
                 )
                 vibe = response.choices[0].message["content"].strip()
                 checkLength = vibe.split()
@@ -408,6 +404,7 @@ def vectorize(lyrics_vibes, audio_vibes):
         return str(closest_audio) + " " + str(closest_emotion)
     else:
         return str(closest_audio)
+
 
 """
 def get_vector(word, model):
