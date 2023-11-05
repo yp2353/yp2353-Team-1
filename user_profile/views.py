@@ -24,7 +24,6 @@ def check_and_store_profile(request):
 
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
-        user = vibe = None
 
         time = timezone.now()
 
@@ -45,8 +44,6 @@ def check_and_store_profile(request):
                 user_country=user_info["country"],
                 user_last_login=time,
             )
-            vibe = Vibe(user_id=user_id, user_vibe="happy", vibe_time=time)
-            vibe.save()
             user.save()
         else:
             user = user_exists
@@ -65,14 +62,15 @@ def check_and_store_profile(request):
             if user.user_country != user_info["country"]:
                 user.user_country = user_info["country"]
 
-            user.user_last_login = timezone.now()
-            vibe = Vibe(user_id=user_id, user_vibe="happy", vibe_time=time)
-            vibe.save()
+            user.user_last_login = time
             user.save()
+        
+        # Get user's most recent vibe, order by descending time
+        recent_vibe = Vibe.objects.filter(user_id=user_id).order_by('-vibe_time').first()
 
         context = {
             "user": user,
-            "vibe": vibe,
+            "vibe": recent_vibe,
             "default_image_path": "user_profile/blank_user_profile_image.jpeg",
         }
         return render(request, "user_profile/user_profile.html", context)

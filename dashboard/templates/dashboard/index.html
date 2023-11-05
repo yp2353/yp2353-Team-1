@@ -5,31 +5,72 @@
 
 {% block content %}
     <div class="container mt-5">
-
-        <div id="vibe-status" data-calculate-vibe-url="{% url 'dashboard:calculate_vibe' %}" class="border border-white rounded d-flex justify-content-center align-items-center vibe-background">
-            <div class="vibe-loading-text"><h3>Loading Vibe...</h3></div>
-            <div class="vibe-loaded-text" style="display: none;"><h3>Your vibe is</h3></div>
+        <div class="row">
+            <div class="col-md-8 mt-4 mx-auto">
+                <div id="vibe-status" data-calculate-vibe-url="{% url 'dashboard:calculate_vibe' %}" class="border border-white rounded-4 px-2 py-2 d-flex justify-content-center align-items-center vibe-background">
+                    <div class="vibe-loading-text"><h3>Loading Vibe...</h3></div>
+                    <div class="vibe-loaded-text" style="display: none;"><h3>Your vibe is</h3></div>
+                </div>
+            </div>
+            <div class="col-md-4 mt-4 mx-auto">
+                <div class="border border-white rounded-4 px-2 py-2">
+                    <h3>Top Tracks</h3>
+                    {% for track in top_tracks %}
+                        <div class="row mb-2">
+                            <div class="col-md-2 mb-2 mb-md-0">
+                                <img src="{{ track.small_album_cover }}" alt="Album Thumbnail" class="img-fluid">
+                            </div>
+                            <div class="col-md-10">
+                                <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
+                                <p>{{ track.artists }}</p> 
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <br>
+                <div class="border border-white rounded-4 px-2 py-2">
+                    <h3>Top Artists</h3>
+                    {% for artist in top_artists %}
+                        <div class="row mb-2">
+                            <div class="col-md-2 mb-2 mb-md-0">
+                                <img src="{{ artist.image_url }}" alt="Artist Thumbnail" class="img-fluid">
+                            </div>
+                            <div class="col-md-10">
+                                <p>{{ artist.name }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <br>
+                <div class="border border-white rounded-4 px-2 py-2">
+                    <h3>Top Genres</h3>
+                    {% for genre in top_genres|slice:":5" %}
+                        <div class="row mb-2">
+                            <p>{{ genre }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                <br>
+                <div class="border border-white rounded-4 px-2 py-2">
+                    <h3>Track Recommendations</h3>
+                    {% for track in recommendedtracks %}
+                        <div class="row mb-2">
+                            <div class="col-md-2 mb-2 mb-md-0">
+                                <img src="{{ track.small_album_cover }}" alt="Album Thumbnail" class="img-fluid">
+                            </div>
+                            <div class="col-md-10">
+                                <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
+                                <p>{{ track.artists }}</p> 
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
+    </div>
 
-        <br>
 
-        <div class="border border-white rounded">
-            <h3>Your top tracks:</h3>
-            {% for track in tracks %}
-            <p>{{ track.name }} - {{ track.artists }} ({{ track.album }})</p>
-            {% endfor %}
-        </div>
-
-        <br>
-        
-        <div class="border border-white rounded">
-            <h3>Recommendations based on your top tracks:</h3>
-            {% for track in recommendedtracks %}
-                <p>{{ track.name }} - {{ track.artists }} ({{ track.album }})</p>
-            {% endfor %}
-        </div>
-
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(document).ready(function() {
                 var calculateVibeUrl = $('#vibe-status').data('calculate-vibe-url');
@@ -61,6 +102,8 @@
             });
         </script>
 
+
+    <div class="container mt-5">
        <div class="container text-center">
             <div class="row">
                     <!-- Container for the Hour of Day Plot -->
@@ -104,14 +147,8 @@
             });
         });
         </script>
-
-        <!--
-        <form action="{% url 'dashboard:logout' %}" method="post">
-            {% csrf_token %}
-            <input type="submit" value="Logout">
-        </form>
-        -->
     </div>
 
 
 {% endblock %}
+
