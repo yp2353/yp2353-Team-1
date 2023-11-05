@@ -368,23 +368,23 @@ def deduce_lyrics(track_names, track_artists, track_ids):
                             "content": f"You are a mood analyzer that can only return a single word. Based on these song lyrics, return a single word that matches this song's mood: '{short_lyrics}'",
                         },
                     ],
-                    timeout=5,
+                    request_timeout=5,
                 )
                 vibe = response.choices[0].message["content"].strip()
                 checkLength = vibe.split()
                 if len(checkLength) == 1:
-                    lyrics_vibes.append(vibe)
+                    if vibe.lower() == "melancholic" or vibe.lower() == "melancholy":
+                        lyrics_vibes.append("Sad")
+                    else:
+                        lyrics_vibes.append(vibe)
+                    
+                    # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
                 print(f"The vibe for {track} is: {vibe}")
 
-                # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
-
                 break
-            except requests.exceptions.Timeout:
-                print(f"Timeout processing the vibe for {track}.")
-                retries += 1
             except Exception as e:
                 print(f"Error processing the vibe for {track}: {e}")
-                break
+                retries += 1
 
             if retries >= MAX_RETRIES:
                 print(f"Retries maxed out processing the vibe for {track}.")
@@ -430,7 +430,6 @@ def lyrics_vectorize(lyrics_vibes):
         "Romantic",
         "Tense",
         "Euphoric",
-        "Melancholic",
         "Restless",
         "Serene",
         "Sensual",
@@ -505,6 +504,9 @@ def spacy_vectorize(vibe, constrain):
     vibe_string = " ".join(vibe)
     in_vocab_vibes = [token.text for token in nlp(vibe_string) if not token.is_oov]
     in_vocab_tokens = nlp(" ".join(in_vocab_vibes))
+
+    if len(in_vocab_tokens) == 0:
+        return None
 
     max_similarity = -1
     closest_emotion = None
