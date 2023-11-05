@@ -501,12 +501,20 @@ def cosine_similarity(vec_a, vec_b):
 
 
 def spacy_vectorize(vibe, constrain):
-    vibe_string = " ".join(vibe)
+    if len(vibe) > 1:
+        vibe_string = " ".join(vibe)
+    else:
+        vibe_string = vibe[0]
+    
     in_vocab_vibes = [token.text for token in nlp(vibe_string) if not token.is_oov]
-    in_vocab_tokens = nlp(" ".join(in_vocab_vibes))
 
-    if len(in_vocab_tokens) == 0:
+    if len(in_vocab_vibes) == 0:
         return None
+    elif len(in_vocab_vibes) == 1:
+        in_vocab_tokens = nlp(in_vocab_vibes[0])
+    else:
+        in_vocab_tokens = nlp(" ".join(in_vocab_vibes))
+
 
     max_similarity = -1
     closest_emotion = None
