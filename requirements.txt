@@ -42,6 +42,7 @@ mypy-extensions<=1.0.0
 numpy<=1.26.1
 openai<=0.28.1
 packaging<=23.2
+pandas
 pathspec<=0.11.2
 platformdirs<=3.11.0
 plotly<=5.17.0
