@@ -35,7 +35,11 @@ def open_search_page(request, username=""):
             print(sender_id)
             request_list.append(sender_id)
 
-        context = {"UsersearchForm": form, "request_list": request_list}
+        context = {
+            "UsersearchForm": form,
+            "request_list": request_list,
+            "friends": current_friend_list(user_id),
+        }
 
         return render(request, "search/search.html", context)
     else:
@@ -100,6 +104,9 @@ def process_friend_request(request, friend_user_id):
                     | Q(user1_id=friend_user_id, user2_id=user_id)
                 )
             ).first()
+            if not friend_request:
+                raise UserFriendRelation.DoesNotExist
+
             if action == "cancel":
                 friend_request.status = "cancle_request"
 
@@ -107,12 +114,16 @@ def process_friend_request(request, friend_user_id):
                 friend_request.status = "not_friend"
 
             elif action == "send":
-                friend_request = UserFriendRelation(
-                    user1_id=User.objects.get(user_id=user_id),
-                    user2_id=User.objects.get(user_id=friend_user_id),
-                    status="pending",
-                )
+                if friend_request.user1_id.user_id != user_id:
+                    (
+                        friend_request.user1_id.user_id,
+                        friend_request.user2_id.user_id,
+                    ) = (
+                        friend_request.user2_id.user_id,
+                        friend_request.user1_id.user_id,
+                    )
 
+            # swaping a,b = b,a
             elif action == "accept":
                 friend_request = UserFriendRelation.objects.filter(
                     (Q(user1_id=friend_user_id)) & (Q(user2_id=user_id))
@@ -146,3 +157,19 @@ def process_friend_request(request, friend_user_id):
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
         return redirect("login:index")
+
+
+def current_friend_list(user_id):
+    friendship_list = UserFriendRelation.objects.filter(
+        (Q(user1_id=user_id) | Q(user2_id=user_id)) & Q(status="friends")
+    )
+
+    friends = []
+    print(friendship_list)
+    for friend in friendship_list:
+        if friend.user2_id.user_id == user_id:
+            friends.append(friend.user1_id)
+        else:
+            friends.append(friend.user2_id)
+
+    return friends

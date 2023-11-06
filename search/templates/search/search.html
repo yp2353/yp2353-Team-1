@@ -51,6 +51,27 @@
         </div>
     {% endif %}
 </div>
+
+<div class="currentFriends">
+    {% if friends %}
+        <h2>Friends:</h2>
+        <div class="container">
+            <ul>
+                {% for user in friends %}
+                    <li>
+                        {{ user.username }}  
+                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=unfriend">Unfriend</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="container">
+            <p>Sorry You have NO FRIEND!!!</p>
+        </div>
+    {% endif %}
+</div>
+
 </div>
 
 
