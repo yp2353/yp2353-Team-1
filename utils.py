@@ -5,6 +5,8 @@ from collections import Counter
 from django.apps import apps
 from dotenv import load_dotenv
 
+# from decouple import config
+
 # Load variables from .env
 load_dotenv()
 

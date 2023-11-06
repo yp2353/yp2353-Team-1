@@ -9,6 +9,8 @@ import lyricsgenius
 import openai
 import time
 import requests
+import threading
+from user_profile.views import check_and_store_profile
 
 # from dotenv import load_dotenv
 import os
@@ -66,6 +68,15 @@ def index(request):
         user_info = sp.current_user()
         username = user_info["display_name"]
 
+        def run_check_and_store_profile():
+            check_and_store_profile(request)
+
+        # Create a thread to run the function
+        thread = threading.Thread(target=run_check_and_store_profile)
+
+        # Start the thread
+        thread.start()
+
         # Get top tracks
         top_tracks = get_top_tracks(sp)
 
@@ -78,16 +89,18 @@ def index(request):
         user_id = user_info["id"]
         current_time = timezone.now()
         midnight = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-        recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=midnight).first()
+        recent_vibe = Vibe.objects.filter(
+            user_id=user_id, vibe_time__gte=midnight
+        ).first()
         if not recent_vibe:
             # If no vibe for this user today, save new row to Vibe database
             vibe_data = Vibe(
                 user_id=user_id,
                 vibe_time=timezone.now(),
-                top_track=[track["id"]for track in top_tracks],
-                top_artist=[artist["id"]for artist in top_artists],
+                top_track=[track["id"] for track in top_tracks],
+                top_artist=[artist["id"] for artist in top_artists],
                 top_genre=top_genres,
-                recommended_tracks=[track["id"]for track in recommendedtracks]
+                recommended_tracks=[track["id"] for track in recommendedtracks],
             )
             vibe_data.save()
 
@@ -116,33 +129,37 @@ def get_top_tracks(sp):
             {
                 "name": track["name"],
                 "id": track["id"],
-                "artists": ", ".join(
-                    [artist["name"] for artist in track["artists"]]
-                ),
+                "artists": ", ".join([artist["name"] for artist in track["artists"]]),
                 "album": track["album"]["name"],
                 "uri": track["uri"],
-                "large_album_cover": track['album']['images'][0]['url'] if len(track['album']['images']) >= 1 else None,
-                "medium_album_cover": track['album']['images'][1]['url'] if len(track['album']['images']) >= 2 else None,
-                "small_album_cover": track['album']['images'][2]['url'] if len(track['album']['images']) >= 3 else None,
+                "large_album_cover": track["album"]["images"][0]["url"]
+                if len(track["album"]["images"]) >= 1
+                else None,
+                "medium_album_cover": track["album"]["images"][1]["url"]
+                if len(track["album"]["images"]) >= 2
+                else None,
+                "small_album_cover": track["album"]["images"][2]["url"]
+                if len(track["album"]["images"]) >= 3
+                else None,
             }
         )
     return tracks
 
 
 def get_top_artist_and_genres(sp):
-    top_artists = sp.current_user_top_artists(limit=5, time_range='short_term')
+    top_artists = sp.current_user_top_artists(limit=5, time_range="short_term")
 
     user_top_artists = []
-    user_top_genres = set() #Set to store unique genres
+    user_top_genres = set()  # Set to store unique genres
 
-    for artist in top_artists['items']:
+    for artist in top_artists["items"]:
         artist_info = {
-            'name': artist['name'],
-            'id': artist['id'],
-            'image_url': artist['images'][0]['url'] if artist['images'] else None
+            "name": artist["name"],
+            "id": artist["id"],
+            "image_url": artist["images"][0]["url"] if artist["images"] else None,
         }
         user_top_artists.append(artist_info)
-        user_top_genres.update(artist['genres']) 
+        user_top_genres.update(artist["genres"])
 
     return user_top_artists, list(user_top_genres)
 
@@ -157,14 +174,18 @@ def get_recommendations(sp, top_tracks):
             {
                 "name": track["name"],
                 "id": track["id"],
-                "artists": ", ".join(
-                    [artist["name"] for artist in track["artists"]]
-                ),
+                "artists": ", ".join([artist["name"] for artist in track["artists"]]),
                 "album": track["album"]["name"],
                 "uri": track["uri"],
-                "large_album_cover": track['album']['images'][0]['url'] if len(track['album']['images']) >= 1 else None,
-                "medium_album_cover": track['album']['images'][1]['url'] if len(track['album']['images']) >= 2 else None,
-                "small_album_cover": track['album']['images'][2]['url'] if len(track['album']['images']) >= 3 else None,
+                "large_album_cover": track["album"]["images"][0]["url"]
+                if len(track["album"]["images"]) >= 1
+                else None,
+                "medium_album_cover": track["album"]["images"][1]["url"]
+                if len(track["album"]["images"]) >= 2
+                else None,
+                "small_album_cover": track["album"]["images"][2]["url"]
+                if len(track["album"]["images"]) >= 3
+                else None,
             }
         )
 
@@ -182,12 +203,14 @@ def calculate_vibe(request):
         user_id = user_info["id"]
         current_time = timezone.now()
         time_difference = current_time - timezone.timedelta(hours=24)
-        recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
+        recent_vibe = Vibe.objects.filter(
+            user_id=user_id, vibe_time__gte=time_difference
+        ).first()
         if recent_vibe and recent_vibe.user_audio_vibe:
             vibe_result = recent_vibe.user_audio_vibe
             if recent_vibe.user_lyrics_vibe:
                 vibe_result += " " + recent_vibe.user_lyrics_vibe
-            return JsonResponse({'result': vibe_result})
+            return JsonResponse({"result": vibe_result})
         # Skips having to perform vibe calculations below
 
         recent_tracks = sp.current_user_recently_played(limit=15)
@@ -220,18 +243,28 @@ def calculate_vibe(request):
             # Find row in vibe database that is within 24 hours
             current_time = timezone.now()
             time_difference = current_time - timezone.timedelta(hours=24)
-            recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=time_difference).first()
+            recent_vibe = Vibe.objects.filter(
+                user_id=user_id, vibe_time__gte=time_difference
+            ).first()
             if not recent_vibe:
                 print("Error, vibe row should already exist when loaded dashboard!")
             else:
                 recent_vibe.user_lyrics_vibe = lyric_vibe
                 recent_vibe.user_audio_vibe = audio_vibe
                 recent_vibe.recent_track = track_ids
-                recent_vibe.user_acousticness = get_feature_average(audio_features_list, "acousticness")
-                recent_vibe.user_danceability = get_feature_average(audio_features_list, "danceability")
-                recent_vibe.user_energy = get_feature_average(audio_features_list, "energy")
-                recent_vibe.user_valence = get_feature_average(audio_features_list, "valence")
-            
+                recent_vibe.user_acousticness = get_feature_average(
+                    audio_features_list, "acousticness"
+                )
+                recent_vibe.user_danceability = get_feature_average(
+                    audio_features_list, "danceability"
+                )
+                recent_vibe.user_energy = get_feature_average(
+                    audio_features_list, "energy"
+                )
+                recent_vibe.user_valence = get_feature_average(
+                    audio_features_list, "valence"
+                )
+
                 recent_vibe.save()
         else:
             vibe_result = "Null"
@@ -240,6 +273,7 @@ def calculate_vibe(request):
     else:
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
+        return redirect("login:index")
         return redirect("login:index")
 
 
@@ -516,6 +550,7 @@ def spacy_vectorize(vibe, constrain):
             closest_emotion = word
 
     return closest_emotion
+
 
 def get_feature_average(list, feature):
     total = sum(track[feature] for track in list)

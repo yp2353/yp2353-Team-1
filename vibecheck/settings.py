@@ -42,8 +42,10 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "login",
     # "dashboard",
-    'dashboard.apps.DashboardConfig',
+    "dashboard.apps.DashboardConfig",
     "user_profile",
+    "chatroom",
+    "search",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -80,7 +82,6 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = "vibecheck.wsgi.application"
 
 

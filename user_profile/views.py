@@ -6,6 +6,7 @@ import spotipy
 from utils import get_spotify_token
 from django.utils import timezone
 from .models import User, Vibe
+
 # import os
 
 # Load variables from .env
@@ -63,9 +64,11 @@ def check_and_store_profile(request):
 
             user.user_last_login = time
             user.save()
-        
+
         # Get user's most recent vibe, order by descending time
-        recent_vibe = Vibe.objects.filter(user_id=user_id).order_by('-vibe_time').first()
+        recent_vibe = (
+            Vibe.objects.filter(user_id=user_id).order_by("-vibe_time").first()
+        )
 
         context = {
             "user": user,
