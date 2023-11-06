@@ -53,6 +53,11 @@ def user_search(request):
     if token_info:
         if request.method == "GET":
             form = UsersearchForm(request.GET)
+            sp = spotipy.Spotify(auth=token_info["access_token"])
+
+            user_info = sp.current_user()
+            current_user_id = user_info["id"]
+            
             if form.is_valid():
                 query = form.cleaned_data
                 username = query["username"]
@@ -74,6 +79,7 @@ def user_search(request):
                         status = "not_friend"
 
                     results.append({"user": entry, "status": status})
+                    form.username = username
             else:
                 results = None
         else:
@@ -83,7 +89,11 @@ def user_search(request):
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
         return redirect("login:index")
-    context = {"results": results, "UsersearchForm": form}
+    context = {
+        "results": results, 
+        "UsersearchForm": form,
+        "friends": current_friend_list(current_user_id),
+        }
     return render(request, "search/search.html", context)
 
 
