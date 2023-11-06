@@ -1,14 +1,18 @@
+# from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import UsersearchForm
 from utils import get_spotify_token
 import spotipy
-from user_profile.models import User, FriendRequest
+from user_profile.models import User, UserFriendRelation
 from django.db.models import Q
 
 # Create your views here.
+"""
+for friends Relation User1 is sender and User2 is receiver
+"""
 
 
-def open_search_page(request):
+def open_search_page(request, username=""):
     token_info = get_spotify_token(request)
     if token_info:
         form = UsersearchForm()
@@ -16,15 +20,23 @@ def open_search_page(request):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
+        print(type(user_id))
         request_list = []
-        received_request = FriendRequest.objects.filter(Q(receiver=user_id))
+        received_request = UserFriendRelation.objects.filter(
+            (Q(user2_id=user_id)) & Q(status="pending")
+        )
+
         for req in received_request:
-            sender_id = req.sender.user_id
-            sender = User.objects.filter(Q(user_id=sender_id)).first()
-            request_list.append(sender)
+            if req.user1_id == user_id:
+                sender_id = req.user1_id
+            else:
+                sender_id = req.user1_id
+            # sender = User.objects.filter(Q(user_id=sender_id)).first()
+            print(sender_id)
+            request_list.append(sender_id)
 
         context = {"UsersearchForm": form, "request_list": request_list}
-        print(request_list)
+
         return render(request, "search/search.html", context)
     else:
         # No token, redirect to login again
@@ -48,14 +60,14 @@ def user_search(request):
                 for entry in response:
                     user_id = entry.user_id
                     # Check if there's a friend request involving the user
-                    friend_request = FriendRequest.objects.filter(
-                        Q(sender=user_id) | Q(receiver=user_id)
+                    friend_request = UserFriendRelation.objects.filter(
+                        Q(user1_id=user_id) | Q(user2_id=user_id)
                     ).first()
                     # Determine the status of the friend request
                     if friend_request:
                         status = friend_request.status
                     else:
-                        status = "no_friend"
+                        status = "not_friend"
 
                     results.append({"user": entry, "status": status})
             else:
@@ -71,10 +83,63 @@ def user_search(request):
     return render(request, "search/search.html", context)
 
 
-def process_friend_request(request):
+def process_friend_request(request, friend_user_id):
     token_info = get_spotify_token(request)
-    print("Profile User Check Started")
+
     if token_info:
+        action = request.GET.get("action")
+        sp = spotipy.Spotify(auth=token_info["access_token"])
+
+        user_info = sp.current_user()
+        user_id = user_info["id"]
+
+        try:
+            friend_request = UserFriendRelation.objects.filter(
+                (
+                    Q(user1_id=user_id, user2_id=friend_user_id)
+                    | Q(user1_id=friend_user_id, user2_id=user_id)
+                )
+            ).first()
+            if action == "cancel":
+                friend_request.status = "cancle_request"
+
+            elif action == "unfriend":
+                friend_request.status = "not_friend"
+
+            elif action == "send":
+                friend_request = UserFriendRelation(
+                    user1_id=User.objects.get(user_id=user_id),
+                    user2_id=User.objects.get(user_id=friend_user_id),
+                    status="pending",
+                )
+
+            elif action == "accept":
+                friend_request = UserFriendRelation.objects.filter(
+                    (Q(user1_id=friend_user_id)) & (Q(user2_id=user_id))
+                ).first()
+                friend_request.status = "friends"
+
+            elif action == "decline":
+                friend_request = UserFriendRelation.objects.filter(
+                    (Q(user1_id=friend_user_id)) & (Q(user2_id=user_id))
+                ).first()
+                friend_request.status = "decline"
+
+            friend_request.save()
+
+        except UserFriendRelation.DoesNotExist:
+            if action == "send":
+                friend_request = UserFriendRelation(
+                    user1_id=User.objects.get(user_id=user_id),
+                    user2_id=User.objects.get(user_id=friend_user_id),
+                    status="pending",
+                )
+                friend_request.save()
+
+        # print('message -> Friend request processed successfully')
+        # response_data = {'message': 'Friend request processed successfully'}
+        # return JsonResponse(response_data)
+
         return open_search_page(request)
 
     else:
