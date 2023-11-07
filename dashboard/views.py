@@ -159,7 +159,7 @@ def get_top_artist_and_genres(sp):
             "image_url": artist["images"][0]["url"] if artist["images"] else None,
         }
         user_top_artists.append(artist_info)
-        user_top_genres.update(artist["genres"])
+        user_top_genres.update(artist['genres'])
 
     return user_top_artists, list(user_top_genres)
 
@@ -252,18 +252,10 @@ def calculate_vibe(request):
                 recent_vibe.user_lyrics_vibe = lyric_vibe
                 recent_vibe.user_audio_vibe = audio_vibe
                 recent_vibe.recent_track = track_ids
-                recent_vibe.user_acousticness = get_feature_average(
-                    audio_features_list, "acousticness"
-                )
-                recent_vibe.user_danceability = get_feature_average(
-                    audio_features_list, "danceability"
-                )
-                recent_vibe.user_energy = get_feature_average(
-                    audio_features_list, "energy"
-                )
-                recent_vibe.user_valence = get_feature_average(
-                    audio_features_list, "valence"
-                )
+                recent_vibe.user_acousticness = get_feature_average(audio_features_list, "acousticness")
+                recent_vibe.user_danceability = get_feature_average(audio_features_list, "danceability")
+                recent_vibe.user_energy = get_feature_average(audio_features_list, "energy")
+                recent_vibe.user_valence = get_feature_average(audio_features_list, "valence")
 
                 recent_vibe.save()
         else:
@@ -358,10 +350,10 @@ def check_vibe(track_names, track_artists, track_ids, audio_features_list):
     lyrics_vibes = deduce_lyrics(track_names, track_artists, track_ids)
     lyrics_final_vibe = lyrics_vectorize(lyrics_vibes)
 
-    if lyrics_final_vibe:
-        return audio_final_vibe, lyrics_final_vibe
-    else:
-        return audio_final_vibe
+    if not lyrics_final_vibe:
+        lyrics_final_vibe = None
+
+    return audio_final_vibe, lyrics_final_vibe
 
 
 def deduce_lyrics(track_names, track_artists, track_ids):
