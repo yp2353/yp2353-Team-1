@@ -125,13 +125,17 @@ def process_friend_request(request, friend_user_id):
 
             elif action == "send":
                 if friend_request.user1_id.user_id != user_id:
+                    print("before" , friend_request.user1_id )
                     (
-                        friend_request.user1_id.user_id,
-                        friend_request.user2_id.user_id,
+                        friend_request.user1_id,
+                        friend_request.user2_id,
                     ) = (
-                        friend_request.user2_id.user_id,
-                        friend_request.user1_id.user_id,
+                        friend_request.user2_id,
+                        friend_request.user1_id,
                     )
+                friend_request.status = "pending"
+                print("after" , friend_request.user1_id )
+
 
             # swaping a,b = b,a
             elif action == "accept":
