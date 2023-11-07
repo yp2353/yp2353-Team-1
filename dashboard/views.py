@@ -11,6 +11,8 @@ import time
 import numpy as np
 from gradio_client import Client
 import re
+import threading
+from user_profile.views import check_and_store_profile
 
 # from dotenv import load_dotenv
 import os
@@ -42,6 +44,15 @@ def index(request):
         # Pass username to navbar
         user_info = sp.current_user()
         username = user_info["display_name"]
+
+        def run_check_and_store_profile():
+            check_and_store_profile(request)
+
+        # Create a thread to run the function
+        thread = threading.Thread(target=run_check_and_store_profile)
+
+        # Start the thread
+        thread.start()
 
         # Get top tracks
         top_tracks = get_top_tracks(sp)
@@ -115,33 +126,37 @@ def get_top_tracks(sp):
             {
                 "name": track["name"],
                 "id": track["id"],
-                "artists": ", ".join(
-                    [artist["name"] for artist in track["artists"]]
-                ),
+                "artists": ", ".join([artist["name"] for artist in track["artists"]]),
                 "album": track["album"]["name"],
                 "uri": track["uri"],
-                "large_album_cover": track['album']['images'][0]['url'] if len(track['album']['images']) >= 1 else None,
-                "medium_album_cover": track['album']['images'][1]['url'] if len(track['album']['images']) >= 2 else None,
-                "small_album_cover": track['album']['images'][2]['url'] if len(track['album']['images']) >= 3 else None,
+                "large_album_cover": track["album"]["images"][0]["url"]
+                if len(track["album"]["images"]) >= 1
+                else None,
+                "medium_album_cover": track["album"]["images"][1]["url"]
+                if len(track["album"]["images"]) >= 2
+                else None,
+                "small_album_cover": track["album"]["images"][2]["url"]
+                if len(track["album"]["images"]) >= 3
+                else None,
             }
         )
     return tracks
 
 
 def get_top_artist_and_genres(sp):
-    top_artists = sp.current_user_top_artists(limit=5, time_range='short_term')
+    top_artists = sp.current_user_top_artists(limit=5, time_range="short_term")
 
     user_top_artists = []
-    user_top_genres = set() #Set to store unique genres
+    user_top_genres = set()  # Set to store unique genres
 
-    for artist in top_artists['items']:
+    for artist in top_artists["items"]:
         artist_info = {
-            'name': artist['name'],
-            'id': artist['id'],
-            'image_url': artist['images'][0]['url'] if artist['images'] else None
+            "name": artist["name"],
+            "id": artist["id"],
+            "image_url": artist["images"][0]["url"] if artist["images"] else None,
         }
         user_top_artists.append(artist_info)
-        user_top_genres.update(artist['genres']) 
+        user_top_genres.update(artist['genres'])
 
     return user_top_artists, list(user_top_genres)
 
@@ -156,14 +171,18 @@ def get_recommendations(sp, top_tracks):
             {
                 "name": track["name"],
                 "id": track["id"],
-                "artists": ", ".join(
-                    [artist["name"] for artist in track["artists"]]
-                ),
+                "artists": ", ".join([artist["name"] for artist in track["artists"]]),
                 "album": track["album"]["name"],
                 "uri": track["uri"],
-                "large_album_cover": track['album']['images'][0]['url'] if len(track['album']['images']) >= 1 else None,
-                "medium_album_cover": track['album']['images'][1]['url'] if len(track['album']['images']) >= 2 else None,
-                "small_album_cover": track['album']['images'][2]['url'] if len(track['album']['images']) >= 3 else None,
+                "large_album_cover": track["album"]["images"][0]["url"]
+                if len(track["album"]["images"]) >= 1
+                else None,
+                "medium_album_cover": track["album"]["images"][1]["url"]
+                if len(track["album"]["images"]) >= 2
+                else None,
+                "small_album_cover": track["album"]["images"][2]["url"]
+                if len(track["album"]["images"]) >= 3
+                else None,
             }
         )
 
@@ -186,7 +205,7 @@ def calculate_vibe(request):
             vibe_result = recent_vibe.user_audio_vibe
             if recent_vibe.user_lyrics_vibe:
                 vibe_result += " " + recent_vibe.user_lyrics_vibe
-            return JsonResponse({'result': vibe_result})
+            return JsonResponse({"result": vibe_result})
         # Skips having to perform vibe calculations below
 
         recent_tracks = sp.current_user_recently_played(limit=15)
@@ -236,6 +255,7 @@ def calculate_vibe(request):
     else:
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
+        return redirect("login:index")
         return redirect("login:index")
 
 
@@ -320,10 +340,10 @@ def check_vibe(track_names, track_artists, track_ids, audio_features_list):
     lyrics_vibes = deduce_lyrics(track_names, track_artists, track_ids)
     lyrics_final_vibe = lyrics_vectorize(lyrics_vibes)
 
-    if lyrics_final_vibe:
-        return audio_final_vibe, lyrics_final_vibe
-    else:
-        return audio_final_vibe
+    if not lyrics_final_vibe:
+        lyrics_final_vibe = None
+
+    return audio_final_vibe, lyrics_final_vibe
 
 
 def deduce_lyrics(track_names, track_artists, track_ids):

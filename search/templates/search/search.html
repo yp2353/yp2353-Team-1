@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block body_class %}background{% endblock %}
+
+{% block content %}
+
+{% if request_list%}
+    <div class="request_received container ">
+        <h2>Received Request</h2>
+        <div class="container">
+            <ul>
+                {% for user in request_list %}
+                    <li>{{ user.username }}  
+                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=accept">Accept</a>
+                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=decline">Decline</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endif %}
+
+<div class="container">
+    <div class="user_search_container">
+        <form method="get" action="{% url 'search:search_user' %}">
+            {{ UsersearchForm.as_p }}
+            <button type="submit">Search</button>
+        </form>
+    </div>
+</div>
+
+<div class="search_result container">
+    {% if results %}
+        <h2>Matched Users</h2>
+        <div class="container">
+            <ul>
+                {% for user in results %}
+                    <li>
+                        {{ user.user.username }}  
+                        {% if user.status == 'pending' %}
+                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=cancel">Cancel Request</a>
+                        {% elif user.status == 'friends' %}
+                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=unfriend">Unfriend</a>
+                        {% else %}
+                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=send">Send Request</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+
+<div class="currentFriends">
+    {% if friends %}
+        <h2>Friends:</h2>
+        <div class="container">
+            <ul>
+                {% for user in friends %}
+                    <li>
+                        {{ user.username }}  
+                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=unfriend">Unfriend</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="container">
+            <p>Sorry to say, You have NO FRIEND!!!</p>
+        </div>
+    {% endif %}
+</div>
+
+</div>
+
+
+
+{% endblock %}
