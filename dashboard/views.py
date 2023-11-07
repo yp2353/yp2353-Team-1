@@ -8,51 +8,28 @@ import shutil
 import lyricsgenius
 import openai
 import time
-import requests
+import numpy as np
+from gradio_client import Client
+import re
 import threading
 from user_profile.views import check_and_store_profile
 
 # from dotenv import load_dotenv
 import os
 
-# from gensim.models import FastText
 from utils import get_spotify_token, deduce_audio_vibe
 from django.http import JsonResponse
 
-# import boto3
-# import tempfile
-from user_profile.models import Vibe
+from user_profile.models import Vibe, UserTop
 from django.utils import timezone
-import spacy
+from dashboard.models import EmotionVector
 
 MAX_RETRIES = 2
 
-# Load spaCy language model from the deployed location
-nlp = spacy.load("dashboard/en_core_web_md/en_core_web_md-3.7.0")
-
-""" AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-
-
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-)
-
-
-def load_model_from_s3():
-    with tempfile.NamedTemporaryFile() as tmp:
-        s3.download_file("vibecheck-storage", "cc.en.12.bin", tmp.name)
-        model = FastText.load_fasttext_format(tmp.name)
-    return model
-
-
-# Uncomment for loading from S3
-model = load_model_from_s3()"""
-
+client = Client("https://alfredo273-vibecheck-fasttext.hf.space/--replicas/pxhkx/")
 
 # Uncomment for manual loading
+# from gensim.models import FastText
 # model = FastText.load_fasttext_format("dashboard/cc.en.32.bin")
 
 
@@ -87,22 +64,40 @@ def index(request):
         recommendedtracks = get_recommendations(sp, top_tracks)
 
         user_id = user_info["id"]
-        current_time = timezone.now()
+        current_time = timezone.now().astimezone(timezone.utc)
         midnight = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-        recent_vibe = Vibe.objects.filter(
-            user_id=user_id, vibe_time__gte=midnight
-        ).first()
-        if not recent_vibe:
-            # If no vibe for this user today, save new row to Vibe database
-            vibe_data = Vibe(
+        recent_top = UserTop.objects.filter(user_id=user_id, time__gte=midnight).first()
+        if not recent_top:
+            # If no top info for this user today, save new row to UserTop database
+            top_data = UserTop(
                 user_id=user_id,
-                vibe_time=timezone.now(),
+                time=current_time,
                 top_track=[track["id"] for track in top_tracks],
                 top_artist=[artist["id"] for artist in top_artists],
                 top_genre=top_genres,
                 recommended_tracks=[track["id"] for track in recommendedtracks],
             )
-            vibe_data.save()
+            top_data.save()
+
+        current_year = current_time.year
+        vibe_history = Vibe.objects.filter(
+            user_id=user_id, vibe_time__year=current_year
+        ).values("vibe_time", "user_audio_vibe", "user_lyrics_vibe")
+        months = [
+            {"number": 0, "short_name": "", "long_name": ""},
+            {"number": 1, "short_name": "J", "long_name": "January"},
+            {"number": 2, "short_name": "F", "long_name": "February"},
+            {"number": 3, "short_name": "M", "long_name": "March"},
+            {"number": 4, "short_name": "A", "long_name": "April"},
+            {"number": 5, "short_name": "M", "long_name": "May"},
+            {"number": 6, "short_name": "J", "long_name": "June"},
+            {"number": 7, "short_name": "J", "long_name": "July"},
+            {"number": 8, "short_name": "A", "long_name": "August"},
+            {"number": 9, "short_name": "S", "long_name": "September"},
+            {"number": 10, "short_name": "O", "long_name": "October"},
+            {"number": 11, "short_name": "N", "long_name": "November"},
+            {"number": 12, "short_name": "D", "long_name": "December"},
+        ]
 
         context = {
             "username": username,
@@ -110,6 +105,10 @@ def index(request):
             "top_artists": top_artists,
             "top_genres": top_genres,
             "recommendedtracks": recommendedtracks,
+            "vibe_history": vibe_history,
+            "iteratorMonth": months,
+            "iteratorDay": range(0, 32),
+            "currentYear": current_year,
         }
 
         extract_tracks(sp)
@@ -159,7 +158,7 @@ def get_top_artist_and_genres(sp):
             "image_url": artist["images"][0]["url"] if artist["images"] else None,
         }
         user_top_artists.append(artist_info)
-        user_top_genres.update(artist['genres'])
+        user_top_genres.update(artist["genres"])
 
     return user_top_artists, list(user_top_genres)
 
@@ -201,10 +200,10 @@ def calculate_vibe(request):
         # Check if user vibe already been calculated for today
         user_info = sp.current_user()
         user_id = user_info["id"]
-        current_time = timezone.now()
-        time_difference = current_time - timezone.timedelta(hours=24)
+        current_time = timezone.now().astimezone(timezone.utc)
+        midnight = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
         recent_vibe = Vibe.objects.filter(
-            user_id=user_id, vibe_time__gte=time_difference
+            user_id=user_id, vibe_time__gte=midnight
         ).first()
         if recent_vibe and recent_vibe.user_audio_vibe:
             vibe_result = recent_vibe.user_audio_vibe
@@ -240,24 +239,23 @@ def calculate_vibe(request):
             if lyric_vibe:
                 vibe_result += " " + lyric_vibe
 
-            # Find row in vibe database that is within 24 hours
-            current_time = timezone.now()
-            time_difference = current_time - timezone.timedelta(hours=24)
-            recent_vibe = Vibe.objects.filter(
-                user_id=user_id, vibe_time__gte=time_difference
-            ).first()
-            if not recent_vibe:
-                print("Error, vibe row should already exist when loaded dashboard!")
-            else:
-                recent_vibe.user_lyrics_vibe = lyric_vibe
-                recent_vibe.user_audio_vibe = audio_vibe
-                recent_vibe.recent_track = track_ids
-                recent_vibe.user_acousticness = get_feature_average(audio_features_list, "acousticness")
-                recent_vibe.user_danceability = get_feature_average(audio_features_list, "danceability")
-                recent_vibe.user_energy = get_feature_average(audio_features_list, "energy")
-                recent_vibe.user_valence = get_feature_average(audio_features_list, "valence")
-
-                recent_vibe.save()
+            current_time = timezone.now().astimezone(timezone.utc)
+            vibe_data = Vibe(
+                user_id=user_id,
+                vibe_time=current_time,
+                user_lyrics_vibe=lyric_vibe,
+                user_audio_vibe=audio_vibe,
+                recent_track=track_ids,
+                user_acousticness=get_feature_average(
+                    audio_features_list, "acousticness"
+                ),
+                user_danceability=get_feature_average(
+                    audio_features_list, "danceability"
+                ),
+                user_energy=get_feature_average(audio_features_list, "energy"),
+                user_valence=get_feature_average(audio_features_list, "valence"),
+            )
+            vibe_data.save()
         else:
             vibe_result = "Null"
 
@@ -394,23 +392,20 @@ def deduce_lyrics(track_names, track_artists, track_ids):
                             "content": f"You are a mood analyzer that can only return a single word. Based on these song lyrics, return a single word that matches this song's mood: '{short_lyrics}'",
                         },
                     ],
-                    timeout=5,
+                    request_timeout=5,
                 )
                 vibe = response.choices[0].message["content"].strip()
                 checkLength = vibe.split()
                 if len(checkLength) == 1:
-                    lyrics_vibes.append(vibe)
+                    lyrics_vibes.append(vibe.lower())
+
+                    # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
                 print(f"The vibe for {track} is: {vibe}")
 
-                # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
-
                 break
-            except requests.exceptions.Timeout:
-                print(f"Timeout processing the vibe for {track}.")
-                retries += 1
             except Exception as e:
                 print(f"Error processing the vibe for {track}: {e}")
-                break
+                retries += 1
 
             if retries >= MAX_RETRIES:
                 print(f"Retries maxed out processing the vibe for {track}.")
@@ -422,100 +417,97 @@ def deduce_lyrics(track_names, track_artists, track_ids):
 
 
 def lyrics_vectorize(lyrics_vibes):
-    lyrics_constrain = [
-        "Happy",
-        "Sad",
-        "Angry",
-        "Anxious",
-        "Content",
-        "Excited",
-        "Bored",
-        "Nostalgic",
-        "Frustrated",
-        "Hopeful",
-        "Afraid",
-        "Confident",
-        "Jealous",
-        "Grateful",
-        "Lonely",
-        "Rebellious",
-        "Relaxed",
-        "Amused",
-        "Curious",
-        "Ashamed",
-        "Sympathetic",
-        "Disappointed",
-        "Proud",
-        "Guilty",
-        "Enthusiastic",
-        "Empathetic",
-        "Shocked",
-        "Calm",
-        "Inspired",
-        "Indifferent",
-        "Romantic",
-        "Tense",
-        "Euphoric",
-        "Melancholic",
-        "Restless",
-        "Serene",
-        "Sensual",
-        "Reflective",
-        "Playful",
-        "Dark",
-        "Optimistic",
-        "Mysterious",
-        "Seductive",
-        "Regretful",
-        "Detached",
-    ]
-
     if lyrics_vibes:
-        # avg_lyr_vibe = average_vector(lyrics_vibes, model)
-        # final_lyr_vibe = vector_to_word(avg_lyr_vibe, model)
-        # closest_emotion = find_closest_emotion(avg_lyr_vibe, model)
-        closest_emotion = spacy_vectorize(lyrics_vibes, lyrics_constrain)
+        for i in lyrics_vibes:
+            print("Lyrics vibes: " + i)
+        avg_lyr_vibe = average_vector(lyrics_vibes)
+        closest_emotion = find_closest_emotion(avg_lyr_vibe)
         return str(closest_emotion)
     else:
         return None
 
 
+def string_to_vector(str):
+    clean = re.sub(r"[\[\]\n\t]", "", str)
+    clean = clean.split()
+    clean = [float(e) for e in clean]
+    return clean
+
+
 """
+# On huggingface spaces
 def get_vector(word, model):
     # Get the word vector from the model.
     try:
         return model.wv[word]
     except KeyError:
         return np.zeros(model.vector_size)
+"""
 
 
-def average_vector(words, model):
+def average_vector(words):
     # Compute the average vector for a list of words.
-    vectors = [get_vector(word, model) for word in words]
+    vectors = []
+    for word in words:
+        str_vector = client.predict("get_vector", word, api_name="/predict")
+        vector = string_to_vector(str_vector)
+        vectors.append(vector)
+
     return np.mean(vectors, axis=0)
 
 
-def vector_to_word(vector, model):
-    # Find the closest word in the embedding for the given vector.
-    # most_similar returns [(word, similarity score), ...]
-    # We just want the word, so we pick [0][0]
-    return model.wv.most_similar(positive=[vector], topn=1)[0][0]
-
-
-def find_closest_emotion(final_vibe, model):
+def find_closest_emotion(final_vibe):
     emotion_words = [
-        "Happy", "Sad", "Angry", "Joyful", "Depressed", "Anxious", "Content",
-        "Excited", "Bored", "Nostalgic", "Frustrated", "Hopeful", "Afraid",
-        "Confident", "Jealous", "Grateful", "Lonely", "Overwhelmed", "Relaxed",
-        "Amused", "Curious", "Ashamed", "Sympathetic", "Disappointed", "Proud",
-        "Guilty", "Enthusiastic", "Empathetic", "Shocked", "Calm", "Inspired",
-        "Disgusted", "Indifferent", "Romantic", "Surprised", "Tense", "Euphoric",
-        "Melancholic", "Restless", "Serene", "Sensual"
+        "happy",
+        "sad",
+        "angry",
+        "anxious",
+        "content",
+        "excited",
+        "bored",
+        "nostalgic",
+        "frustrated",
+        "hopeful",
+        "afraid",
+        "confident",
+        "jealous",
+        "grateful",
+        "lonely",
+        "rebellious",
+        "relaxed",
+        "amused",
+        "curious",
+        "ashamed",
+        "sympathetic",
+        "disappointed",
+        "proud",
+        "enthusiastic",
+        "empathetic",
+        "shocked",
+        "calm",
+        "inspired",
+        "indifferent",
+        "romantic",
+        "tense",
+        "euphoric",
+        "restless",
+        "serene",
+        "sensual",
+        "reflective",
+        "playful",
+        "dark",
+        "optimistic",
+        "mysterious",
+        "seductive",
+        "regretful",
+        "detached",
+        "melancholic",
     ]
+
     max_similarity = -1
     closest_emotion = None
     for word in emotion_words:
-        word_vec = get_vector(word, model)
+        word_vec = get_emotion_vector(word)
         similarity = cosine_similarity(final_vibe, word_vec)
         if similarity > max_similarity:
             max_similarity = similarity
@@ -524,27 +516,24 @@ def find_closest_emotion(final_vibe, model):
 
 
 def cosine_similarity(vec_a, vec_b):
-    return np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b)) """
-
-
-def spacy_vectorize(vibe, constrain):
-    vibe_string = " ".join(vibe)
-    in_vocab_vibes = [token.text for token in nlp(vibe_string) if not token.is_oov]
-    in_vocab_tokens = nlp(" ".join(in_vocab_vibes))
-
-    max_similarity = -1
-    closest_emotion = None
-
-    for word in constrain:
-        similarity = nlp(word).similarity(in_vocab_tokens)
-        if similarity > max_similarity:
-            max_similarity = similarity
-            closest_emotion = word
-
-    return closest_emotion
+    return np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))
 
 
 def get_feature_average(list, feature):
     total = sum(track[feature] for track in list)
     average = total / len(list)
     return average
+
+
+def get_emotion_vector(input_emotion):
+    input_emotion = input_emotion.lower()
+    vector_str = EmotionVector.objects.filter(emotion=input_emotion).first()
+
+    if not vector_str:
+        # We should always get vector string stored in our database,
+        # but if somehow is not in database..
+        vector_str = client.predict("get_vector", input_emotion, api_name="/predict")
+    else:
+        vector_str = vector_str.vector
+
+    return string_to_vector(vector_str)
