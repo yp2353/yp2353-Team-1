@@ -24,3 +24,7 @@ class Track(models.Model):
     )
     track_speechiness = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     track_valence = models.DecimalField(null=True, max_digits=10, decimal_places=6)
+
+class EmotionVector(models.Model):
+    emotion = models.CharField(max_length=250, primary_key=True)
+    vector = models.TextField()
