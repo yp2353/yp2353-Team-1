@@ -39,6 +39,23 @@ class Vibe(models.Model):
 
 
 # User Friend List
+
+
+class UserFriendRelation(models.Model):
+    user1_id = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="sender_user"
+    )
+    user2_id = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="receiver_user"
+    )
+    status = models.CharField(max_length=30, default="pending")
+    status_update_time = models.DateField(default=timezone.now, editable=False)
+
+    def __str__(self) -> str:
+        return f"User -> {self.user1_id} ->  {self.user2_id} -> status"
+
+
+# User Friend List
 class FriendRequest(models.Model):
     sender = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="sent_request"

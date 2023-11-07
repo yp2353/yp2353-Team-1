@@ -507,7 +507,7 @@ def vector_to_word(vector, model):
     # Find the closest word in the embedding for the given vector.
     # most_similar returns [(word, similarity score), ...]
     # We just want the word, so we pick [0][0]
-    return model.wv.most_similar(positive=[vector], topn=1)[0][0] 
+    return model.wv.most_similar(positive=[vector], topn=1)[0][0]
 
 
 def find_closest_emotion(final_vibe, model):
