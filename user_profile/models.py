@@ -28,11 +28,7 @@ class Vibe(models.Model):
     user_danceability = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     user_energy = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     user_valence = models.DecimalField(null=True, max_digits=10, decimal_places=6)
-    recent_track = ArrayField(
-        models.CharField(max_length=250),
-        size=20,
-        null=True
-        )
+    recent_track = ArrayField(models.CharField(max_length=250), size=20, null=True)
     vibe_time = models.DateTimeField()
 
 
@@ -41,25 +37,12 @@ class UserTop(models.Model):
     user_id = models.CharField(max_length=250)
     time = models.DateTimeField()
     recommended_tracks = ArrayField(
-        models.CharField(max_length=250),
-        size=20,
-        null=True
-        )
-    top_track = ArrayField(
-        models.CharField(max_length=250),
-        size=20,
-        null=True
-        )
-    top_artist = ArrayField(
-        models.CharField(max_length=250),
-        size=20,
-        null=True
-        )
-    top_genre = ArrayField(
-        models.CharField(max_length=250),
-        size=20,
-        null=True
-        )
+        models.CharField(max_length=250), size=20, null=True
+    )
+    top_track = ArrayField(models.CharField(max_length=250), size=20, null=True)
+    top_artist = ArrayField(models.CharField(max_length=250), size=20, null=True)
+    top_genre = ArrayField(models.CharField(max_length=250), size=20, null=True)
+
 
 # User Friend List
 class UserFriendRelation(models.Model):
@@ -86,4 +69,3 @@ class FriendRequest(models.Model):
     )
     status = models.CharField(max_length=30, default="declined")
     request_time = models.DateField(default=timezone.now, editable=False)
-

@@ -72,29 +72,31 @@ def index(request):
             top_data = UserTop(
                 user_id=user_id,
                 time=current_time,
-                top_track=[track["id"]for track in top_tracks],
-                top_artist=[artist["id"]for artist in top_artists],
+                top_track=[track["id"] for track in top_tracks],
+                top_artist=[artist["id"] for artist in top_artists],
                 top_genre=top_genres,
-                recommended_tracks=[track["id"]for track in recommendedtracks]
+                recommended_tracks=[track["id"] for track in recommendedtracks],
             )
             top_data.save()
 
         current_year = current_time.year
-        vibe_history = Vibe.objects.filter(user_id=user_id, vibe_time__year=current_year).values('vibe_time', 'user_audio_vibe', 'user_lyrics_vibe')
+        vibe_history = Vibe.objects.filter(
+            user_id=user_id, vibe_time__year=current_year
+        ).values("vibe_time", "user_audio_vibe", "user_lyrics_vibe")
         months = [
-            {'number': 0, 'short_name': '', 'long_name': ''},
-            {'number': 1, 'short_name': 'J', 'long_name': 'January'},
-            {'number': 2, 'short_name': 'F', 'long_name': 'February'},
-            {'number': 3, 'short_name': 'M', 'long_name': 'March'},
-            {'number': 4, 'short_name': 'A', 'long_name': 'April'},
-            {'number': 5, 'short_name': 'M', 'long_name': 'May'},
-            {'number': 6, 'short_name': 'J', 'long_name': 'June'},
-            {'number': 7, 'short_name': 'J', 'long_name': 'July'},
-            {'number': 8, 'short_name': 'A', 'long_name': 'August'},
-            {'number': 9, 'short_name': 'S', 'long_name': 'September'},
-            {'number': 10, 'short_name': 'O', 'long_name': 'October'},
-            {'number': 11, 'short_name': 'N', 'long_name': 'November'},
-            {'number': 12, 'short_name': 'D', 'long_name': 'December'}
+            {"number": 0, "short_name": "", "long_name": ""},
+            {"number": 1, "short_name": "J", "long_name": "January"},
+            {"number": 2, "short_name": "F", "long_name": "February"},
+            {"number": 3, "short_name": "M", "long_name": "March"},
+            {"number": 4, "short_name": "A", "long_name": "April"},
+            {"number": 5, "short_name": "M", "long_name": "May"},
+            {"number": 6, "short_name": "J", "long_name": "June"},
+            {"number": 7, "short_name": "J", "long_name": "July"},
+            {"number": 8, "short_name": "A", "long_name": "August"},
+            {"number": 9, "short_name": "S", "long_name": "September"},
+            {"number": 10, "short_name": "O", "long_name": "October"},
+            {"number": 11, "short_name": "N", "long_name": "November"},
+            {"number": 12, "short_name": "D", "long_name": "December"},
         ]
 
         context = {
@@ -105,7 +107,7 @@ def index(request):
             "recommendedtracks": recommendedtracks,
             "vibe_history": vibe_history,
             "iteratorMonth": months,
-            "iteratorDay": range(0,32),
+            "iteratorDay": range(0, 32),
             "currentYear": current_year,
         }
 
@@ -156,7 +158,7 @@ def get_top_artist_and_genres(sp):
             "image_url": artist["images"][0]["url"] if artist["images"] else None,
         }
         user_top_artists.append(artist_info)
-        user_top_genres.update(artist['genres'])
+        user_top_genres.update(artist["genres"])
 
     return user_top_artists, list(user_top_genres)
 
@@ -200,7 +202,9 @@ def calculate_vibe(request):
         user_id = user_info["id"]
         current_time = timezone.now().astimezone(timezone.utc)
         midnight = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-        recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=midnight).first()
+        recent_vibe = Vibe.objects.filter(
+            user_id=user_id, vibe_time__gte=midnight
+        ).first()
         if recent_vibe and recent_vibe.user_audio_vibe:
             vibe_result = recent_vibe.user_audio_vibe
             if recent_vibe.user_lyrics_vibe:
@@ -242,11 +246,15 @@ def calculate_vibe(request):
                 user_lyrics_vibe=lyric_vibe,
                 user_audio_vibe=audio_vibe,
                 recent_track=track_ids,
-                user_acousticness=get_feature_average(audio_features_list, "acousticness"),
-                user_danceability=get_feature_average(audio_features_list, "danceability"),
+                user_acousticness=get_feature_average(
+                    audio_features_list, "acousticness"
+                ),
+                user_danceability=get_feature_average(
+                    audio_features_list, "danceability"
+                ),
                 user_energy=get_feature_average(audio_features_list, "energy"),
                 user_valence=get_feature_average(audio_features_list, "valence"),
-                )    
+            )
             vibe_data.save()
         else:
             vibe_result = "Null"
@@ -390,7 +398,7 @@ def deduce_lyrics(track_names, track_artists, track_ids):
                 checkLength = vibe.split()
                 if len(checkLength) == 1:
                     lyrics_vibes.append(vibe.lower())
-                    
+
                     # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
                 print(f"The vibe for {track} is: {vibe}")
 
@@ -420,12 +428,12 @@ def lyrics_vectorize(lyrics_vibes):
 
 
 def string_to_vector(str):
-    clean = re.sub(r'[\[\]\n\t]', '', str)
+    clean = re.sub(r"[\[\]\n\t]", "", str)
     clean = clean.split()
-    clean = [float(e) for e in clean] 
+    clean = [float(e) for e in clean]
     return clean
 
-    
+
 """
 # On huggingface spaces
 def get_vector(word, model):
@@ -436,6 +444,7 @@ def get_vector(word, model):
         return np.zeros(model.vector_size)
 """
 
+
 def average_vector(words):
     # Compute the average vector for a list of words.
     vectors = []
@@ -445,6 +454,7 @@ def average_vector(words):
         vectors.append(vector)
 
     return np.mean(vectors, axis=0)
+
 
 def find_closest_emotion(final_vibe):
     emotion_words = [
@@ -493,7 +503,7 @@ def find_closest_emotion(final_vibe):
         "detached",
         "melancholic",
     ]
-    
+
     max_similarity = -1
     closest_emotion = None
     for word in emotion_words:
