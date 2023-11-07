@@ -32,6 +32,13 @@ class Vibe(models.Model):
         size=20,
         null=True
         )
+    vibe_time = models.DateTimeField()
+
+
+# storing User top items
+class UserTop(models.Model):
+    user_id = models.CharField(max_length=250)
+    time = models.DateTimeField()
     recommended_tracks = ArrayField(
         models.CharField(max_length=250),
         size=20,
@@ -52,5 +59,3 @@ class Vibe(models.Model):
         size=20,
         null=True
         )
-    vibe_time = models.DateTimeField()
-    

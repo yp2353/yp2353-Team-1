@@ -80,14 +80,14 @@ def deduce_audio_vibe(audio_features_list):
 
     # Define the mood dictionary
     mood_dict = {
-        0: "Happy",
-        1: "Sad",
-        2: "Energetic",
-        3: "Calm",
-        4: "Anxious",
-        5: "Cheerful",
-        6: "Gloomy",
-        7: "Content",
+        0: "happy",
+        1: "sad",
+        2: "energetic",
+        3: "calm",
+        4: "anxious",
+        5: "cheerful",
+        6: "gloomy",
+        7: "content",
     }
 
     # Predict the moods using the model
