@@ -24,11 +24,13 @@ Ensure you have Python and pip installed. The following packages are required:
 - `numpy`
 - `joblib`
 - `pandas`
+- `gradio_client`
+- `rich`
 
 Install the prerequisites using pip:
 
 ```bash
-pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase numpy  joblib pandas
+pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase numpy joblib pandas gradio_client rich
 ```
 Install the Bootstrap-Icons using npm:
 
