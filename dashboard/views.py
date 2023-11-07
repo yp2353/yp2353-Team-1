@@ -26,7 +26,7 @@ from dashboard.models import EmotionVector
 
 MAX_RETRIES = 2
 
-client = Client("https://alfredo273-vibecheck-fasttext.hf.space/--replicas/pxhkx/")
+client = Client("https://alfredo273-vibecheck-fasttext.hf.space/--replicas/zt2rw/")
 
 # Uncomment for manual loading
 # from gensim.models import FastText
@@ -263,7 +263,6 @@ def calculate_vibe(request):
     else:
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
-        return redirect("login:index")
         return redirect("login:index")
 
 
