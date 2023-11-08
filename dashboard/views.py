@@ -26,7 +26,9 @@ from dashboard.models import EmotionVector
 
 MAX_RETRIES = 2
 
-client = Client("https://alfredo273-vibecheck-fasttext.hf.space/--replicas/zt2rw/", serialize=False)
+client = Client(
+    "https://alfredo273-vibecheck-fasttext.hf.space/--replicas/zt2rw/", serialize=False
+)
 
 # Uncomment for manual loading
 # from gensim.models import FastText
@@ -449,14 +451,15 @@ def average_vector(words):
     # Compute the average vector for a list of words.
     vectors = []
     for word in words:
-        try:
-            str_vector = client.predict("get_vector", word, api_name="/predict")
-        except json.JSONDecodeError as e:
-            # Log the error and the input that caused it
-            logging.error(f"JSONDecodeError: {e.msg}")
-            logging.info(f"Input that caused the error: {word}")
-            # Optionally log the raw response if possible
-            # Handle the error, e.g., by returning a default value or re-trying the request
+        str_vector = client.predict("get_vector", word, api_name="/predict")
+        # try:
+        #     str_vector = client.predict("get_vector", word, api_name="/predict")
+        # except json.JSONDecodeError as e:
+        #     # Log the error and the input that caused it
+        #     logging.error(f"JSONDecodeError: {e.msg}")
+        #     logging.info(f"Input that caused the error: {word}")
+        #     # Optionally log the raw response if possible
+        #     # Handle the error, e.g., by returning a default value or re-trying the request
 
         vector = string_to_vector(str_vector)
         vectors.append(vector)
