@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load tz %}
 {% block body_class %}background{% endblock %}
 
 {% block content %}
@@ -11,6 +12,31 @@
                     <div class="vibe-loading-text"><h3>Loading Vibe...</h3></div>
                     <div class="vibe-loaded-text" style="display: none;"><h3>Your vibe is</h3></div>
                 </div>
+                <br>
+                <div class="container border border-white rounded-4 px-4 py-4 justify-content-center align-items-center">
+                    <h3>{{currentYear}} Vibes</h3>
+                    <br>
+                    {% for day in iteratorDay %}
+                      <div class="row">
+                        {% for month in iteratorMonth %}
+                            {% if day == 0 %}
+                                <div class="col text-center"> {{ month.short_name }} </div>
+                            {% elif month.number == 0 and day > 0 %}
+                                <div class="col text-center">{{ day }}</div>
+                            {% else %}
+                                <div class="col vibe-history-table mood-none
+                                    {% for entry in vibe_history %}
+                                        {% if entry.vibe_time|timezone:'UTC'|date:'F' == month.long_name and entry.vibe_time|timezone:'UTC'|date:'j'|add:0 == day and entry.user_audio_vibe %}
+                                            mood-{{ entry.user_audio_vibe }}" data-toggle="tooltip" data-placement="top"
+                                            title="{{ entry.user_audio_vibe }} {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
+                                        {% endif %}
+                                    {% endfor %}">
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                      </div>
+                    {% endfor %}
+                </div>            
             </div>
             <div class="col-md-4 mt-4 mx-auto">
                 <div class="border border-white rounded-4 px-2 py-2">
@@ -101,6 +127,13 @@
                 });
             });
         </script>
+    
+    <!-- For vibe-history tooltip toggle -->
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
+        });
+    </script>
 
 
     <div class="container mt-5">

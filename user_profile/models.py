@@ -29,18 +29,22 @@ class Vibe(models.Model):
     user_energy = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     user_valence = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     recent_track = ArrayField(models.CharField(max_length=250), size=20, null=True)
+    vibe_time = models.DateTimeField()
+
+
+# storing User top items
+class UserTop(models.Model):
+    user_id = models.CharField(max_length=250)
+    time = models.DateTimeField()
     recommended_tracks = ArrayField(
         models.CharField(max_length=250), size=20, null=True
     )
     top_track = ArrayField(models.CharField(max_length=250), size=20, null=True)
     top_artist = ArrayField(models.CharField(max_length=250), size=20, null=True)
     top_genre = ArrayField(models.CharField(max_length=250), size=20, null=True)
-    vibe_time = models.DateTimeField()
 
 
 # User Friend List
-
-
 class UserFriendRelation(models.Model):
     user1_id = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="sender_user"

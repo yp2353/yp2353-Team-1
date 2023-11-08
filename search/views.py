@@ -57,7 +57,7 @@ def user_search(request):
 
             user_info = sp.current_user()
             current_user_id = user_info["id"]
-            
+
             if form.is_valid():
                 query = form.cleaned_data
                 username = query["username"]
@@ -90,10 +90,10 @@ def user_search(request):
         # ERROR MESSAGE HERE?
         return redirect("login:index")
     context = {
-        "results": results, 
+        "results": results,
         "UsersearchForm": form,
         "friends": current_friend_list(current_user_id),
-        }
+    }
     return render(request, "search/search.html", context)
 
 
@@ -125,13 +125,16 @@ def process_friend_request(request, friend_user_id):
 
             elif action == "send":
                 if friend_request.user1_id.user_id != user_id:
+                    print("before", friend_request.user1_id)
                     (
-                        friend_request.user1_id.user_id,
-                        friend_request.user2_id.user_id,
+                        friend_request.user1_id,
+                        friend_request.user2_id,
                     ) = (
-                        friend_request.user2_id.user_id,
-                        friend_request.user1_id.user_id,
+                        friend_request.user2_id,
+                        friend_request.user1_id,
                     )
+                friend_request.status = "pending"
+                print("after", friend_request.user1_id)
 
             # swaping a,b = b,a
             elif action == "accept":
