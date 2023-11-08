@@ -1,6 +1,6 @@
 language: python
 python:
-  - "3.8"  
+  - "3.11"  
 
 cache: pip
 
@@ -17,7 +17,7 @@ script:
   - black .
   - black --check .  
   - flake8 .
-  - coverage run --source=login,static,templates,dashboard,vibecheck,user_profile manage.py test 
+  - coverage run --source=login,static,templates,dashboard,vibecheck,user_profile,search manage.py test 
 
 
 deploy:
