@@ -10,9 +10,26 @@
         {% load static %}
     <style>
         .background {
-            background-color: black;
+            background-color: #121212;
             font-family: 'Inter', sans-serif;
             color: white;
+        }
+
+        /* Set a fixed height for the carousel items on larger screens */
+        #topItemsCarousel .carousel-item {
+            height: 500px; /* Example height, adjust to fit the content */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            #topItemsCarousel .carousel-item {
+                height: auto; /* Height becomes flexible on small screens */
+            }
+        }
+
+        #topItemsCarousel .slide-content {
+            height: 100%;
+            overflow-y: auto; /* Enable scrolling if content is taller than the slide */
         }
 
         /*DASHBOARD PAGE*/

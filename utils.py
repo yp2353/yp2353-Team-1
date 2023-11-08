@@ -1,8 +1,9 @@
 from spotipy.oauth2 import SpotifyOAuth
 import os
 import pandas as pd
-from collections import Counter
-from django.apps import apps
+
+# from collections import Counter
+# from django.apps import apps
 from dotenv import load_dotenv
 
 # from decouple import config
@@ -88,7 +89,7 @@ def deduce_audio_vibe(audio_features_list):
     spotify_data = spotify_data[ordered_features]
 
     # Define the mood dictionary
-    mood_dict = {
+    """ mood_dict = {
         0: "happy",
         1: "sad",
         2: "energetic",
@@ -97,14 +98,15 @@ def deduce_audio_vibe(audio_features_list):
         5: "cheerful",
         6: "gloomy",
         7: "content",
-    }
+    } """
 
     # Predict the moods using the model
-    model = apps.get_app_config("dashboard").model
-    pred = model.predict(spotify_data)
+    # model = apps.get_app_config("dashboard").model
+    # pred = model.predict(spotify_data)
 
     # Find the most common mood prediction
-    most_common_pred = Counter(pred).most_common(1)[0][0]
-    audio_vibe = mood_dict.get(most_common_pred, "Unknown")
+    # most_common_pred = Counter(pred).most_common(1)[0][0]
+    # audio_vibe = mood_dict.get(most_common_pred, "Unknown")
 
-    return audio_vibe
+    # return audio_vibe
+    return "calm"
