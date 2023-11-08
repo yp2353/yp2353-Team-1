@@ -19,6 +19,9 @@ from django.core.asgi import get_asgi_application
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent
 sys.path.append(str(ROOT_DIR / "vibecheck"))
 
+# If DJANGO_SETTINGS_MODULE is unset, default to the local settings
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vibecheck.settings")
+
 
 # This application object is used by any ASGI server configured to use this file.
 django_application = get_asgi_application()
@@ -29,8 +32,6 @@ from chatroom import routing  # noqa isort:skip
 from channels.routing import ProtocolTypeRouter, URLRouter  # noqa isort:skip
 from channels.auth import AuthMiddlewareStack
 
-
-os.getenv('DJANGO_SETTINGS_MODULE')
 
 
 application = ProtocolTypeRouter({
