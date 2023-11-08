@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render, redirect
 import spotipy
 import plotly.graph_objects as go
@@ -26,7 +27,9 @@ from dashboard.models import EmotionVector
 
 MAX_RETRIES = 2
 
-client = Client("https://alfredo273-vibecheck-fasttext.hf.space/--replicas/zt2rw/", serialize=False)
+client = Client(
+    "https://alfredo273-vibecheck-fasttext.hf.space/--replicas/zt2rw/", serialize=False
+)
 
 # Uncomment for manual loading
 # from gensim.models import FastText
