@@ -43,6 +43,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "login",
     # "dashboard",
+    "channels",
     "dashboard.apps.DashboardConfig",
     "user_profile",
     "chatroom",
@@ -53,8 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_extensions",
-    "channels"
+    "django_extensions"
 ]
 
 MIDDLEWARE = [
