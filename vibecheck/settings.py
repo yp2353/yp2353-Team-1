@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
+
+# Load variables from .env
+load_dotenv()
 
 # from supabase import create_client, Client
 # SUPABASE_URL = 'https://rndwvilajbirenkbpccu.supabase.co'
@@ -51,6 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -81,7 +86,16 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = "vibecheck.wsgi.application"
+ASGI_APPLICATION = "vibecheck.routing.application"
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -89,11 +103,11 @@ WSGI_APPLICATION = "vibecheck.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "team1vibecheck",
-        "HOST": "db.rndwvilajbirenkbpccu.supabase.co",
-        "PORT": "5432",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
