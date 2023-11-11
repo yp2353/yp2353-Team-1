@@ -76,7 +76,22 @@
         .mood-cheerful { background-color: #F1C40F !important; }
         .mood-gloomy { background-color: #16A085 !important; }
         .mood-content { background-color: #F39C12 !important; }
-        .mood-none { background-color: black; } 
+        .mood-none { background-color: black; }
+
+        .vibe-history-cell {
+            margin: 2px;
+            width: 20px; /* Adjust as needed */
+            height: 20px; /* Adjust as needed */
+            border-radius: 2px; /* Optional, for rounded corners */
+            display: inline-block; /* Aligns the cells correctly */
+        }
+
+        #vibe-status {
+    transition: transform 0.3s ease-in-out;
+    transform-origin: center center; /* Adjust as needed */
+}
+
+
         /*DASHBOARD PAGE END*/
 
         .navbar {
@@ -115,7 +130,7 @@
                       <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="#">Friends</a>
+                      <a class="nav-link" href="{% url 'vibematch:vibe_match'%}">VibeMatch</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'chatroom:open_chatroom'%}">Chatrooms</a>

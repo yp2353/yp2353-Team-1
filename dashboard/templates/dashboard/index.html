@@ -7,39 +7,53 @@
 {% block content %}
     <div class="container mt-5">
         <div class="row">
-            <div class="col-md-8 mt-4 mx-auto">
+            <div class="col-12 mt-4 mx-auto">
                 <div id="vibe-status" data-calculate-vibe-url="{% url 'dashboard:calculate_vibe' %}" class="px-2 py-2 d-flex justify-content-center align-items-center vibe-background">
                     <div class="vibe-loading-text"><h3>Loading Vibe...</h3></div>
                     <div class="vibe-loaded-text" style="display: none;"><h3>Your vibe is</h3></div>
                 </div>
                 <br>
-                <div class="container border border-white rounded-4 px-4 py-4 justify-content-center align-items-center">
-                    <h3>{{currentYear}} Vibes</h3>
-                    <br>
-                    {% for day in iteratorDay %}
-                      <div class="row">
-                        {% for month in iteratorMonth %}
-                            {% if day == 0 %}
-                                <div class="col text-center"> {{ month.short_name }} </div>
-                            {% elif month.number == 0 and day > 0 %}
-                                <div class="col text-center">{{ day }}</div>
-                            {% else %}
-                                <div class="col vibe-history-table mood-none
-                                    {% for entry in vibe_history %}
-                                        {% if entry.vibe_time|timezone:'UTC'|date:'F' == month.long_name and entry.vibe_time|timezone:'UTC'|date:'j'|add:0 == day and entry.user_audio_vibe %}
-                                            mood-{{ entry.user_audio_vibe }}" data-toggle="tooltip" data-placement="top"
-                                            title="{{ entry.user_audio_vibe }} {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
-                                        {% endif %}
-                                    {% endfor %}">
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                      </div>
-                    {% endfor %}
-                </div>
+
             </div>
-            <div class="col-md-4 mt-4 mx-auto">
-           <div id="topItemsCarousel" class="carousel slide mt-4" data-bs-ride="carousel" data-bs-touch="true">
+        <div class="container mt-5">
+
+        <div class="row">
+        <div class="col-8 mt-4">
+            <h2>Your vibe decomposed...</h2>
+            <br>
+                    <div class="row">
+            <div class="col-5.5 mt-4">                   <div class="container" style="background:black; height:300px;">Component 1</div>
+</div>
+            <div class="col-5.5 mt-4"><div class="container" style="background:black;height:300px;">Component 2</div></div>
+                    </div>
+
+        </div>
+            <div class="col-md-4 mt-4 d-flex flex-column justify-content-center align-items-center">
+              <div class="container" style="max-width: 800px; margin: auto; padding: 20px;  border-radius: 16px;">
+        <h3>{{currentYear}} Vibes</h3>
+        <br>
+        {% for day in iteratorDay %}
+            <div class="row">
+                {% for month in iteratorMonth %}
+                    {% if day == 0 %}
+                        <div class="vibe-history-cell text-center"> {{ month.short_name }} </div>
+                    {% elif month.number == 0 and day > 0 %}
+                        <div class="vibe-history-cell text-center">{{ day }}</div>
+                    {% else %}
+                        <div class="vibe-history-cell mood-none
+                            {% for entry in vibe_history %}
+                                {% if entry.vibe_time|timezone:'UTC'|date:'F' == month.long_name and entry.vibe_time|timezone:'UTC'|date:'j'|add:0 == day and entry.user_audio_vibe %}
+                                    mood-{{ entry.user_audio_vibe }}" data-toggle="tooltip" data-placement="top"
+                                    title="{{ entry.user_audio_vibe }} {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
+                                {% endif %}
+                            {% endfor %}">
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+           <div id="topItemsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
     <!-- Indicators -->
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -53,7 +67,7 @@
 
         <!-- Top Tracks Slide -->
         <div class="carousel-item active">
-            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0;">
+            <div class="px-2 py-2 align-content-center" style=" border-radius: 0; background:black;">
                 <h3>Top Tracks</h3>
                 {% for track in top_tracks|slice:":6" %}
                 <div class="row mb-2">
@@ -71,7 +85,7 @@
 
         <!-- Top Artists Slide -->
         <div class="carousel-item">
-            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0;">
+            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background:black;">
                 <h3>Top Artists</h3>
                 {% for artist in top_artists|slice:":6" %}
                 <div class="row mb-2">
@@ -88,7 +102,7 @@
 
         <!-- Top Genres Slide -->
         <div class="carousel-item">
-            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0;">
+            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background: black;">
                 <h3>Top Genres</h3>
                 {% for genre in top_genres|slice:":5" %}
                 <div class="row mb-2">
@@ -100,7 +114,7 @@
 
         <!-- Track Recommendations Slide -->
         <div class="carousel-item">
-            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0;">
+            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background:black;">
                 <h3>Recommended Tracks</h3>
                  {% for track in recommendedtracks %}
                         <div class="row mb-2">
@@ -118,10 +132,12 @@
 
     </div>
 </div>
-
-
+            </div>
 
 </div>
+        </div>
+
+
 
 
 
@@ -130,33 +146,48 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(document).ready(function() {
-                var calculateVibeUrl = $('#vibe-status').data('calculate-vibe-url');
-                $('#vibe-status').addClass('vibe-loading');
-                $('#vibe-status .vibe-loading-text').show();
-                $('#vibe-status .vibe-loaded-text').hide();
-                $.ajax({
-                    url: calculateVibeUrl,
-                    type: 'GET',
-                    success: function(data) {
-                        if (data.result === "Null") {
-                            $('#vibe-status .vibe-loaded-text').text('No songs to analyze.').show();
-                            $('#vibe-status').removeClass('vibe-loading');
-                        } else {
-                            var dataAsH1 = $('<h1>').text(data.result);
-                            $('#vibe-status .vibe-loaded-text').append(dataAsH1).show();
-                            $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
-                        }
-                        $('#vibe-status .vibe-loading-text').hide();
-                        alert('Vibe loaded');
-                    },
-                    error: function() {
-                        // If ajax function has error..
-                        $('#vibe-status .vibe-loaded-text').text('Error, please try again later.').show();
-                        $('#vibe-status').removeClass('vibe-loading');
-                        $('#vibe-status .vibe-loading-text').hide();
-                    }
-                });
-            });
+    var calculateVibeUrl = $('#vibe-status').data('calculate-vibe-url');
+    $('#vibe-status').addClass('vibe-loading');
+    $('#vibe-status .vibe-loading-text').show();
+    $('#vibe-status .vibe-loaded-text').hide();
+
+    $.ajax({
+        url: calculateVibeUrl,
+        type: 'GET',
+        success: function(data) {
+            if (data.result === "Null") {
+                $('#vibe-status .vibe-loaded-text').text('No songs to analyze.').show();
+            } else {
+                var dataAsH1 = $('<h1>').text(data.result);
+                $('#vibe-status .vibe-loaded-text').append(dataAsH1).show();
+            }
+            $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
+            $('#vibe-status .vibe-loading-text').hide();
+            alert('Vibe loaded');
+
+            // Trigger the zoom effect here
+            triggerZoomEffect();
+        },
+        error: function() {
+            $('#vibe-status .vibe-loaded-text').text('Error, please try again later.').show();
+            $('#vibe-status').removeClass('vibe-loading');
+            $('#vibe-status .vibe-loading-text').hide();
+        }
+    });
+
+    function triggerZoomEffect() {
+        var scale = 1.5; // Set your desired maximum scale
+        $('#vibe-status').css({
+            'transform': 'scale(' + scale + ')',
+            'transition': 'transform 1s ease-in-out'
+        });
+
+        // Optionally, reset to normal size after some time
+        setTimeout(function() {
+            $('#vibe-status').css('transform', 'scale(1)');
+        }, 2000); // Adjust time as needed
+    }
+});
         </script>
     
     <!-- For vibe-history tooltip toggle -->

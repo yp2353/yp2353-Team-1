@@ -16,10 +16,8 @@ from user_profile.views import check_and_store_profile
 
 # from dotenv import load_dotenv
 import os
-
 from utils import get_spotify_token, deduce_audio_vibe
 from django.http import JsonResponse
-
 from user_profile.models import Vibe, UserTop
 from django.utils import timezone
 from dashboard.models import EmotionVector
@@ -27,12 +25,8 @@ from dashboard.models import EmotionVector
 MAX_RETRIES = 2
 
 client = Client(
-    "https://alfredo273-vibecheck-fasttext.hf.space/--replicas/zt2rw/", serialize=False
+    "https://alfredo273-vibecheck-fasttext.hf.space/--replicas/2gfl7/", serialize=False
 )
-
-# Uncomment for manual loading
-# from gensim.models import FastText
-# model = FastText.load_fasttext_format("dashboard/cc.en.32.bin")
 
 
 def index(request):
@@ -452,15 +446,6 @@ def average_vector(words):
     vectors = []
     for word in words:
         str_vector = client.predict("get_vector", word, api_name="/predict")
-        # try:
-        #     str_vector = client.predict("get_vector", word, api_name="/predict")
-        # except json.JSONDecodeError as e:
-        #     # Log the error and the input that caused it
-        #     logging.error(f"JSONDecodeError: {e.msg}")
-        #     logging.info(f"Input that caused the error: {word}")
-        #     # Optionally log the raw response if possible
-        #     # Handle the error, e.g., by returning a default value or re-trying the request
-
         vector = string_to_vector(str_vector)
         vectors.append(vector)
 
