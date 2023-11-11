@@ -24,7 +24,9 @@ from dashboard.models import EmotionVector
 
 MAX_RETRIES = 2
 
-client = Client("https://alfredo273-vibecheck-fasttext.hf.space/--replicas/zxpm7/", serialize=False)
+client = Client(
+    "https://alfredo273-vibecheck-fasttext.hf.space/--replicas/2gfl7/", serialize=False
+)
 
 
 def index(request):
