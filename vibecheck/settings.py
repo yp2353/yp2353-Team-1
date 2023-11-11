@@ -35,10 +35,7 @@ SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "vcheck-env.eba-psppdhep.us-west-2.elasticbeanstalk.com/"
-    "vcheck-env-1014.eba-megnbk6g.us-west-2.elasticbeanstalk.com",
-    "vcheck-env.eba-psppdhep.us-west-2.elasticbeanstalk.com ",
-    "127.0.0.1",
+    "*",
 ]
 
 
@@ -58,7 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    "channels"
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -89,13 +86,13 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = "vibecheck.wsgi.application"
-ASGI_APPLICATION = 'vibecheck.routing.application'
+ASGI_APPLICATION = "vibecheck.routing.application"
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
