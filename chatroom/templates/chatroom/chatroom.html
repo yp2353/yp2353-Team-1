@@ -23,11 +23,14 @@
     <br>
     <div class="container">
         <div class="row">
+            
             <div id = "room-list" class="col-md-3">
                 <h2>Room List</h2>
+                <!-- {{ SearchRoomFrom.as_p }} -->
                 <ul>
-                    <li >Global Chat</li>
-                    <li>Happy Mood</li>
+                    {% for room in rooms_list %}
+                    <li class="room-list-item" data-room-id="{{ room.roomID }}">{{ room.room_name }}</li>   
+                    {% endfor %}
                 </ul>
                 
             </div>
@@ -35,7 +38,7 @@
                 <div class="row justify-content-center">
                     <div class="col-md">
                         <div class="card">
-                            <div class="card-header" id="room-name">Global Chat Room</div>
+                            <div class="card-header" id="room-name"></div>
                             <div class="card-body" id="chat-messages">
                                 <!-- Messages will be displayed here -->
                             </div>

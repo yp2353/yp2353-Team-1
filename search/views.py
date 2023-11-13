@@ -20,7 +20,7 @@ def open_search_page(request, username=""):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
-        print(type(user_id))
+
         request_list = []
         received_request = UserFriendRelation.objects.filter(
             (Q(user2_id=user_id)) & Q(status="pending")

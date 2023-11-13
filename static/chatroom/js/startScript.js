@@ -9,20 +9,33 @@ const chatSocket = new WebSocket(
 
 
 chatSocket.onmessage = function(e) {
-    console.log("top")
     const data = JSON.parse(e.data);
-    document.querySelector('#chat-messages').innerHTML += (
-        '<div class="message ' + 
-        (data.sender === 'me' ? 'outgoing' : 'incoming') + '">' +
-        data.message + '</div>'
-        
-    );
+    
+    console.log(data.type)
     console.log(data.message)
+
+    
+    if (data.type === 'chat_message') {
+        // Handle chat messages
+        const sender = data.sender || 'Anonymous';  // Default to 'Anonymous' if sender is not provided
+        const message = data.message;
+        
+        // Append the message to the chat interface
+        document.querySelector('#chat-messages').innerHTML += (
+            '<div class="message incoming">' +
+            '<strong>' + sender + ':</strong> ' + message + '</div>'
+        );
+    }
+    
+};
+
+chatSocket.onerror = function (error) {
+    console.error('WebSocket Error: ', error);
 };
 
 chatSocket.onclose = function(e) {
-    console.log('Chat socket closed unexpectedly');
+    console.log('Chat socket closed unexpectedly', e.log);
     // stoping roomlist observer
-    observer.disconnect();  
+    // observer.disconnect();  
 };
 

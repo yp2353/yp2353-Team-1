@@ -1,8 +1,5 @@
 from django import forms
-from .models import ChatMessage
 
 
-class UserMessageForm(forms.ModelForm):
-    class Meta:
-        model = ChatMessage
-        fields = ["user", "message"]
+class SearchRoomFrom(forms.Form):
+    search_query = forms.CharField(label="Search Room", max_length=100)
