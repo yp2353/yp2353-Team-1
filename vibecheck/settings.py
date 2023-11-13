@@ -17,9 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # from supabase import create_client, Client
-# SUPABASE_URL = 'https://rndwvilajbirenkbpccu.supabase.co'
-# SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZHd2aWxhamJpcmVua2JwY2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUzNDg3NjksImV4cCI6MjAxMDkyNDc2OX0.pDRxht8VqaEd3B9Pwrl3QVjPT8HgRekkeV533qgXY3s'
-# supabase: Client = create_client(SUPABASE_URL, SUPABASE_API_KEY)
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -56,6 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "channels",
+    "vibematch",
 ]
 
 MIDDLEWARE = [
