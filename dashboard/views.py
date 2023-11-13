@@ -24,9 +24,7 @@ from dashboard.models import EmotionVector
 
 MAX_RETRIES = 2
 
-client = Client(
-    "https://alfredo273-vibecheck-fasttext.hf.space/--replicas/2gfl7/", serialize=False
-)
+client = Client("https://boyanxu-vibecheck-fasttext.hf.space/", serialize=False)
 
 
 def index(request):
@@ -189,6 +187,9 @@ def get_recommendations(sp, top_tracks):
 
 def calculate_vibe(request):
     token_info = get_spotify_token(request)
+
+    # Initialize description to a default value
+    description = "No description available"
 
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
@@ -556,6 +557,6 @@ def vibe_description(final_vibe):
         request_timeout=50,
     )
 
-    response = response.choices[0].message["content"].strip()
+    response = response.choices[0]["message"]["content"].strip()
 
     return response
