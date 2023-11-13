@@ -33,10 +33,7 @@ SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "vcheck-env.eba-psppdhep.us-west-2.elasticbeanstalk.com/"
-    "vcheck-env-1014.eba-megnbk6g.us-west-2.elasticbeanstalk.com",
-    "vcheck-env.eba-psppdhep.us-west-2.elasticbeanstalk.com ",
-    "127.0.0.1",
+    "*",
 ]
 
 
