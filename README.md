@@ -39,6 +39,12 @@ Install the Bootstrap-Icons using npm:
 npm i bootstrap-icons
 ```
 
+Initiate the Redis server:
+
+```bash
+redis-server --port 6579
+```
+
 ### Configuring API Credentials
 
 #### Spotify API
