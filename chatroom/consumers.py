@@ -24,7 +24,9 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
 
         # Use async for directly on the coroutine result
         async for message in messages:
-            sender_username = await database_sync_to_async(lambda: message.sender.username)()
+            sender_username = await database_sync_to_async(
+                lambda: message.sender.username
+            )()
             await self.send(
                 text_data=json.dumps(
                     {

@@ -22,6 +22,7 @@ def open_chatroom(request):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
+        username = user_info["display_name"]
 
         user_exists = User.objects.filter(user_id=user_id).first()
         rooms_list = RoomModel.objects.filter(room_participants=user_id)
@@ -35,6 +36,7 @@ def open_chatroom(request):
         print(rooms_list)
 
         context = {
+            "username": username,
             "user": user_exists,
             "rooms_list": rooms_list,
             "SearchRoomFrom": form,
