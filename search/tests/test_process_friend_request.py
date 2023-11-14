@@ -17,7 +17,7 @@ class ProcessFriendRequestTest(TestCase):
         self.friend_user_id = "l584nmd717fk2meevv14ng8og"  # Mock friend user ID
 
         # Mocking Spotify API response
-        self.spotify_user_info = {"id": self.user_id}
+        self.spotify_user_info = {"id": self.user_id, "display_name": "mock_name"}
 
         # Mocking the database models
         self.mock_user = MagicMock()
@@ -43,9 +43,12 @@ class ProcessFriendRequestTest(TestCase):
             "search.views.spotipy.Spotify"
         ) as mock_spotify, patch("user_profile.models.User", new=self.mock_user), patch(
             "user_profile.models.UserFriendRelation", new=self.mock_user_friend_relation
-        ):
+        ), patch(
+            "spotipy.Spotify.current_user"
+        ) as mock_current_user:
             # Setup mock for Spotify token
             mock_get_spotify_token.return_value = {"access_token": "mock_token"}
+            mock_current_user.return_value = self.spotify_user_info
 
             # Setup mock for Spotify API response
             mock_spotify_instance = mock_spotify.return_value
