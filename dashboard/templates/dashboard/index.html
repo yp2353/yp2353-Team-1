@@ -15,141 +15,156 @@
         </div>
         <br>
 
-            </div>
-        <div class="container mt-5">
+    </div>
+    <div class="container mt-5">
 
         <div class="row">
-        <div class="col-8 mt-4">
-            <h2>Your vibe decomposed...</h2>
-            <br>
-                    <div class="row">
-            <div class="col-5.5 mt-4">                   <div class="container" style="background:black; height:300px;">Component 1</div>
-</div>
-            <div class="col-5.5 mt-4"><div class="container" style="background:black;height:300px;">Component 2</div></div>
+            <div class="col-8 mt-4">
+                <h2>Your vibe decomposed...</h2>
+                <br>
+                <div class="row">
+                    <div class="col-5.5 mt-4">
+                        <div class="container custom-container">
+<div class="reveal-prompt" style="font-family: Inter"><h2>Your energy.</h2></div>
+                            <div class="description" style="font-family: Inter">
+                            </div>
+                        </div>
                     </div>
+                    <div class="col-5.5 mt-4">
+                        <div class="container custom-container" style="background:black;height:300px;">Component 2</div>
+                    </div>
+                </div>
 
-        </div>
+            </div>
             <div class="col-md-4 mt-4 d-flex flex-column justify-content-center align-items-center">
-              <div class="container" style="max-width: 800px; margin: auto; padding: 20px;  border-radius: 16px;">
-        <h3>{{currentYear}} Vibes</h3>
-        <br>
-        {% for day in iteratorDay %}
-            <div class="row">
-                {% for month in iteratorMonth %}
-                    {% if day == 0 %}
-                        <div class="vibe-history-cell text-center"> {{ month.short_name }} </div>
-                    {% elif month.number == 0 and day > 0 %}
-                        <div class="vibe-history-cell text-center">{{ day }}</div>
-                    {% else %}
-                        <div class="vibe-history-cell mood-none
+                <div class="container" style="max-width: 800px; margin: auto; padding: 20px;  border-radius: 16px;">
+                    <h3>{{ currentYear }} Vibes</h3>
+                    <br>
+                    {% for day in iteratorDay %}
+                        <div class="row">
+                            {% for month in iteratorMonth %}
+                                {% if day == 0 %}
+                                    <div class="vibe-history-cell text-center"> {{ month.short_name }} </div>
+                                {% elif month.number == 0 and day > 0 %}
+                                    <div class="vibe-history-cell text-center">{{ day }}</div>
+                                {% else %}
+                                    <div class="vibe-history-cell mood-none
                             {% for entry in vibe_history %}
                                 {% if entry.vibe_time|timezone:'UTC'|date:'F' == month.long_name and entry.vibe_time|timezone:'UTC'|date:'j'|add:0 == day and entry.user_audio_vibe %}
                                     mood-{{ entry.user_audio_vibe }}" data-toggle="tooltip" data-placement="top"
-                                    title="{{ entry.user_audio_vibe }} {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
+                                        title="{{ entry.user_audio_vibe }}
+                                        {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
                                 {% endif %}
                             {% endfor %}">
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endfor %}
-    </div>
-           <div id="topItemsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
-    <!-- Indicators -->
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
-    </div>
-
-    <!-- Wrapper for slides -->
-    <div class="carousel-inner">
-
-        <!-- Top Tracks Slide -->
-        <div class="carousel-item active">
-            <div class="px-2 py-2 align-content-center" style=" border-radius: 0; background:black;">
-                <h3>Top Tracks</h3>
-                {% for track in top_tracks|slice:":6" %}
-                <div class="row mb-2">
-                    <div class="col-md-2 mb-2 mb-md-0">
-                        <img src="{{ track.small_album_cover }}" alt="Album Thumbnail" class="img-fluid">
-                    </div>
-                    <div class="col-md-10">
-                        <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
-                        <p>{{ track.artists }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Top Artists Slide -->
-        <div class="carousel-item">
-            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background:black;">
-                <h3>Top Artists</h3>
-                {% for artist in top_artists|slice:":6" %}
-                <div class="row mb-2">
-                    <div class="col-md-2 mb-2 mb-md-0">
-                        <img src="{{ artist.image_url }}" alt="Artist Thumbnail" class="img-fluid">
-                    </div>
-                    <div class="col-md-10">
-                        <p>{{ artist.name }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Top Genres Slide -->
-        <div class="carousel-item">
-            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background: black;">
-                <h3>Top Genres</h3>
-                {% for genre in top_genres|slice:":5" %}
-                <div class="row mb-2">
-                    <p>{{ genre }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Track Recommendations Slide -->
-        <div class="carousel-item">
-            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background:black;">
-                <h3>Recommended Tracks</h3>
-                 {% for track in recommendedtracks %}
-                        <div class="row mb-2">
-                            <div class="col-md-2 mb-2 mb-md-0">
-                                <img src="{{ track.small_album_cover }}" alt="Album Thumbnail" class="img-fluid">
-                            </div>
-                            <div class="col-md-10">
-                                <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
-                                <p>{{ track.artists }}</p>
-                            </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     {% endfor %}
-            </div>
-        </div>
+                </div>
+                <div id="topItemsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel"
+                     data-bs-touch="true">
+                    <!-- Indicators -->
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="0" class="active"
+                                aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="1"
+                                aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="2"
+                                aria-label="Slide 3"></button>
+                        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="3"
+                                aria-label="Slide 4"></button>
+                    </div>
 
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
+
+                        <!-- Top Tracks Slide -->
+                        <div class="carousel-item active">
+                            <div class="px-2 py-2 align-content-center" style=" border-radius: 0; background:black;">
+                                <h3>Top Tracks</h3>
+                                {% for track in top_tracks|slice:":6" %}
+                                    <div class="row mb-2">
+                                        <div class="col-md-2 mb-2 mb-md-0">
+                                            <img src="{{ track.small_album_cover }}" alt="Album Thumbnail"
+                                                 class="img-fluid">
+                                        </div>
+                                        <div class="col-md-10">
+                                            <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
+                                            <p>{{ track.artists }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Top Artists Slide -->
+                        <div class="carousel-item">
+                            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background:black;">
+                                <h3>Top Artists</h3>
+                                {% for artist in top_artists|slice:":6" %}
+                                    <div class="row mb-2">
+                                        <div class="col-md-2 mb-2 mb-md-0">
+                                            <img src="{{ artist.image_url }}" alt="Artist Thumbnail" class="img-fluid">
+                                        </div>
+                                        <div class="col-md-10">
+                                            <p>{{ artist.name }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Top Genres Slide -->
+                        <div class="carousel-item">
+                            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background: black;">
+                                <h3>Top Genres</h3>
+                                {% for genre in top_genres|slice:":5" %}
+                                    <div class="row mb-2">
+                                        <p>{{ genre }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Track Recommendations Slide -->
+                        <div class="carousel-item">
+                            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background:black;">
+                                <h3>Recommended Tracks</h3>
+                                {% for track in recommendedtracks %}
+                                    <div class="row mb-2">
+                                        <div class="col-md-2 mb-2 mb-md-0">
+                                            <img src="{{ track.small_album_cover }}" alt="Album Thumbnail"
+                                                 class="img-fluid">
+                                        </div>
+                                        <div class="col-md-10">
+                                            <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
+                                            <p>{{ track.artists }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-</div>
-            </div>
-
-</div>
-        </div>
 
 
 
 
 
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
             var user_id = "{{ user_id }}";
             var midnight = "{{ midnight }}";
-            var vibe_or_not = "{{ vibe_or_not }}"; 
+            var vibe_or_not = "{{ vibe_or_not }}";
 
             $('#vibe-status').addClass('vibe-loading');
             $('#vibe-status .vibe-loading-text').show();
@@ -181,7 +196,7 @@
                                     // Trigger the zoom effect here
                                     triggerZoomEffect();
                                 }
-                                
+
                             } else if (data.status === 'PENDING') {
                                 // Task is still in progress, continue polling
                                 setTimeout(pollVibeStatus, 5000);  // Poll every 5 seconds
@@ -212,87 +227,78 @@
                 // Start polling when the document is ready
                 pollVibeStatus();
             }
-            $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
-            $('#vibe-status .vibe-loading-text').hide();
-            alert('Vibe loaded');
-
-            // Trigger the zoom effect here
-            triggerZoomEffect();
-        },
-        error: function() {
-            $('#vibe-status .vibe-loaded-text').text('Error, please try again later.').show();
-            $('#vibe-status').removeClass('vibe-loading');
-            $('#vibe-status .vibe-loading-text').hide();
-        }
-    });
-
-    function triggerZoomEffect() {
-        var scale = 1.5; // Set your desired maximum scale
-        $('#vibe-status').css({
-            'transform': 'scale(' + scale + ')',
-            'transition': 'transform 1s ease-in-out'
         });
+    </script>
 
-        // Optionally, reset to normal size after some time
-        setTimeout(function() {
-            $('#vibe-status').css('transform', 'scale(1)');
-        }, 2000); // Adjust time as needed
-    }
-});
-        </script>
-    
     <!-- For vibe-history tooltip toggle -->
     <script>
-        $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip(); 
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
 
 
     <div class="container mt-5">
-       <div class="container text-center">
+        <div class="container text-center">
             <div class="row">
-                    <!-- Container for the Hour of Day Plot -->
+                <!-- Container for the Hour of Day Plot -->
                 <div id="hourPlot" class="col"></div>
 
                 <!-- Container for the Day of Week Plot -->
                 <div id="dayPlot" class="col"></div>
             </div>
-       </div>
+        </div>
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
+            document.addEventListener("DOMContentLoaded", function () {
                 fetch('{% static "login/day_data.json" %}')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const dayData = JSON.parse(data);
-                Plotly.newPlot('dayPlot', dayData.data, dayData.layout);
-            })
-            .catch(error => {
-                console.log('There was a problem with the fetch operation:', error.message);
-            });
-            // Your fetch and plot code here
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const dayData = JSON.parse(data);
+                        Plotly.newPlot('dayPlot', dayData.data, dayData.layout);
+                    })
+                    .catch(error => {
+                        console.log('There was a problem with the fetch operation:', error.message);
+                    });
+                // Your fetch and plot code here
 
                 fetch('{% static "login/hour_data.json" %}')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const hourData = JSON.parse(data);
-                Plotly.newPlot('hourPlot', hourData.data, hourData.layout);
-            })
-            .catch(error => {
-                console.log('There was a problem with the fetch operation:', error.message);
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const hourData = JSON.parse(data);
+                        Plotly.newPlot('hourPlot', hourData.data, hourData.layout);
+                    })
+                    .catch(error => {
+                        console.log('There was a problem with the fetch operation:', error.message);
+                    });
             });
-        });
         </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var container = document.querySelector('.custom-container');
+    if (container) {
+        // Assuming there's an event or function that triggers the generation of <h1> and collapsing
+        // Replace 'yourTriggerFunction' with the actual event/function
+        yourTriggerFunction(function() {
+            var prompt = container.querySelector('.reveal-prompt');
+            if (prompt) {
+                // Decide when to hide or show the prompt based on your logic
+                // For example:
+                prompt.style.opacity = '1'; // Show the prompt
+            }
+        });
+    }
+});
+</script>
     </div>
 
 
