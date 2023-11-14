@@ -91,6 +91,76 @@
     transform-origin: center center; /* Adjust as needed */
 }
 
+        .custom-container {
+    border-radius: 15px;
+    padding: 40px;
+    transition: max-height 0.8s ease-in-out, padding 0.5s ease;
+    margin: 20px auto;
+    overflow: hidden;
+    max-height: 150px; /* Adjusted initial max-height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+            background: linear-gradient(145deg, #1C1C1E, #2D2E30); /* Updated with gradient */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.custom-container:hover {
+    max-height: 1000px; /* Sufficiently large to accommodate larger text */
+    padding: 60px; /* Increased padding on hover for more whitespace */
+}
+
+.reveal-prompt {
+    font-size: 22px; /* Adjusted for balance */
+    color: floralwhite; /* Subtle interactive color */
+    text-align: center;
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.5s ease;
+    margin-bottom: 20px; /* Space between prompt and description */
+    cursor: pointer; /* Interactive cursor */
+        transition: opacity 0.3s ease, transform 0.5s ease;
+
+
+}
+
+.reveal-prompt.visible {
+    opacity: 1;
+}
+
+.reveal-prompt.hidden {
+    opacity: 0;
+}
+
+
+
+.description {
+    font-size: 16px; /* Ideal for readability */
+    color: #E5E5EA; /* Contrast color for readability */
+    opacity: 0;
+    transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s;
+    text-align: justify; /* Improved readability for longer text */
+    line-height: 1.6;
+    margin-top: auto; /* Aligns text at the bottom of the container */
+        transform: translateY(-10px); /* Initial subtle upward transformation */
+
+}
+
+.custom-container:hover .description {
+    opacity: 1;
+}
+
+.custom-container:hover .description {
+    transform: translateY(0); /* Reset to original position on hover */
+}
+
+@media (max-width: 768px) {
+    .custom-container {
+        /* Adjustments for mobile devices */
+    }
+}
+
+
 
         /*DASHBOARD PAGE END*/
 
@@ -110,8 +180,9 @@
         }
 
         .navbar-toggler:focus, .navbar-toggler:active {
-            box-shadow: none; 
+            box-shadow: none;
         }
+
 
     </style>
     
