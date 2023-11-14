@@ -27,6 +27,8 @@ sp_oauth = SpotifyOAuth(
     CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SCOPE, show_dialog=True
 )
 
+vibe_calc_threads = {}
+
 
 def get_spotify_token(request):
     token_info = request.session.get("token_info", None)

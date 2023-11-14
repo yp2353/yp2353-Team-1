@@ -18,7 +18,7 @@
         <div class="user-details container">
             <p>Username: {{ user.username }}</p>
             <p>Total Followers: {{ user.total_followers}}</p>
-            <p>Current Vibe: {{ vibe.user_audio_vibe }} {{ vibe.user_lyrics_vibe }}</p>
+            <p>Current Vibe: {{ vibe.user_audio_vibe }} {% if vibe.user_lyrics_vibe %}{{ vibe.user_lyrics_vibe }}{% endif %}</p>
             
             {% if user.user_country %}
             <p>Country: {{ user.user_country }}</p>    
