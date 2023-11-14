@@ -20,6 +20,7 @@ def open_search_page(request, username=""):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
+        username = user_info["display_name"]
 
         request_list = []
         received_request = UserFriendRelation.objects.filter(
@@ -36,6 +37,7 @@ def open_search_page(request, username=""):
             request_list.append(sender_id)
 
         context = {
+            "username": username,
             "UsersearchForm": form,
             "request_list": request_list,
             "friends": current_friend_list(user_id),
@@ -106,6 +108,7 @@ def process_friend_request(request, friend_user_id):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
+        
 
         try:
             friend_request = UserFriendRelation.objects.filter(
