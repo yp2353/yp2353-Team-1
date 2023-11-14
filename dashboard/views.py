@@ -14,6 +14,7 @@ from utils import get_spotify_token, vibe_calc_threads
 from django.http import JsonResponse
 from user_profile.models import Vibe, UserTop
 from django.utils import timezone
+
 from .vibe_calc import calculate_vibe_async
 
 
