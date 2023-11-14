@@ -13,6 +13,11 @@ from pathlib import Path
 
 from django.core.asgi import get_asgi_application
 
+from chatroom import routing  # noqa isort:skip
+
+from channels.routing import ProtocolTypeRouter, URLRouter  # noqa isort:skip
+from channels.auth import AuthMiddlewareStack
+
 # This allows easy placement of apps within the interior
 # conversa_dj directory.
 
@@ -27,18 +32,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vibecheck.settings")
 django_application = get_asgi_application()
 
 # Import websocket application here, so apps from django_application are loaded first
-from chatroom import routing  # noqa isort:skip
 
-from channels.routing import ProtocolTypeRouter, URLRouter  # noqa isort:skip
-from channels.auth import AuthMiddlewareStack
-
-
-
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            routing.websocket_urlpatterns
-        )
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns)),
+    }
+)

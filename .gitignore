@@ -1,6 +1,6 @@
 # ipynb and csv
 *.ipynb
-*.csv
+eight_moods.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

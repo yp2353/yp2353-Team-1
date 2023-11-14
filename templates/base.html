@@ -10,9 +10,26 @@
         {% load static %}
     <style>
         .background {
-            background-color: black;
+            background-color: #121212;
             font-family: 'Inter', sans-serif;
             color: white;
+        }
+
+        /* Set a fixed height for the carousel items on larger screens */
+        #topItemsCarousel .carousel-item {
+            height: 500px; /* Example height, adjust to fit the content */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            #topItemsCarousel .carousel-item {
+                height: auto; /* Height becomes flexible on small screens */
+            }
+        }
+
+        #topItemsCarousel .slide-content {
+            height: 100%;
+            overflow-y: auto; /* Enable scrolling if content is taller than the slide */
         }
 
         /*DASHBOARD PAGE*/
@@ -59,7 +76,92 @@
         .mood-cheerful { background-color: #F1C40F !important; }
         .mood-gloomy { background-color: #16A085 !important; }
         .mood-content { background-color: #F39C12 !important; }
-        .mood-none { background-color: black; } 
+        .mood-none { background-color: black; }
+
+        .vibe-history-cell {
+            margin: 2px;
+            width: 20px; /* Adjust as needed */
+            height: 20px; /* Adjust as needed */
+            border-radius: 2px; /* Optional, for rounded corners */
+            display: inline-block; /* Aligns the cells correctly */
+        }
+
+        #vibe-status {
+    transition: transform 0.3s ease-in-out;
+    transform-origin: center center; /* Adjust as needed */
+}
+
+        .custom-container {
+    border-radius: 15px;
+    padding: 40px;
+    transition: max-height 0.8s ease-in-out, padding 0.5s ease;
+    margin: 20px auto;
+    overflow: hidden;
+    max-height: 150px; /* Adjusted initial max-height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+            background: linear-gradient(145deg, #1C1C1E, #2D2E30); /* Updated with gradient */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.custom-container:hover {
+    max-height: 1000px; /* Sufficiently large to accommodate larger text */
+    padding: 60px; /* Increased padding on hover for more whitespace */
+}
+
+.reveal-prompt {
+    font-size: 22px; /* Adjusted for balance */
+    color: floralwhite; /* Subtle interactive color */
+    text-align: center;
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.5s ease;
+    margin-bottom: 20px; /* Space between prompt and description */
+    cursor: pointer; /* Interactive cursor */
+        transition: opacity 0.3s ease, transform 0.5s ease;
+
+
+}
+
+.reveal-prompt.visible {
+    opacity: 1;
+}
+
+.reveal-prompt.hidden {
+    opacity: 0;
+}
+
+
+
+.description {
+    font-size: 16px; /* Ideal for readability */
+    color: #E5E5EA; /* Contrast color for readability */
+    opacity: 0;
+    transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s;
+    text-align: justify; /* Improved readability for longer text */
+    line-height: 1.6;
+    margin-top: auto; /* Aligns text at the bottom of the container */
+        transform: translateY(-10px); /* Initial subtle upward transformation */
+
+}
+
+.custom-container:hover .description {
+    opacity: 1;
+}
+
+.custom-container:hover .description {
+    transform: translateY(0); /* Reset to original position on hover */
+}
+
+@media (max-width: 768px) {
+    .custom-container {
+        /* Adjustments for mobile devices */
+    }
+}
+
+
+
         /*DASHBOARD PAGE END*/
 
         .navbar {
@@ -81,6 +183,7 @@
             box-shadow: none; 
         }
 
+
     </style>
     
 </head>
@@ -98,7 +201,7 @@
                       <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="#">Friends</a>
+                      <a class="nav-link" href="{% url 'vibematch:vibe_match'%}">VibeMatch</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'chatroom:open_chatroom'%}">Chatrooms</a>

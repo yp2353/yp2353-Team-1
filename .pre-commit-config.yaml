@@ -1,0 +1,12 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.10.1
+    hooks:
+      - id: black
+        language_version: python3.11.2  # Replace with the Python version you use
+        args: [--check]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0  # Replace with the version of flake8 you want to use
+    hooks:
+      - id: flake8

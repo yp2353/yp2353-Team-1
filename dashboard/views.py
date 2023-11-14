@@ -16,17 +16,15 @@ from user_profile.views import check_and_store_profile
 
 # from dotenv import load_dotenv
 import os
-
 from utils import get_spotify_token, deduce_audio_vibe
 from django.http import JsonResponse
-
 from user_profile.models import Vibe, UserTop
 from django.utils import timezone
 from dashboard.models import EmotionVector
 
 MAX_RETRIES = 2
 
-client = Client("https://alfredo273-vibecheck-fasttext.hf.space/--replicas/zt2rw/")
+client = Client("https://alfredo273-vibecheck-fasttext.hf.space/--replicas/wqb66/")
 
 # Uncomment for manual loading
 # from gensim.models import FastText
@@ -205,11 +203,15 @@ def calculate_vibe(request):
         recent_vibe = Vibe.objects.filter(
             user_id=user_id, vibe_time__gte=midnight
         ).first()
+
+        description = None 
+
         if recent_vibe and recent_vibe.user_audio_vibe:
             vibe_result = recent_vibe.user_audio_vibe
             if recent_vibe.user_lyrics_vibe:
                 vibe_result += " " + recent_vibe.user_lyrics_vibe
-            return JsonResponse({"result": vibe_result})
+                description = vibe_description(vibe_result)
+            return JsonResponse({"result": vibe_result, "description": description})
         # Skips having to perform vibe calculations below
 
         recent_tracks = sp.current_user_recently_played(limit=15)
@@ -240,6 +242,7 @@ def calculate_vibe(request):
                 vibe_result += " " + lyric_vibe
 
             current_time = timezone.now().astimezone(timezone.utc)
+            description = vibe_description(vibe_result)
             vibe_data = Vibe(
                 user_id=user_id,
                 vibe_time=current_time,
@@ -259,11 +262,10 @@ def calculate_vibe(request):
         else:
             vibe_result = "Null"
 
-        return JsonResponse({"result": vibe_result})
+        return JsonResponse({"result": vibe_result, "description": description})
     else:
         # No token, redirect to login again
         # ERROR MESSAGE HERE?
-        return redirect("login:index")
         return redirect("login:index")
 
 
@@ -537,3 +539,27 @@ def get_emotion_vector(input_emotion):
         vector_str = vector_str.vector
 
     return string_to_vector(vector_str)
+
+
+def vibe_description(final_vibe):
+    print(final_vibe)
+    openai.api_key = os.getenv("OPEN_AI_TOKEN")
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {
+                "role": "user",
+                "content": f"This is the output of a program that takes listening history of a person (spotify "
+                f"features) and their lyrics and classifies a daily final vibe. Take the daily final vibe, "
+                f"this being: '{final_vibe}', and briefly describe today's person music vibe and energy as "
+                f"if you were talking to them. Use pop culture terms, artists as references as be brief "
+                f"but precise.",
+            },
+        ],
+        request_timeout=50,
+    )
+
+    response = response.choices[0].message["content"].strip()
+
+    return response

@@ -29,6 +29,7 @@ class Vibe(models.Model):
     user_energy = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     user_valence = models.DecimalField(null=True, max_digits=10, decimal_places=6)
     recent_track = ArrayField(models.CharField(max_length=250), size=20, null=True)
+    # description = models.CharField(max_length=10000, null=True)
     vibe_time = models.DateTimeField()
 
 
