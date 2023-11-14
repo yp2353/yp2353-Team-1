@@ -16,9 +16,6 @@ from dotenv import load_dotenv
 # Load variables from .env
 load_dotenv()
 
-# from supabase import create_client, Client
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -86,7 +83,8 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = "vibecheck.wsgi.application"
-ASGI_APPLICATION = "vibecheck.routing.application"
+# Daphne
+ASGI_APPLICATION = "vibecheck.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
