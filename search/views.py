@@ -108,7 +108,6 @@ def process_friend_request(request, friend_user_id):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
-        
 
         try:
             friend_request = UserFriendRelation.objects.filter(
