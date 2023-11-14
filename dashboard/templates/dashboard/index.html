@@ -6,13 +6,14 @@
 
 {% block content %}
     <div class="container mt-5">
-        <div class="row">
-            <div class="col-12 mt-4 mx-auto">
-                <div id="vibe-status" data-calculate-vibe-url="{% url 'dashboard:calculate_vibe' %}" class="px-2 py-2 d-flex justify-content-center align-items-center vibe-background">
-                    <div class="vibe-loading-text"><h3>Loading Vibe...</h3></div>
-                    <div class="vibe-loaded-text" style="display: none;"><h3>Your vibe is</h3></div>
-                </div>
-                <br>
+    <div class="row">
+    <div class="col-12 mt-4 mx-auto">
+        <div id="vibe-status"
+             class="px-2 py-2 d-flex justify-content-center align-items-center vibe-background">
+            <div class="vibe-loading-text"><h3>Loading Vibe...</h3></div>
+            <div class="vibe-loaded-text" style="display: none;"><h3>Your vibe is</h3></div>
+        </div>
+        <br>
 
             </div>
         <div class="container mt-5">
@@ -144,22 +145,72 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function() {
-    var calculateVibeUrl = $('#vibe-status').data('calculate-vibe-url');
-    $('#vibe-status').addClass('vibe-loading');
-    $('#vibe-status .vibe-loading-text').show();
-    $('#vibe-status .vibe-loaded-text').hide();
+    <script>
+        $(document).ready(function () {
+            var user_id = "{{ user_id }}";
+            var midnight = "{{ midnight }}";
+            var vibe_or_not = "{{ vibe_or_not }}"; 
 
-    $.ajax({
-        url: calculateVibeUrl,
-        type: 'GET',
-        success: function(data) {
-            if (data.result === "Null") {
+            $('#vibe-status').addClass('vibe-loading');
+            $('#vibe-status .vibe-loading-text').show();
+            $('#vibe-status .vibe-loaded-text').hide();
+
+            if (vibe_or_not === "no_songs"){
                 $('#vibe-status .vibe-loaded-text').text('No songs to analyze.').show();
+                $('#vibe-status').removeClass('vibe-loading');
+                $('#vibe-status .vibe-loading-text').hide();
             } else {
-                var dataAsH1 = $('<h1>').text(data.result);
-                $('#vibe-status .vibe-loaded-text').append(dataAsH1).show();
+                function pollVibeStatus() {
+                    $.ajax({
+                        url: '{% url "dashboard:get_task_status" user_id=user_id midnight=midnight %}',
+                        type: 'GET',
+                        success: function(data) {
+                            if (data.status === 'SUCCESS') {
+                                var dataAsH1 = $('<h1>').text(data.result);
+                                var dataAsP = $('<h3>').text(data.description);
+                                $('#vibe-status .vibe-loaded-text').append(dataAsH1).show();
+                                $('.description').append(dataAsP).show();
+                                $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
+                                $('#vibe-status .vibe-loading-text').hide();
+
+                                if (vibe_or_not === "asyn_started"){
+                                    // Trigger alert and effects if vibe newly loaded
+
+                                    alert('Vibe loaded');
+
+                                    // Trigger the zoom effect here
+                                    triggerZoomEffect();
+                                }
+                                
+                            } else if (data.status === 'PENDING') {
+                                // Task is still in progress, continue polling
+                                setTimeout(pollVibeStatus, 5000);  // Poll every 5 seconds
+                            }
+                        },
+                        error: function() {
+                            $('#vibe-status .vibe-loaded-text').text('Error calculating vibe. Please try again later.').show();
+                            $('#vibe-status').removeClass('vibe-loading');
+                            $('#vibe-status .vibe-loading-text').hide();
+                        }
+                    });
+
+                    function triggerZoomEffect() {
+                        var scale = 1.5; // Set your desired maximum scale
+                        $('#vibe-status').css({
+                            'transform': 'scale(' + scale + ')',
+                            'transition': 'transform 1s ease-in-out'
+                        });
+
+                        // Optionally, reset to normal size after some time
+                        setTimeout(function () {
+                            $('#vibe-status').css('transform', 'scale(1)');
+                        }, 2000); // Adjust time as needed
+                    }
+
+                }
+
+                // Start polling when the document is ready
+                pollVibeStatus();
             }
             $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
             $('#vibe-status .vibe-loading-text').hide();
