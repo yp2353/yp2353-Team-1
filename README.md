@@ -40,7 +40,7 @@ Install the Bootstrap-Icons using npm:
 npm i bootstrap-icons
 ```
 
-Initiate the Redis server:
+Initiate the Redis server before starting your Web server:
 
 ```bash
 redis-server --port 6579
