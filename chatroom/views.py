@@ -135,3 +135,17 @@ def chatroom_api(request):
             )
 
     return JsonResponse({"error": "Invalid request"})
+
+def get_latest_messages(request, room_id):
+    room_messages = ChatMessage.objects.filter(room=room_id)
+    messages = []
+
+    for message in room_messages:
+        sender_username = message.sender.username
+        messages.append({
+            "type": "chat_message",
+            "message": message.content,
+            "sender": sender_username,
+        })
+
+    return JsonResponse({"messages": messages, "sender": get_user_exist().username})

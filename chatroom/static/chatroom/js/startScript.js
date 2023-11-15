@@ -15,6 +15,26 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function pollForMessages(roomID) {
+    setInterval(function() {
+        $.ajax({
+            type: 'GET',
+            url: `/chatroom/api/latest_messages/${roomID}/`,
+            success: function(response) {
+                if (response.hasOwnProperty("messages")) {
+                    const messages = response.messages || [];
+                    for (const message of messages) {
+                        handleMessage(message, false);
+                    }
+                }
+            },
+            error: function(error) {
+                console.error('Error fetching latest messages:', error);
+            }
+        });
+    }, 500);  // Adjust the interval (in milliseconds) based on your needs
+}
+
 // Function to join a room
 function joinRoom(roomID) {
     $.ajax({
@@ -38,6 +58,8 @@ function joinRoom(roomID) {
             // Update the sender value
             sender = response.sender || 'Anonymous';
             console.log("User is ", sender);
+
+            pollForMessages(roomID);
         },
         error: function (error) {
             console.error('Error joining room:', roomID, error);
@@ -80,4 +102,6 @@ $('#room-list').on('click', 'li', function (e) {
     $('#room-container').css('visibility', 'visible');
     $('#room-name').html($(this).html());
 });
+
+
 

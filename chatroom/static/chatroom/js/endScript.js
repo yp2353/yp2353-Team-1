@@ -67,3 +67,4 @@ $('#room-list').on('click', 'li', function(e) {
         $('#room-name').html($(e.target).html());
     }
 });
+
