@@ -1,0 +1,37 @@
+body {
+    margin-top: 10px;
+}
+#chat-messages {
+    height: 300px;
+    overflow-y: scroll;
+    border: 1px solid #dee2e6;
+    padding: 5px;
+    background: #e9ecef;
+}
+.message {
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+.incoming {
+    background-color: #d1e7dd;
+}
+.outgoing {
+    background-color: #cff4fc;
+    text-align: right;
+}
+
+#room-list{
+    background-color: rgb(29, 28, 28);
+    max-width: 15vw;
+    
+    
+}
+#room-list > ul{
+    padding: 8px;
+    margin: 8px;
+    height: 75vh;
+    overflow-y:scroll ;
+    list-style: none;
+    border: 1px, solid, #606363;
+}

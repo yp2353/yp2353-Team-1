@@ -26,16 +26,24 @@ Ensure you have Python and pip installed. The following packages are required:
 - `pandas`
 - `gradio_client`
 - `rich`
+- `channels`
 
 Install the prerequisites using pip:
 
 ```bash
-pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase numpy joblib pandas gradio_client rich
+pip install django psycopg2_binary spotipy lyricsgenius python-dotenv plotly openai django-extensions supabase numpy joblib pandas gradio_client rich channels
 ```
+
 Install the Bootstrap-Icons using npm:
 
 ```bash
 npm i bootstrap-icons
+```
+
+Initiate the Redis server before starting your Web server:
+
+```bash
+redis-server --port 6579
 ```
 
 ### Configuring API Credentials
@@ -44,8 +52,8 @@ npm i bootstrap-icons
 
 1. **Retrieve API Credentials:**
    Obtain the `CLIENT_ID` and `CLIENT_SECRET` from your Spotify Developer Dashboard.
-
 2. **Local Development:**
+
    - Create a `.env` file in the project root and add your Spotify API credentials:
      ```env
      SPOTIPY_CLIENT_ID=your_client_id
@@ -54,6 +62,7 @@ npm i bootstrap-icons
    - Ensure `.env` is listed in your `.gitignore` file to prevent it from being tracked by Git.
 
    Example usage in code:
+
    ```python
    import os
    from dotenv import load_dotenv
@@ -63,7 +72,6 @@ npm i bootstrap-icons
    CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
    CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
    ```
-
 3. **Production Deployment:**
    Set the `CLIENT_ID` and `CLIENT_SECRET` directly in your production environment’s configuration.
 
@@ -72,6 +80,7 @@ npm i bootstrap-icons
 1. Replace the `GENIUS_CLIENT_ACCESS_TOKEN` in your `.env` file.
 
    Example usage:
+
    ```python
    import lyricsgenius
    import os
@@ -86,20 +95,17 @@ npm i bootstrap-icons
    ```
 
 #### OpenAI API
+
 1. Replace the `OPEN_AI_TOKEN` in your `.env` file.
 
 ### For Collaborators
 
 - Ensure to create your own `.env` file and populate it with your own Spotify, Genius, and OpenAI API credentials.
 - Do check lines 11-15 in `vibecheck/settings.py` while working on your local machine.
-- Before pushing `develop` branch into `master`, make sure the AWS Elastic Beanstalk environment is restarted with `Health:OK`. 
+- Before pushing `develop` branch into `master`, make sure the AWS Elastic Beanstalk environment is restarted with `Health:OK`.
 
-## Development and Usage
+## Deploy on AWS
 
-### Running the Django Application
+[![asciicast](https://asciinema.org/a/BqGf7cpmVyexCGKc767nvnYYp.svg)](https://asciinema.org/a/BqGf7cpmVyexCGKc767nvnYYp)
 
-[Include steps on running the Django app, applying migrations, creating a superuser, etc.]
-
-### Interacting with APIs
-
-[Details regarding API interactions, endpoints utilized, and any additional configurations or considerations should be documented here.]
+1. Create environemnt

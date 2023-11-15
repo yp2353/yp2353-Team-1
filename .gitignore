@@ -1,6 +1,6 @@
 # ipynb and csv
 *.ipynb
-*.csv
+eight_moods.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -214,3 +214,7 @@ login/static/login/day_data.json
 login/static/login/hour_data.json
 
 node_modules
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

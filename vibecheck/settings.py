@@ -83,7 +83,8 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = "vibecheck.wsgi.application"
-
+# Daphne
+ASGI_APPLICATION = "vibecheck.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
