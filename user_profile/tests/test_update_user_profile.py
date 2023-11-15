@@ -3,7 +3,7 @@ from django.urls import reverse
 from unittest.mock import patch
 from user_profile.views import update_user_profile
 from user_profile.models import User
-from datetime import datetime
+from django.utils import timezone
 
 
 class UserProfileUpdateTests(TestCase):
@@ -16,7 +16,7 @@ class UserProfileUpdateTests(TestCase):
             user_id=self.user_id,
             username="test_user",
             total_followers=100,  # Example value, adjust as needed
-            user_last_login=datetime.now(),  # Current timestamp
+            user_last_login=timezone.now(),  # Current timestamp
         )
 
     @patch("user_profile.models.User.objects.filter")

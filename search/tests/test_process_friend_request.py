@@ -1,73 +1,166 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, Client
 from django.urls import reverse
 from unittest.mock import patch, MagicMock
-from search.views import (
-    process_friend_request,
-)
 from user_profile.models import User, UserFriendRelation
-from test_utils import load_test_data
+from django.utils import timezone
 
 
-class ProcessFriendRequestTest(TestCase):
+class ProcessFriendRequestTestCase(TestCase):
     def setUp(self):
-        load_test_data()
+        self.client = Client()
+        # Create User instances with all required fields
+        self.user1 = User.objects.create(
+            user_id="user1",
+            username="username1",
+            total_followers=10,
+            user_last_login=timezone.now(),
+            # Add other fields as required
+        )
+        self.user2 = User.objects.create(
+            user_id="friend_user_id",
+            username="username2",
+            total_followers=15,
+            user_last_login=timezone.now(),
+            # Add other fields as required
+        )
 
-        self.factory = RequestFactory()
-        self.user_id = "31riwbvwvrsgadgrerv6llzlmbpi"  # Mock user ID
-        self.friend_user_id = "l584nmd717fk2meevv14ng8ogw"  # Mock friend user ID
+    @patch("search.views.get_spotify_token")
+    @patch("search.views.spotipy.Spotify")
+    def test_send_new_friend_request(self, mock_spotify, mock_get_token):
+        """
+        Test sending a new friend request where none existed before.
+        """
+        mock_get_token.return_value = {"access_token": "fake_token"}
+        mock_spotify_instance = MagicMock()
+        mock_spotify.return_value = mock_spotify_instance
+        mock_spotify_instance.current_user.return_value = {
+            "id": "user1",
+            "display_name": "username1",
+        }
 
-        # Mocking Spotify API response
-        self.spotify_user_info = {"id": self.user_id, "display_name": "mock_name"}
+        response = self.client.get(
+            reverse("search:process_friend_request", args=["friend_user_id"]),
+            {"action": "send"},
+        )
+        self.assertEqual(response.status_code, 200)
+        # Assertions to verify the creation of a new friend request
 
-        # Mocking the database models
-        self.mock_user = MagicMock()
-        self.mock_user_friend_relation = MagicMock()
+    @patch("search.views.get_spotify_token")
+    @patch("search.views.spotipy.Spotify")
+    def test_send_friend_request(self, mock_spotify, mock_get_token):
+        mock_get_token.return_value = {"access_token": "fake_token"}
+        mock_spotify_instance = MagicMock()
+        mock_spotify.return_value = mock_spotify_instance
+        mock_spotify_instance.current_user.return_value = {
+            "id": "user1",
+            "display_name": "username1",
+        }
 
-    def test_cancel_action(self):
-        self.friend_action("cancel")
-
-    def test_unfriend_action(self):
-        self.friend_action("unfriend")
-
-    # def test_send_action(self):
-    #     self.friend_action("send")
-
-    def test_accept_action(self):
-        self.friend_action("accept")
-
-    def test_decline_action(self):
-        self.friend_action("decline")
-
-    def friend_action(self, action):
-        with patch("search.views.get_spotify_token") as mock_get_spotify_token, patch(
-            "search.views.spotipy.Spotify"
-        ) as mock_spotify, patch("user_profile.models.User", new=self.mock_user), patch(
-            "user_profile.models.UserFriendRelation", new=self.mock_user_friend_relation
-        ), patch(
-            "spotipy.Spotify.current_user"
-        ) as mock_current_user:
-            # Setup mock for Spotify token
-            mock_get_spotify_token.return_value = {"access_token": "mock_token"}
-            mock_current_user.return_value = self.spotify_user_info
-
-            # Setup mock for Spotify API response
-            mock_spotify_instance = mock_spotify.return_value
-            mock_spotify_instance.current_user.return_value = self.spotify_user_info
-
-            # Setup mock user and friend relation
-            self.mock_user.objects.get.return_value = User(user_id=self.user_id)
-            mock_relation = UserFriendRelation(
-                user1_id=User(user_id=self.friend_user_id),
-                user2_id=User(user_id=self.user_id),
+        # Ensure no existing friend request
+        response = self.client.get(
+            reverse("search:process_friend_request", args=[self.user2.user_id]),
+            {"action": "send"},
+        )
+        self.assertEqual(response.status_code, 200)
+        try:
+            friend_request = UserFriendRelation.objects.get(
+                user1_id=self.user1, user2_id=self.user2
             )
-            self.mock_user_friend_relation.objects.filter.return_value = [mock_relation]
+            self.assertEqual(friend_request.status, "pending")
+        except UserFriendRelation.DoesNotExist:
+            self.fail("UserFriendRelation object not created after sending request")
 
-            # Test 'cancel' action
-            url = (
-                reverse("search:process_friend_request", args=[self.friend_user_id])
-                + f"?action={action}"
-            )
-            request = self.factory.get(url)
-            request.session = {}
-            response = process_friend_request(request, self.friend_user_id)
-            self.assertEqual(response.status_code, 200)
+    @patch("search.views.get_spotify_token")
+    @patch("search.views.spotipy.Spotify")
+    def test_cancel_friend_request(self, mock_spotify, mock_get_token):
+        mock_get_token.return_value = {"access_token": "fake_token"}
+        mock_spotify_instance = MagicMock()
+        mock_spotify.return_value = mock_spotify_instance
+        mock_spotify_instance.current_user.return_value = {
+            "id": "user1",
+            "display_name": "username1",
+        }
+
+        friend_request = UserFriendRelation.objects.create(
+            user1_id=self.user1, user2_id=self.user2, status="pending"
+        )
+        response = self.client.get(
+            reverse("search:process_friend_request", args=[self.user2.user_id]),
+            {"action": "cancel"},
+        )
+        self.assertEqual(response.status_code, 200)
+        friend_request.refresh_from_db()
+        self.assertEqual(friend_request.status, "cancle_request")
+
+    @patch("search.views.get_spotify_token")
+    @patch("search.views.spotipy.Spotify")
+    def test_unfriend_friend_request(self, mock_spotify, mock_get_token):
+        mock_get_token.return_value = {"access_token": "fake_token"}
+        mock_spotify_instance = MagicMock()
+        mock_spotify.return_value = mock_spotify_instance
+        mock_spotify_instance.current_user.return_value = {
+            "id": "user1",
+            "display_name": "username1",
+        }
+
+        friend_request = UserFriendRelation.objects.create(
+            user1_id=self.user1, user2_id=self.user2, status="friends"
+        )
+        response = self.client.get(
+            reverse("search:process_friend_request", args=[self.user2.user_id]),
+            {"action": "unfriend"},
+        )
+        self.assertEqual(response.status_code, 200)
+        friend_request = UserFriendRelation.objects.get(
+            user1_id=self.user1, user2_id=self.user2
+        )
+        self.assertEqual(friend_request.status, "not_friend")
+
+    @patch("search.views.get_spotify_token")
+    @patch("search.views.spotipy.Spotify")
+    def test_accept_friend_request(self, mock_spotify, mock_get_token):
+        mock_get_token.return_value = {"access_token": "fake_token"}
+        mock_spotify_instance = MagicMock()
+        mock_spotify.return_value = mock_spotify_instance
+        mock_spotify_instance.current_user.return_value = {
+            "id": "user1",
+            "display_name": "username1",
+        }
+
+        # Setup a pending friend request
+        friend_request = UserFriendRelation.objects.create(
+            user1_id=self.user2, user2_id=self.user1, status="pending"
+        )
+        response = self.client.get(
+            reverse("search:process_friend_request", args=[self.user2.user_id]),
+            {"action": "accept"},
+        )
+        self.assertEqual(response.status_code, 200)
+        friend_request = UserFriendRelation.objects.get(
+            user1_id=self.user2, user2_id=self.user1
+        )
+        self.assertEqual(friend_request.status, "friends")
+
+    @patch("search.views.get_spotify_token")
+    @patch("search.views.spotipy.Spotify")
+    def test_decline_friend_request(self, mock_spotify, mock_get_token):
+        mock_get_token.return_value = {"access_token": "fake_token"}
+        mock_spotify_instance = MagicMock()
+        mock_spotify.return_value = mock_spotify_instance
+        mock_spotify_instance.current_user.return_value = {
+            "id": "user1",
+            "display_name": "username1",
+        }
+
+        UserFriendRelation.objects.create(
+            user1_id=self.user2, user2_id=self.user1, status="pending"
+        )
+        response = self.client.get(
+            reverse("search:process_friend_request", args=[self.user2.user_id]),
+            {"action": "decline"},
+        )
+        self.assertEqual(response.status_code, 200)
+        friend_request = UserFriendRelation.objects.get(
+            user1_id=self.user2, user2_id=self.user1
+        )
+        self.assertEqual(friend_request.status, "decline")
