@@ -12,7 +12,7 @@ from user_profile.models import Vibe
 
 MAX_RETRIES = 2
 
-client = Client("https://boyanxu-vibecheck-fasttext.hf.space/", serialize=False)
+client = Client("https://alfredo273-vibecheck-fasttext.hf.space/", serialize=False)
 
 
 def calculate_vibe_async(
