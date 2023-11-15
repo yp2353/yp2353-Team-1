@@ -201,7 +201,7 @@ def calculate_vibe(sp, midnight):
 
     recent_tracks = sp.current_user_recently_played(limit=15)
 
-    if not recent_tracks.get('items', []):
+    if not recent_tracks.get("items", []):
         return "no_songs"
     else:
         track_names = []
