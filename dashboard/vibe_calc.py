@@ -134,11 +134,18 @@ def average_vector(words):
     # Compute the average vector for a list of words.
     vectors = []
     for word in words:
-        str_vector = client.predict("get_vector", word, api_name="/predict")
-        vector = string_to_vector(str_vector)
-        vectors.append(vector)
+        try:
+            str_vector = client.predict("get_vector", word, api_name="/predict")
+            vector = string_to_vector(str_vector)
+            vectors.append(vector)
+        except Exception as e:
+            print(f"Error processing word '{word}': {e}")
 
-    return np.mean(vectors, axis=0)
+    if vectors:
+        return np.mean(vectors, axis=0)
+    else:
+        # Return a zeros vector of 300 dimension
+        return np.zeros(300)
 
 
 def string_to_vector(str):
@@ -226,27 +233,30 @@ def cosine_similarity(vec_a, vec_b):
 
 
 def vibe_description(final_vibe):
-    print(final_vibe)
     openai.api_key = os.getenv("OPEN_AI_TOKEN")
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {
-                "role": "user",
-                "content": f"This is the output of a program that takes listening history of a person (spotify "
-                f"features) and their lyrics and classifies a daily final vibe. Take the daily final vibe, "
-                f"this being: '{final_vibe}', and briefly describe today's person music vibe and energy as "
-                f"if you were talking to them. Use pop culture terms, artists as references as be brief "
-                f"but precise.",
-            },
-        ],
-        request_timeout=50,
-    )
 
-    response = response.choices[0].message["content"].strip()
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {
+                    "role": "user",
+                    "content": f"This is the output of a program that takes listening history of a person (spotify "
+                    f"features) and their lyrics and classifies a daily final vibe. Take the daily final vibe, "
+                    f"this being: '{final_vibe}', and briefly describe today's person music vibe and energy as "
+                    f"if you were talking to them. Use pop culture terms, artists as references as be brief "
+                    f"but precise.",
+                },
+            ],
+            request_timeout=50,
+        )
 
-    return response
+        response = response.choices[0].message["content"].strip()
+        return response
+
+    except Exception:
+        return None
 
 
 def get_feature_average(list, feature):

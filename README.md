@@ -4,7 +4,7 @@ This repository contains the codebase for our team project, which involves inter
 
 [![Build Status](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-1.svg?branch=develop)](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-1)
 
-[![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/Wednesday-Fall2023-Team-1/badge.svg?branch=develop)](https://coveralls.io/github/gcivil-nyu-org/Wednesday-Fall2023-Team-1?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/Wednesday-Fall2023-Team-1/badge.svg)](https://coveralls.io/github/gcivil-nyu-org/Wednesday-Fall2023-Team-1)
 
 ## Getting Started
 
