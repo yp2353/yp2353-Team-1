@@ -15,9 +15,9 @@ CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 
 # Comment the below line while working on your local machine
-REDIRECT_URI = (
-    "http://vc-env-1114bb.eba-s3yeiibw.us-west-2.elasticbeanstalk.com/login/callback"
-)
+# REDIRECT_URI = (
+#     "http://vc-env-1114bb.eba-s3yeiibw.us-west-2.elasticbeanstalk.com/login/callback"
+# )
 
 # Uncomment the below line while working on your local machine
 # REDIRECT_URI = "http://127.0.0.1:8000/login/callback"
