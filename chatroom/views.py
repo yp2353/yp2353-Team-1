@@ -10,6 +10,7 @@ from .consumer import GlobalChatConsumer
 from utils import get_spotify_token
 from user_profile.models import User
 import spotipy
+from .models import ChatMessage
 
 class ChatRoomView(View):
     @method_decorator(csrf_exempt)
@@ -73,7 +74,6 @@ def get_room_details(roomID):
 def search_room(request):
     return None
 
-
 def get_user_exist():
     global user_exists
     if user_exists:
@@ -82,26 +82,44 @@ def get_user_exist():
     else:
         print("No get_user_exist")
 
+
 # New view for handling chat room API requests
 @csrf_exempt
 def chatroom_api(request):
     if request.method == "POST":
         data = request.POST
+        print("Received data:", data)  # Add print statements for debugging purposes
         message_type = data.get("type")
 
         if message_type == "join_room":
             room_id = data.get("roomID")
-            consumer = GlobalChatConsumer()
-            response = consumer.post(request, roomID=room_id, type="join_room")
-            messages = response.get("messages", [])
-            return JsonResponse({"messages": messages})
+
+            # Retrieve previous messages from the database
+            room_messages = ChatMessage.objects.filter(room=room_id)
+            messages = []
+
+            for message in room_messages:
+                sender_username = message.sender.username
+                messages.append({
+                    "type": "chat_message",
+                    "message": message.content,
+                    "sender": sender_username,
+                })
+
+            return JsonResponse({"messages": messages, "sender": get_user_exist().username,})
 
         elif message_type == "chat_message":
             # Handle sending a chat message
             room_id = data.get("roomID")
             message = data.get("message")
-            # ... perform necessary actions ...
+            sender_username=get_user_exist().username
+            save_message = ChatMessage.objects.create(
+                sender=get_user_exist(),
+                room=RoomModel.objects.get(roomID=room_id),
+                content=message,
+                )      
+            save_message.save()
 
-            return JsonResponse({"success": True})
+            return JsonResponse({"sender": sender_username, "message": message, "success": True})
 
     return JsonResponse({"error": "Invalid request"})

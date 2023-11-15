@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "*",
@@ -37,7 +37,6 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
@@ -51,7 +50,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    # "channels",
     "vibematch",
 ]
 
@@ -83,18 +81,6 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = "vibecheck.wsgi.application"
-
-# # Daphne
-# ASGI_APPLICATION = "vibecheck.asgi.application"
-
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -153,6 +139,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "login/static"),
     os.path.join(BASE_DIR, "dashboard/static"),
     os.path.join(BASE_DIR, "user_profile/static"),
+    # os.path.join(BASE_DIR, "chatroom/static"),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")

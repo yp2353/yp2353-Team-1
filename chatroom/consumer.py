@@ -5,7 +5,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 from .models import ChatMessage, RoomModel
-from .views import get_user_exist
 
 class GlobalChatConsumer(View):
     @method_decorator(csrf_exempt)
@@ -44,9 +43,6 @@ class GlobalChatConsumer(View):
             return JsonResponse({"success": True})
 
         return JsonResponse({"error": "Invalid request"})
-
-    def get_user(self):
-        return get_user_exist()
 
     def retrieve_room_messages(self, room_id):
         room_messages = ChatMessage.objects.filter(room=room_id)

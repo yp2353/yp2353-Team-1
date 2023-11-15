@@ -4,7 +4,7 @@
 function joinRoom(roomID) {
     $.ajax({
         type: 'POST',
-        url: '/api/chatroom/',
+        url: 'chatroom/api/chatroom/',
         data: { roomID: roomID },
         success: function (response) {
             // Handle the response (e.g., update chat messages)
