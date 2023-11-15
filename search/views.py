@@ -20,6 +20,7 @@ def open_search_page(request, username=""):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
+        # Pass username to navbar
         username = user_info["display_name"]
 
         request_list = []
@@ -59,6 +60,8 @@ def user_search(request):
 
             user_info = sp.current_user()
             current_user_id = user_info["id"]
+            # Pass username to navbar
+            username = user_info["display_name"]
 
             if form.is_valid():
                 query = form.cleaned_data
@@ -92,6 +95,7 @@ def user_search(request):
         # ERROR MESSAGE HERE?
         return redirect("login:index")
     context = {
+        "username": username,
         "results": results,
         "UsersearchForm": form,
         "friends": current_friend_list(current_user_id),
