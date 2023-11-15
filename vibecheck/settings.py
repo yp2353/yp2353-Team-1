@@ -90,10 +90,11 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('vibecheck-globalchat.wucycs.ng.0001.usw2.cache.amazonaws.com', 6579)],
+            "hosts": [('redis://vibecheck-globalchat.wucycs.ng.0001.usw2.cache.amazonaws.com', 6579)],
         },
     },
 }
+
 
 # settings.py
 CACHES = {
