@@ -148,7 +148,6 @@ def average_vector(words):
         return np.zeros(300)
 
 
-
 def string_to_vector(str):
     clean = re.sub(r"[\[\]\n\t]", "", str)
     clean = clean.split()
@@ -255,11 +254,11 @@ def vibe_description(final_vibe):
 
         response = response.choices[0].message["content"].strip()
         return response
-    
-    except Exception as e:
+
+    except Exception:
         return None
 
-    
+
 def get_feature_average(list, feature):
     total = sum(track[feature] for track in list)
     average = total / len(list)
