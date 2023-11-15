@@ -96,16 +96,16 @@ CHANNEL_LAYERS = {
 }
 
 
-# settings.py
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://vibecheck-globalchat.wucycs.ng.0001.usw2.cache.amazonaws.com:6579/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
+# # settings.py
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://vibecheck-globalchat.wucycs.ng.0001.usw2.cache.amazonaws.com:6579/1',
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
