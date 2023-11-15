@@ -12,6 +12,7 @@ from user_profile.models import User
 import spotipy
 from .models import ChatMessage
 
+
 class ChatRoomView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -28,6 +29,7 @@ class ChatRoomView(View):
             messages = response.get("messages", [])
             return JsonResponse({"messages": messages})
         return JsonResponse({"error": "Invalid request"})
+
 
 user_exists = None
 
@@ -74,6 +76,7 @@ def get_room_details(roomID):
 def search_room(request):
     return None
 
+
 def get_user_exist():
     global user_exists
     if user_exists:
@@ -100,26 +103,35 @@ def chatroom_api(request):
 
             for message in room_messages:
                 sender_username = message.sender.username
-                messages.append({
-                    "type": "chat_message",
-                    "message": message.content,
-                    "sender": sender_username,
-                })
+                messages.append(
+                    {
+                        "type": "chat_message",
+                        "message": message.content,
+                        "sender": sender_username,
+                    }
+                )
 
-            return JsonResponse({"messages": messages, "sender": get_user_exist().username,})
+            return JsonResponse(
+                {
+                    "messages": messages,
+                    "sender": get_user_exist().username,
+                }
+            )
 
         elif message_type == "chat_message":
             # Handle sending a chat message
             room_id = data.get("roomID")
             message = data.get("message")
-            sender_username=get_user_exist().username
+            sender_username = get_user_exist().username
             save_message = ChatMessage.objects.create(
                 sender=get_user_exist(),
                 room=RoomModel.objects.get(roomID=room_id),
                 content=message,
-                )      
+            )
             save_message.save()
 
-            return JsonResponse({"sender": sender_username, "message": message, "success": True})
+            return JsonResponse(
+                {"sender": sender_username, "message": message, "success": True}
+            )
 
     return JsonResponse({"error": "Invalid request"})

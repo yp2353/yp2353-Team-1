@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from .models import ChatMessage, RoomModel
 
+
 class GlobalChatConsumer(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -26,11 +27,13 @@ class GlobalChatConsumer(View):
 
             for message in room_messages:
                 sender_username = message.sender.username
-                messages.append({
-                    "type": "chat_message",
-                    "message": message.content,
-                    "sender": sender_username,
-                })
+                messages.append(
+                    {
+                        "type": "chat_message",
+                        "message": message.content,
+                        "sender": sender_username,
+                    }
+                )
 
             return JsonResponse({"messages": messages})
 
