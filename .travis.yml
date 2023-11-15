@@ -1,24 +1,24 @@
 dist: focal
 language: python
 python:
-  - "3.11"  
+  - "3.11"
 
 cache: pip
 
 install:
-  - pip install -r requirements.txt  
+  - pip install -r requirements.txt
 
 before_script:
-  
+
 
 after_script:
   - coveralls
 
 script:
   - black .
-  - black --check .  
+  - black --check .
   - flake8 .
-  - coverage run --source=chatroom,vibematch,login,static,templates,dashboard,vibecheck,user_profile,search manage.py test --no-input 
+  - coverage run --source=chatroom,vibematch,login,static,templates,dashboard,vibecheck,user_profile,search manage.py test --no-input
 
 
 deploy:
