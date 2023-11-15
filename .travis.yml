@@ -1,23 +1,24 @@
+dist: focal
 language: python
 python:
-  - "3.11"  
+  - "3.11"
 
 cache: pip
 
 install:
-  - pip install -r requirements.txt  
+  - pip install -r requirements.txt
 
 before_script:
-  
+
 
 after_script:
   - coveralls
 
 script:
   - black .
-  - black --check .  
+  - black --check .
   - flake8 .
-  - coverage run --source=chatroom,vibematch,login,static,templates,dashboard,vibecheck,user_profile,search manage.py test 
+  - coverage run --source=chatroom,vibematch,login,static,templates,dashboard,vibecheck,user_profile,search manage.py test --no-input
 
 
 deploy:
@@ -25,10 +26,10 @@ deploy:
   access_key_id: $AWS_ACCESS_KEY_ID
   secret_access_key: $AWS_SECRET_ACCESS_KEY
   region: "us-west-2"
-  app: "vcheck-app-1016"
-  env: "vcheck-env-1016"
+  app: "vcheck-app-1114b"
+  env: "vc-env-1114bb"
   bucket_name: "elasticbeanstalk-us-west-2-284687301079"
-  bucket_path: "vcheck-app-1016/"
+  bucket_path: "vcheck-app-1114b/"
   on:
     repo: gcivil-nyu-org/Wednesday-Fall2023-Team-1
     branch: develop
