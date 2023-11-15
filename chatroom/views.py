@@ -1,14 +1,32 @@
 # views.py
-from rich.console import Console
 from django.shortcuts import render, redirect
-from utils import get_spotify_token
-import spotipy
-from user_profile.models import User
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
 from .models import RoomModel
 from .forms import SearchRoomFrom
+from .consumer import GlobalChatConsumer
+from utils import get_spotify_token
+from user_profile.models import User
+import spotipy
 
+class ChatRoomView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
-console = Console(style="bold green")
+    def get(self, request, *args, **kwargs):
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    def post(self, request, *args, **kwargs):
+        room_id = request.POST.get("roomID")
+        if room_id:
+            consumer = GlobalChatConsumer()
+            response = consumer.post(request, roomID=room_id, type="join_room")
+            messages = response.get("messages", [])
+            return JsonResponse({"messages": messages})
+        return JsonResponse({"error": "Invalid request"})
 
 user_exists = None
 
@@ -63,3 +81,27 @@ def get_user_exist():
         return user_exists
     else:
         print("No get_user_exist")
+
+# New view for handling chat room API requests
+@csrf_exempt
+def chatroom_api(request):
+    if request.method == "POST":
+        data = request.POST
+        message_type = data.get("type")
+
+        if message_type == "join_room":
+            room_id = data.get("roomID")
+            consumer = GlobalChatConsumer()
+            response = consumer.post(request, roomID=room_id, type="join_room")
+            messages = response.get("messages", [])
+            return JsonResponse({"messages": messages})
+
+        elif message_type == "chat_message":
+            # Handle sending a chat message
+            room_id = data.get("roomID")
+            message = data.get("message")
+            # ... perform necessary actions ...
+
+            return JsonResponse({"success": True})
+
+    return JsonResponse({"error": "Invalid request"})
