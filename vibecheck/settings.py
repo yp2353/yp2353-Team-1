@@ -37,7 +37,6 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
@@ -51,7 +50,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    "channels",
     "vibematch",
 ]
 
@@ -83,30 +81,6 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = "vibecheck.wsgi.application"
-# Daphne
-ASGI_APPLICATION = "vibecheck.asgi.application"
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('vibecheck-globalchat.wcuycs.ng.0001.usw2.cache.amazonaws.com', 6579)]
-            
-        },
-    },
-}
-
-
-# # settings.py
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://vibecheck-globalchat.wucycs.ng.0001.usw2.cache.amazonaws.com:6579/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -165,6 +139,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "login/static"),
     os.path.join(BASE_DIR, "dashboard/static"),
     os.path.join(BASE_DIR, "user_profile/static"),
+    # os.path.join(BASE_DIR, "chatroom/static"),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")

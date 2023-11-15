@@ -1,41 +1,50 @@
-const roomName = 'global';
-const chatSocket = new WebSocket(
-'ws://' + window.location.host + '/ws/chatroom/'
-);
+// startScript.js
 
-// chatSocket.onopen = function (event) {
-//     console.log('WebSocket connection opened:', event);
-// };
+// Function to join a room
+function joinRoom(roomID) {
+    $.ajax({
+        type: 'POST',
+        url: 'chatroom/api/chatroom/',
+        data: { roomID: roomID },
+        success: function (response) {
+            // Handle the response (e.g., update chat messages)
+            console.log('Joined room:', roomID);
+            const messages = response.messages || [];
+            for (const message of messages) {
+                handleMessage(message);
+            }
+        },
+        error: function (error) {
+            console.error('Error joining room:', roomID, error);
+        }
+    });
+}
 
+// Function to handle incoming chat messages
+function handleMessage(data) {
+    console.log(data.type);
+    console.log(data.message);
 
-chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    
-    console.log(data.type)
-    console.log(data.message)
-
-    
     if (data.type === 'chat_message') {
         // Handle chat messages
         const sender = data.sender || 'Anonymous';  // Default to 'Anonymous' if sender is not provided
         const message = data.message;
-        
+
         // Append the message to the chat interface
-        document.querySelector('#chat-messages').innerHTML += (
+        $('#chat-messages').append(
             '<div class="message incoming">' +
             '<strong>' + sender + ':</strong> ' + message + '</div>'
         );
     }
-    
-};
+}
 
-chatSocket.onerror = function (error) {
-    console.error('WebSocket Error: ', error);
-};
+// Attach event listener to room list items
+$('#room-list').on('click', 'li', function (e) {
+    const roomID = $(this).data('room-id');
+    joinRoom(roomID);
 
-chatSocket.onclose = function(e) {
-    console.log('Chat socket closed unexpectedly', e.log);
-    // stoping roomlist observer
-    // observer.disconnect();  
-};
+    // Update the room container visibility
+    $('#room-container').css('visibility', 'visible');
+    $('#room-name').html($(this).html());
+});
 
