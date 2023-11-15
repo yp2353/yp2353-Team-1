@@ -50,7 +50,6 @@
     
             <div>
                 <label for="user_city">User City:</label>
-                <input type="text" id="city_search" placeholder="Search for a city">
                 <select id="user_city" name="user_city">
                     <option value=""></option>
                 </select>
@@ -99,44 +98,6 @@
     </script>
         
         
-{% endblock %}
-
-{% block navbar %}
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-    <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">VibeCheck</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Friends</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Chatrooms</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Search</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-gear-wide-connected" style="font-size: 2rem; color: white;"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a id="navbar-save-button" class="dropdown-item" href="{% url 'user_profile:update' user.user_id %}"><i class="bi bi-floppy2"></i> Save</a></li>
-                      <li><a class="dropdown-item" href="{% url 'dashboard:logout' %}">Log Out</a></li>
-                    </ul>
-                </li>
-              </ul>
-        </div>
-    </div>
-</nav>
 {% endblock %}
 
 
