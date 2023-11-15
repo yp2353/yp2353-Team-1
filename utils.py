@@ -16,7 +16,7 @@ REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 
 # Comment the below line while working on your local machine
 REDIRECT_URI = (
-    "http://vcheck-env-1114b.eba-s3yeiibw.us-west-2.elasticbeanstalk.com/login/callback"
+    "http://vc-env-1114bb.eba-s3yeiibw.us-west-2.elasticbeanstalk.com/login/callback"
 )
 
 # Uncomment the below line while working on your local machine
