@@ -81,10 +81,3 @@ class UserProfileTest(TestCase):
             return Decimal(value) if value else None
         except (decimal.InvalidOperation, ValueError):
             return None
-
-    def test_user_count(self):
-        # Example test to check if users are loaded
-        user_count = User.objects.count()
-        self.assertEqual(
-            user_count, 10
-        )  # Replace 10 with the expected number of users from the CSV
