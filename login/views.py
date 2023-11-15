@@ -23,5 +23,4 @@ def callback(request):
         request.session["token_info"] = token_info
         return redirect("dashboard:index")
     else:
-        # ERROR MESSAGE HERE?
-        return HttpResponse("Authorization error")
+        return redirect("login:index")
