@@ -29,6 +29,8 @@ def check_and_store_profile(request):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
+        # Pass username to navbar
+        username = user_info["display_name"]
         user_exists = User.objects.filter(user_id=user_id).first()
 
         if not user_exists:
@@ -71,6 +73,7 @@ def check_and_store_profile(request):
         )
 
         context = {
+            "username": username,
             "user": user,
             "vibe": recent_vibe,
             "default_image_path": "user_profile/blank_user_profile_image.jpeg",
@@ -84,7 +87,11 @@ def check_and_store_profile(request):
 
 def update_user_profile(request, user_id):
     user = User.objects.filter(user_id=user_id).first()
-    context = {"user": user}
+    # Pass username to navbar
+    context = {
+        "username": user.username,
+        "user": user,
+    }
     return render(request, "user_profile/update_profile.html", context)
 
 
