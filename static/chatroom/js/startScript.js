@@ -2,7 +2,6 @@ const roomName = 'global';
 const chatSocket = new WebSocket(
 'ws://' + window.location.host + '/ws/chatroom/'
 );
-
 // chatSocket.onopen = function (event) {
 //     console.log('WebSocket connection opened:', event);
 // };
