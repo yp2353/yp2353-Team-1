@@ -1,10 +1,11 @@
 const roomName = 'global';
-const chatSocket = new WebSocket(
-'ws://' + window.location.host + '/ws/chatroom/'
-);
-// chatSocket.onopen = function (event) {
-//     console.log('WebSocket connection opened:', event);
-// };
+// const chatSocket = new WebSocket(
+// 'ws://' + window.location.host + '/ws/chatroom/'
+// );
+
+const chatSocket = new WebSocket('wss://team-dev.eba-gbtqzcqx.us-east-1.elasticbeanstalk.com/ws/chatroom/');
+
+
 
 
 chatSocket.onmessage = function(e) {
