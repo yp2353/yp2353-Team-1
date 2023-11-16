@@ -164,5 +164,4 @@ SESSION_CACHE_ALIAS = (
     "default"  # Use the default cache (can be adjusted based on your caching settings)
 )
 
-SECURE_SSL_REDIRECT = True
 

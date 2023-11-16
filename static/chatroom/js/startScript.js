@@ -3,7 +3,7 @@ const roomName = 'global';
 // 'ws://' + window.location.host + '/ws/chatroom/'
 // );
 
-const chatSocket = new WebSocket('wss://team-dev.eba-gbtqzcqx.us-east-1.elasticbeanstalk.com/ws/chatroom/');
+const chatSocket = new WebSocket('ws://team-dev.eba-gbtqzcqx.us-east-1.elasticbeanstalk.com/ws/chatroom/');
 
 
 
