@@ -94,8 +94,16 @@ CHANNEL_LAYERS = {
             # "hosts": [("127.0.0.1", 6379)],
         },
     },
+
 }
 
+
+# import channels.layers
+# from asgiref.sync import async_to_sync
+# channel_layer = channels.layers.get_channel_layer()
+# async_to_sync(channel_layer.send)('test_channel', {'foo': 'bar'})
+# async_to_sync(channel_layer.receive)('test_channel')
+# {'foo': 'bar'} # <---------- you should receive this as output if everything went well
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
