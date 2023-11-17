@@ -51,12 +51,12 @@
 
     <div class="row">
 <div class="match_component">
-{% if user %}
-
+{% if neighbors %}
+    {% for user in neighbors  %}
         <div class="user_card">
                 <h3> {{ user }}</h3>
         </div>
-
+    {% endfor %}
 {% endif %}
 </div>
     </div></div>
