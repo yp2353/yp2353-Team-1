@@ -216,5 +216,5 @@ node_modules
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 # 01_environment_variables.config
-04_supervisord.config
+# 04_supervisord.config
 .DS_Store
