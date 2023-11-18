@@ -5,6 +5,7 @@ from utils import get_spotify_token
 import spotipy
 from user_profile.models import User, UserFriendRelation
 from django.db.models import Q
+from django.contrib import messages
 
 # Create your views here.
 """
@@ -47,7 +48,9 @@ def open_search_page(request, username=""):
         return render(request, "search/search.html", context)
     else:
         # No token, redirect to login again
-        # ERROR MESSAGE HERE?
+        messages.error(
+            request, f"Open_search_page failed, please try again later."
+        )
         return redirect("login:index")
 
 
@@ -92,7 +95,9 @@ def user_search(request):
             results = None
     else:
         # No token, redirect to login again
-        # ERROR MESSAGE HERE?
+        messages.error(
+            request, f"User_search failed, please try again later."
+        )
         return redirect("login:index")
 
     # "username": current_username,
@@ -175,7 +180,9 @@ def process_friend_request(request, friend_user_id):
 
     else:
         # No token, redirect to login again
-        # ERROR MESSAGE HERE?
+        messages.error(
+            request, f"Process_friend_request failed, please try again later."
+        )
         return redirect("login:index")
 
 

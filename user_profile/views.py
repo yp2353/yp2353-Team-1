@@ -6,17 +6,12 @@ import spotipy
 from utils import get_spotify_token
 from django.utils import timezone
 from .models import User, Vibe
-
-# import os
+from django.contrib import messages
 
 # Load variables from .env
 load_dotenv()
 
 # Create your views here.
-
-# url: str = os.getenv("SUPABASE_URL")
-# key: str = os.getenv("SUPABASE_KEY")
-# supabase: Client = create_client(url, key)
 
 
 def check_and_store_profile(request):
@@ -81,7 +76,9 @@ def check_and_store_profile(request):
         return render(request, "user_profile/user_profile.html", context)
     else:
         # No token, redirect to login again
-        # ERROR MESSAGE HERE?
+        messages.error(
+            request, f"Check_and_store_profile failed, please try again later."
+        )
         return redirect("login:index")
 
 

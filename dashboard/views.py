@@ -14,6 +14,7 @@ from utils import get_spotify_token, vibe_calc_threads
 from django.http import JsonResponse
 from user_profile.models import Vibe, UserTop
 from django.utils import timezone
+from django.contrib import messages
 
 from .vibe_calc import calculate_vibe_async
 
@@ -109,7 +110,10 @@ def index(request):
         return render(request, "dashboard/index.html", context)
     else:
         # No token, redirect to login again
-        # ERROR MESSAGE HERE?
+        debug_info = f"Request: {request}"
+        messages.error(
+            request, f"Dashboard failed, please try again later. Debug info: {debug_info}"
+        )
         return redirect("login:index")
 
 
