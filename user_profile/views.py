@@ -77,7 +77,7 @@ def check_and_store_profile(request):
     else:
         # No token, redirect to login again
         messages.error(
-            request, f"Check_and_store_profile failed, please try again later."
+            request, "Check_and_store_profile failed, please try again later."
         )
         return redirect("login:index")
 

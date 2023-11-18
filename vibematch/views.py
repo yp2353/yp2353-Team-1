@@ -23,9 +23,7 @@ def vibe_match(request):
         return render(request, "match.html", context)
     else:
         # No token, redirect to login again
-        messages.error(
-            request, f"Vibe_match failed, please try again later."
-        )
+        messages.error(request, "Vibe_match failed, please try again later.")
         return redirect("login:index")
 
 

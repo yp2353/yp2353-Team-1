@@ -112,7 +112,8 @@ def index(request):
         # No token, redirect to login again
         debug_info = f"Request: {request}"
         messages.error(
-            request, f"Dashboard failed, please try again later. Debug info: {debug_info}"
+            request,
+            f"Dashboard failed, please try again later. Debug info: {debug_info}",
         )
         return redirect("login:index")
 
