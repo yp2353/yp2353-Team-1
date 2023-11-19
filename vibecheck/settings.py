@@ -90,14 +90,14 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("aws-my-1e4g7ymowrvcu.ki72ah.0001.use1.cache.amazonaws.com", 6379)],
-            # "hosts": [("127.0.0.1", 6379)],
+            # "hosts": [("redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com", 6379)],
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 
 }
 
-
+# redis-cli -h redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com:6379 ping
 # import channels.layers
 # from asgiref.sync import async_to_sync
 # channel_layer = channels.layers.get_channel_layer()
