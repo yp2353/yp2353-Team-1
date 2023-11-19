@@ -6,6 +6,7 @@ import numpy as np
 import re
 from dashboard.models import EmotionVector
 from django.db.models import OuterRef, Subquery, F
+from django.contrib import messages
 
 
 def vibe_match(request):
@@ -22,7 +23,7 @@ def vibe_match(request):
         return render(request, "match.html", context)
     else:
         # No token, redirect to login again
-        # ERROR MESSAGE HERE?
+        messages.error(request, "Vibe_match failed, please try again later.")
         return redirect("login:index")
 
 
