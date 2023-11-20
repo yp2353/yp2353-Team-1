@@ -38,12 +38,15 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "daphne",
+    'corsheaders',
+    "channels",
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
     "user_profile",
     "chatroom",
     "search",
+    "vibematch",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -51,8 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    "channels",
-    "vibematch",
+    
 ]
 
 MIDDLEWARE = [
@@ -63,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = "vibecheck.urls"
@@ -86,6 +89,8 @@ WSGI_APPLICATION = "vibecheck.wsgi.application"
 # Daphne
 ASGI_APPLICATION = "vibecheck.asgi.application"
 
+
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -96,7 +101,10 @@ CHANNEL_LAYERS = {
     },
 
 }
-0
+CORS_ALLOWED_ORIGINS = [
+    "http://vibe-env.eba-p2he4imi.us-east-1.elasticbeanstalk.com",
+]
+
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
