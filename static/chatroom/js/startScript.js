@@ -1,9 +1,9 @@
 const roomName = 'global';
-const chatSocket = new WebSocket(
-'ws://' + window.location.host + '/ws/chatroom/'
-);
+// const chatSocket = new WebSocket(
+// 'ws://' + window.location.host + '/ws/chatroom/'
+// );
 
-// const chatSocket = new WebSocket('ws://awseb--AWSEB-ZZ5Bcc5fVtFm-348239649.us-east-1.elb.amazonaws.com/ws/chatroom/');
+const chatSocket = new WebSocket('ws://awseb--AWSEB-ZZ5Bcc5fVtFm-348239649.us-east-1.elb.amazonaws.com/ws/chatroom/');
 
 
 
