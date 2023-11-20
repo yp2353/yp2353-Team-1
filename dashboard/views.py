@@ -14,6 +14,7 @@ from utils import get_spotify_token, vibe_calc_threads
 from django.http import JsonResponse
 from user_profile.models import Vibe, UserTop
 from django.utils import timezone
+from django.contrib import messages
 
 from .vibe_calc import calculate_vibe_async
 
@@ -109,7 +110,11 @@ def index(request):
         return render(request, "dashboard/index.html", context)
     else:
         # No token, redirect to login again
-        # ERROR MESSAGE HERE?
+        debug_info = f"Request: {request}"
+        messages.error(
+            request,
+            f"Dashboard failed, please try again later. Debug info: {debug_info}",
+        )
         return redirect("login:index")
 
 
@@ -158,9 +163,14 @@ def get_top_artist_and_genres(sp):
 
 def get_recommendations(sp, top_tracks):
     seed_tracks = [track["id"] for track in top_tracks[:5]]
-    recommendations = sp.recommendations(seed_tracks=seed_tracks, limit=5)
-
     recommendedtracks = []
+
+    try:
+        recommendations = sp.recommendations(seed_tracks=seed_tracks, limit=5)
+    except Exception:
+        # No tracks as seed to recommend
+        return recommendedtracks
+
     for track in recommendations["tracks"]:
         recommendedtracks.append(
             {
@@ -196,7 +206,9 @@ def calculate_vibe(sp, midnight):
 
     recent_tracks = sp.current_user_recently_played(limit=15)
 
-    if recent_tracks:
+    if not recent_tracks.get("items", []):
+        return "no_songs"
+    else:
         track_names = []
         track_artists = []
         track_ids = []
@@ -225,9 +237,6 @@ def calculate_vibe(sp, midnight):
             vibe_calc_threads[user_id] = vibe_thread
 
         return "asyn_started"
-
-    else:
-        return "no_songs"
 
 
 def logout(request):

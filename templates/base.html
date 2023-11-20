@@ -201,18 +201,13 @@
                       <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="{% url 'vibematch:vibe_match'%}">VibeMatch</a>
+                            <a class="nav-link" href="{% url 'vibematch:vibe_match'%}">VibeMatch</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="{% url 'chatroom:open_chatroom'%}">Chatrooms</a>
+                            <a class="nav-link" href="{% url 'chatroom:open_chatroom'%}">Chatrooms</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'search:search_page'%}">Search</a>
-                      <!-- <i class="bi bi-search"></i>
-                      <div class="input-group mb-3 ">
-                        <span class="input-group-text" id="basic-addon1">@</span>
-                        <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-                      </div> -->
                     </li>
                   </ul>
                   <ul class="navbar-nav ms-auto">
