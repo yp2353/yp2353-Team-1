@@ -1,9 +1,9 @@
 const roomName = 'global';
-const chatSocket = new WebSocket(
-'ws://' + window.location.host + '/ws/chatroom/'
-);
+// const chatSocket = new WebSocket(
+// 'ws://' + window.location.host + '/ws/chatroom/'
+// );
 
-// const chatSocket = new WebSocket('ws://team-dev.eba-gbtqzcqx.us-east-1.elasticbeanstalk.com/ws/chatroom/');
+const chatSocket = new WebSocket('ws://redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com/ws/chatroom/');
 
 
 
