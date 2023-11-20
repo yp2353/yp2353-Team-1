@@ -6,36 +6,32 @@
 
 {% block content %}
     <div class="container mt-5">
-    <div class="row">
-    <div class="col-12 mt-4 mx-auto">
+    <div class="row" style="padding-top:30px;">
+    <div class="col-md-5 col-12">
         <div id="vibe-status"
              class="px-2 py-2 d-flex justify-content-center align-items-center vibe-background">
             <div class="vibe-loading-text"><h3>Loading Vibe...</h3></div>
             <div class="vibe-loaded-text" style="display: none;"><h3>Your vibe is</h3></div>
         </div>
-        <br>
 
     </div>
-    <div class="container mt-5">
+    <div class="col-md-6 col-12">
+    <div class="container custom-container" onclick="toggleExpand(this)">
+        <div class="reveal-prompt" style="font-family: Inter"></div>
+        <div class="description" style="font-family: Inter">
+            <!-- Placeholder for description content -->
+        </div>
+    </div>
+</div>
+    </div>
+    </div>
+<br>
 
+    <!-- Decomposition Section -->
+        <div class="decomposition-section">
+    <div class="container">
+        <h2 class="decomposition-title">Your vibe decomposed...</h2>
         <div class="row">
-            <div class="col-8 mt-4">
-                <h2>Your vibe decomposed...</h2>
-                <br>
-                <div class="row">
-                    <div class="col-5.5 mt-4">
-                        <div class="container custom-container">
-<div class="reveal-prompt" style="font-family: Inter"><h2>Your energy.</h2></div>
-                            <div class="description" style="font-family: Inter">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-5.5 mt-4">
-                        <div class="container custom-container" style="background:black;height:300px;">Component 2</div>
-                    </div>
-                </div>
-
-            </div>
             <div class="col-md-4 mt-4 d-flex flex-column justify-content-center align-items-center">
                 <div class="container" style="max-width: 800px; margin: auto; padding: 20px;  border-radius: 16px;">
                     <h3>{{ currentYear }} Vibes</h3>
@@ -148,10 +144,16 @@
 
                     </div>
                 </div>
+        </div>
+    </div>
+</div>
+
+    <div class="container mt-5">
+
+
             </div>
 
         </div>
-    </div>
 
 
 
@@ -299,6 +301,22 @@
     }
 });
 </script>
+    <script>
+      function toggleExpand(element, event) {
+    // This prevents the click from propagating to the parent elements
+    if (event) {
+        event.stopPropagation();
+    }
+
+    // Check if the clicked element is the close button
+    if (element.classList.contains('close-btn')) {
+        element.parentElement.parentElement.classList.remove('expanded');
+    } else {
+        element.classList.toggle('expanded');
+    }
+}
+
+    </script>
     </div>
 
 
