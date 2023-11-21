@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     # "dashboard",
     "dashboard.apps.DashboardConfig",
     "user_profile",
-    "chatroom",
+    "chats",
     "search",
     "django.contrib.admin",
     "django.contrib.auth",
