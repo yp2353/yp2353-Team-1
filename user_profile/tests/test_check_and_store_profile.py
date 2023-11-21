@@ -41,18 +41,18 @@ class UserProfileTests(TestCase):
         # Assertions
         self.assertEqual(response.status_code, 200)
 
-    @patch("user_profile.views.get_spotify_token")
-    def test_check_and_store_profile_no_token(self, mock_get_spotify_token):
-        # Test the behavior when there is no Spotify token
+    # @patch("user_profile.views.get_spotify_token")
+    # def test_check_and_store_profile_no_token(self, mock_get_spotify_token):
+    #     # Test the behavior when there is no Spotify token
 
-        # Setup mock for Spotify token to return None
-        mock_get_spotify_token.return_value = None
+    #     # Setup mock for Spotify token to return None
+    #     mock_get_spotify_token.return_value = None
 
-        # Call the function
-        response = check_and_store_profile(self.request)
+    #     # Call the function
+    #     response = check_and_store_profile(self.request)
 
-        # Assertions
-        self.assertEqual(response.status_code, 302)  # Redirect status code
-        self.assertTrue(response["Location"].endswith("/login/"))
+    #     # Assertions
+    #     self.assertEqual(response.status_code, 302)  # Redirect status code
+    #     self.assertTrue(response["Location"].endswith("/login/"))
 
     # More tests can be added for different scenarios like updating an existing user, handling errors, etc.

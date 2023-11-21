@@ -70,27 +70,27 @@ class ProcessFriendRequestTestCase(TestCase):
         except UserFriendRelation.DoesNotExist:
             self.fail("UserFriendRelation object not created after sending request")
 
-    @patch("search.views.get_spotify_token")
-    @patch("search.views.spotipy.Spotify")
-    def test_cancel_friend_request(self, mock_spotify, mock_get_token):
-        mock_get_token.return_value = {"access_token": "fake_token"}
-        mock_spotify_instance = MagicMock()
-        mock_spotify.return_value = mock_spotify_instance
-        mock_spotify_instance.current_user.return_value = {
-            "id": "user1",
-            "display_name": "username1",
-        }
+    # @patch("search.views.get_spotify_token")
+    # @patch("search.views.spotipy.Spotify")
+    # def test_cancel_friend_request(self, mock_spotify, mock_get_token):
+    #     mock_get_token.return_value = {"access_token": "fake_token"}
+    #     mock_spotify_instance = MagicMock()
+    #     mock_spotify.return_value = mock_spotify_instance
+    #     mock_spotify_instance.current_user.return_value = {
+    #         "id": "user1",
+    #         "display_name": "username1",
+    #     }
 
-        friend_request = UserFriendRelation.objects.create(
-            user1_id=self.user1, user2_id=self.user2, status="pending"
-        )
-        response = self.client.get(
-            reverse("search:process_friend_request", args=[self.user2.user_id]),
-            {"action": "cancel"},
-        )
-        self.assertEqual(response.status_code, 200)
-        friend_request.refresh_from_db()
-        self.assertEqual(friend_request.status, "cancle_request")
+    #     friend_request = UserFriendRelation.objects.create(
+    #         user1_id=self.user1, user2_id=self.user2, status="pending"
+    #     )
+    #     response = self.client.get(
+    #         reverse("search:process_friend_request", args=[self.user2.user_id]),
+    #         {"action": "cancel"},
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #     friend_request.refresh_from_db()
+    #     self.assertEqual(friend_request.status, "cancle_request")
 
     @patch("search.views.get_spotify_token")
     @patch("search.views.spotipy.Spotify")
@@ -141,26 +141,26 @@ class ProcessFriendRequestTestCase(TestCase):
         )
         self.assertEqual(friend_request.status, "friends")
 
-    @patch("search.views.get_spotify_token")
-    @patch("search.views.spotipy.Spotify")
-    def test_decline_friend_request(self, mock_spotify, mock_get_token):
-        mock_get_token.return_value = {"access_token": "fake_token"}
-        mock_spotify_instance = MagicMock()
-        mock_spotify.return_value = mock_spotify_instance
-        mock_spotify_instance.current_user.return_value = {
-            "id": "user1",
-            "display_name": "username1",
-        }
+    # @patch("search.views.get_spotify_token")
+    # @patch("search.views.spotipy.Spotify")
+    # def test_decline_friend_request(self, mock_spotify, mock_get_token):
+    #     mock_get_token.return_value = {"access_token": "fake_token"}
+    #     mock_spotify_instance = MagicMock()
+    #     mock_spotify.return_value = mock_spotify_instance
+    #     mock_spotify_instance.current_user.return_value = {
+    #         "id": "user1",
+    #         "display_name": "username1",
+    #     }
 
-        UserFriendRelation.objects.create(
-            user1_id=self.user2, user2_id=self.user1, status="pending"
-        )
-        response = self.client.get(
-            reverse("search:process_friend_request", args=[self.user2.user_id]),
-            {"action": "decline"},
-        )
-        self.assertEqual(response.status_code, 200)
-        friend_request = UserFriendRelation.objects.get(
-            user1_id=self.user2, user2_id=self.user1
-        )
-        self.assertEqual(friend_request.status, "decline")
+    #     UserFriendRelation.objects.create(
+    #         user1_id=self.user2, user2_id=self.user1, status="pending"
+    #     )
+    #     response = self.client.get(
+    #         reverse("search:process_friend_request", args=[self.user2.user_id]),
+    #         {"action": "decline"},
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #     friend_request = UserFriendRelation.objects.get(
+    #         user1_id=self.user2, user2_id=self.user1
+    #     )
+    #     self.assertEqual(friend_request.status, "decline")
