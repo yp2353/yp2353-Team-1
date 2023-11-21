@@ -8,11 +8,14 @@ https://docs.djangoproject.com/en/dev/howto/deployment/asgi/
 
 """
 import os
-from channels.routing import ProtocolTypeRouter, URLRouter
-from chatroom import routing  # noqa isort:skip
-from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.core.asgi import get_asgi_application
+from dotenv import load_dotenv
+from chatroom import routing  # noqa isort:skip
 
+
+load_dotenv()
 
 # If DJANGO_SETTINGS_MODULE is unset, default to the local settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vibecheck.settings")
