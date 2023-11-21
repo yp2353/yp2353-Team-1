@@ -53,7 +53,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    
+    "channels",
+    "vibematch",
+    "view_profile",
 ]
 
 MIDDLEWARE = [

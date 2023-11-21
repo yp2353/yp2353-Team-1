@@ -14,6 +14,7 @@ from utils import get_spotify_token, vibe_calc_threads
 from django.http import JsonResponse
 from user_profile.models import Vibe, UserTop
 from django.utils import timezone
+from django.contrib import messages
 
 from .vibe_calc import calculate_vibe_async
 
@@ -99,7 +100,6 @@ def index(request):
             "iteratorMonth": months,
             "iteratorDay": range(0, 32),
             "currentYear": current_year,
-            "user_id": user_id,
             "midnight": midnight,
             "vibe_or_not": vibe_or_not,
         }
@@ -109,7 +109,11 @@ def index(request):
         return render(request, "dashboard/index.html", context)
     else:
         # No token, redirect to login again
-        # ERROR MESSAGE HERE?
+        debug_info = f"Request: {request}"
+        messages.error(
+            request,
+            f"Dashboard failed, please try again later. Debug info: {debug_info}",
+        )
         return redirect("login:index")
 
 
@@ -320,20 +324,34 @@ def get_vector(word, model):
 """
 
 
-def get_task_status(request, user_id, midnight):
-    # Check if there is a result in the database
-    recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=midnight).first()
+def get_task_status(request, midnight):
+    token_info = get_spotify_token(request)
 
-    if recent_vibe and recent_vibe.user_audio_vibe:
-        vibe_result = recent_vibe.user_audio_vibe
-        if recent_vibe.user_lyrics_vibe:
-            vibe_result += " " + recent_vibe.user_lyrics_vibe
-        description = recent_vibe.description
-        response_data = {
-            "status": "SUCCESS",
-            "result": vibe_result,
-            "description": description,
-        }
-        return JsonResponse(response_data)
+    if token_info:
+        sp = spotipy.Spotify(auth=token_info["access_token"])
+        user_info = sp.current_user()
+        user_id = user_info["id"]
+
+        # Check if there is a result in the database
+        recent_vibe = Vibe.objects.filter(
+            user_id=user_id, vibe_time__gte=midnight
+        ).first()
+
+        if recent_vibe and recent_vibe.user_audio_vibe:
+            vibe_result = recent_vibe.user_audio_vibe
+            if recent_vibe.user_lyrics_vibe:
+                vibe_result += " " + recent_vibe.user_lyrics_vibe
+            description = recent_vibe.description
+            response_data = {
+                "status": "SUCCESS",
+                "result": vibe_result,
+                "description": description,
+            }
+            return JsonResponse(response_data)
+        else:
+            return JsonResponse({"status": "PENDING"})
+
     else:
-        return JsonResponse({"status": "PENDING"})
+        # No token, redirect to login again
+        messages.error(request, "Get_task_status failed, please try again later.")
+        return redirect("login:index")
