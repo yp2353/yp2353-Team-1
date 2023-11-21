@@ -1,5 +1,10 @@
 from django.db import models
-from user_profile.models import User
+from django.apps import apps
+
+if apps.is_installed('user_profile'):
+    from user_profile.models import User
+else:
+    User = None
 
 
 class RoomModel(models.Model):
