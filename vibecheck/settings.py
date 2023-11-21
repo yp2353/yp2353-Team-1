@@ -38,7 +38,6 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "daphne",
-    'corsheaders',
     "channels",
     "login",
     # "dashboard",
@@ -65,7 +64,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = "vibecheck.urls"
@@ -101,9 +99,7 @@ CHANNEL_LAYERS = {
     },
 
 }
-CORS_ALLOWED_ORIGINS = [
-    "http://vibe-env.eba-p2he4imi.us-east-1.elasticbeanstalk.com",
-]
+
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
