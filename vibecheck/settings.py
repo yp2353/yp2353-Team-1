@@ -38,14 +38,12 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "daphne",
-    "channels",
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
     "user_profile",
     "chatroom",
     "search",
-    "vibematch",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -95,7 +93,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com", 6379)],
+            "hosts": [("redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com:6379", 6379)],
             # "hosts": [("127.0.0.1", 6379)],
         },
     },
