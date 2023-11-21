@@ -11,9 +11,17 @@
         <div class="container">
             <ul>
                 {% for user in request_list %}
-                    <li>{{ user.username }}  
-                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=accept">Accept</a>
-                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=decline">Decline</a>
+                    <li>
+                        <a href="{% url 'view_profile:other' user.user_id %}">
+                            {{ user.username }}
+                        </a>
+                        <form method="post" action="{% url 'view_profile:process_fr' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="where_from" value="search_request_list">
+                            <input type="hidden" name="other_user_id" value="{{user.user_id}}">
+                            <button class="btn btn-dark default-btn" type="submit" name="action" value="accept">Accept</button>
+                            <button class="btn btn-dark default-btn" type="submit" name="action" value="decline">Decline</button>
+                        </form>
                     </li>
                 {% endfor %}
             </ul>
@@ -37,17 +45,9 @@
             <ul>
                 {% for user in results %}
                     <li>
-                        {{ user.user.username }}  
-                        {% if user.status == 'user_sent_fr' %}
-                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=cancel">Cancel Request</a>
-                        {% elif user.status == 'pending' %}
-                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=accept">Accept</a>
-                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=decline">Decline</a>
-                        {% elif user.status == 'friends' %}
-                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=unfriend">Unfriend</a>
-                        {% else %}
-                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=send">Send Request</a>
-                        {% endif %}
+                        <a href="{% url 'view_profile:other' user.user.user_id %}">
+                            {{ user.user.username }}
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
@@ -62,8 +62,9 @@
             <ul>
                 {% for user in friends %}
                     <li>
-                        {{ user.username }}  
-                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=unfriend">Unfriend</a>
+                        <a href="{% url 'view_profile:other' user.user_id %}">
+                            {{ user.username }}
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
