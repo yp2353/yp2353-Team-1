@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "channels",
     "vibematch",
+    "view_profile",
 ]
 
 MIDDLEWARE = [
