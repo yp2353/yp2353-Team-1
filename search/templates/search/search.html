@@ -32,14 +32,17 @@
 
 <div class="search_result container">
     {% if results %}
-        <h2>Matched Users</h2>
+        <h2>Search Results</h2>
         <div class="container">
             <ul>
                 {% for user in results %}
                     <li>
                         {{ user.user.username }}  
-                        {% if user.status == 'pending' %}
+                        {% if user.status == 'user_sent_fr' %}
                             <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=cancel">Cancel Request</a>
+                        {% elif user.status == 'pending' %}
+                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=accept">Accept</a>
+                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=decline">Decline</a>
                         {% elif user.status == 'friends' %}
                             <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=unfriend">Unfriend</a>
                         {% else %}
@@ -67,7 +70,7 @@
         </div>
     {% else %}
         <div class="container">
-            <p>Sorry to say, You have NO FRIEND!!!</p>
+            <p>Sorry to say, You have NO FRIENDS!!!</p>
         </div>
     {% endif %}
 </div>

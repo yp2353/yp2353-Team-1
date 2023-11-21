@@ -58,15 +58,3 @@ class UserFriendRelation(models.Model):
 
     def __str__(self) -> str:
         return f"User -> {self.user1_id} ->  {self.user2_id} -> status"
-
-
-# User Friend List
-class FriendRequest(models.Model):
-    sender = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="sent_request"
-    )
-    receiver = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="receive_request"
-    )
-    status = models.CharField(max_length=30, default="declined")
-    request_time = models.DateField(default=timezone.now, editable=False)
