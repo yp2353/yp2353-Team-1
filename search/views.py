@@ -101,8 +101,6 @@ def user_search(request):
                     else:
                         status = "not_friend"
 
-                    print("TEST!!!!!!!!")
-                    print(status)
                     results.append({"user": entry, "status": status})
             else:
                 results = None
@@ -150,6 +148,8 @@ def process_friend_request(request, friend_user_id):
             elif action == "send":
                 # swaping a,b = b,a
                 # as in, user1 (the sender) should now be current user
+
+                # TROUBLE: GOT A FRIEND REQ FROM ANOTHER USER AND I CHANGE LINK TO SEND
                 if friend_request.user1_id.user_id != user_id:
                     print("before", friend_request.user1_id)
                     (
