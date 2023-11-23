@@ -109,6 +109,7 @@ storage3==0.6.1
 StrEnum==0.4.15
 supabase==1.2.0
 supafunc==0.2.3
+supervisor==4.2.5
 tenacity==8.2.3
 thinc==8.2.1
 threadpoolctl==3.2.0
