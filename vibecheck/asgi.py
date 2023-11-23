@@ -12,9 +12,9 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 from dotenv import load_dotenv
-import django
+# import django
 
-django.setup()
+# django.setup()
 load_dotenv()
 
 # If DJANGO_SETTINGS_MODULE is unset, default to the local settings
