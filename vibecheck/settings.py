@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    # "daphne",
+    "daphne",
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
