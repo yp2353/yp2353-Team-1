@@ -76,8 +76,9 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_user(self):
-        # Import User model here to avoid AppRegistryNotReady error
-        return get_user_exist()
+        user = get_user_exist(self.scope)
+        return user
+
 
     @database_sync_to_async
     def retrieve_room_messages(self):

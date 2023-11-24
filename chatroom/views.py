@@ -58,10 +58,13 @@ def search_room(request):
     return None
 
 
-def get_user_exist():
-    global user_exists
-    if user_exists:
-        # print("Got user", user_exists)
-        return user_exists
+def get_user_exist(scope):
+    from user_profile.models import User
+    user_id = scope.get("user", None)
+    if user_id:
+        user_exists = User.objects.filter(user_id=user_id).first()
+        if user_exists:
+            return user_exists
     else:
-        print("No get_user_exist")
+        print("No User Exists")
+        return None
