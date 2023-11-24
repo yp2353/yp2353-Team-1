@@ -86,11 +86,14 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         return room_messages
 
     @database_sync_to_async
-    def save_chat_db(self):
+    async def save_chat_db(self):
         from chatroom.models import ChatMessage, RoomModel
+
+        user = await self.get_user()  # Await the result of get_user
         message = ChatMessage.objects.create(
-            sender=self.get_user(),
+            sender=user,
             room=RoomModel.objects.get(roomID=self.roomID),
             content=self.message,
         )
         message.save()
+
