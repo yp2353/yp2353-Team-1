@@ -9,10 +9,9 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     message = ""
 
     async def connect(self):
+        self.sender = await self.get_user()
         await self.channel_layer.group_add(self.roomID, self.channel_name)
         await self.accept()
-
-        self.sender = await self.get_user()
 
         messages = await self.retrieve_room_messages()
 
@@ -76,7 +75,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_user(self):
-        user = get_user_exist(self.scope)
+        user = get_user_exist()
         return user
 
 
@@ -86,13 +85,16 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         room_messages = ChatMessage.objects.filter(room=self.roomID)
         return room_messages
 
-    async def save_chat_db(self):
+    @database_sync_to_async
+    def save_chat_db(self):
         from chatroom.models import ChatMessage, RoomModel
 
-        user = await self.get_user()  # Await the result of get_user
+        user = self.sender
+        room = RoomModel.objects.get(roomID=self.roomID)
+
         message = ChatMessage.objects.create(
             sender=user,
-            room=RoomModel.objects.get(roomID=self.roomID),
+            room=room,
             content=self.message,
         )
         message.save()

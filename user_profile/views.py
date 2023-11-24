@@ -40,6 +40,7 @@ def check_and_store_profile(request):
                 ),
                 user_country=user_info["country"],
                 user_last_login=time,
+                user_token = token_info,
             )
             user.save()
         else:
@@ -58,6 +59,8 @@ def check_and_store_profile(request):
                 user.profile_image_url = new_profile_image_url
             if user.user_country != user_info["country"]:
                 user.user_country = user_info["country"]
+            if(user.user_token != token_info):
+                user.user_token = token_info
 
             user.user_last_login = time
             user.save()
