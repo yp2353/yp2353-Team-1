@@ -85,7 +85,6 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         room_messages = ChatMessage.objects.filter(room=self.roomID)
         return room_messages
 
-    @database_sync_to_async
     async def save_chat_db(self):
         from chatroom.models import ChatMessage, RoomModel
 
