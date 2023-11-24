@@ -3,7 +3,6 @@ from rich.console import Console
 from django.shortcuts import render, redirect
 from utils import get_spotify_token
 import spotipy
-from user_profile.models import User
 from .models import RoomModel
 from .forms import SearchRoomFrom
 
@@ -14,6 +13,7 @@ user_exists = None
 
 
 def open_chatroom(request):
+    from user_profile.models import User
     global user_exists
     token_info = get_spotify_token(request)
 

@@ -1,7 +1,6 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from chatroom.models import ChatMessage, RoomModel
 from chatroom.views import get_user_exist
 
 class GlobalChatConsumer(AsyncWebsocketConsumer):
@@ -78,17 +77,17 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_user(self):
         # Import User model here to avoid AppRegistryNotReady error
-        from user_profile.models import User
         return get_user_exist()
 
     @database_sync_to_async
     def retrieve_room_messages(self):
+        from chatroom.models import ChatMessage
         room_messages = ChatMessage.objects.filter(room=self.roomID)
         return room_messages
 
     @database_sync_to_async
     def save_chat_db(self):
-        print("Doing DB work")
+        from chatroom.models import ChatMessage, RoomModel
         message = ChatMessage.objects.create(
             sender=self.sender,
             room=RoomModel.objects.get(roomID=self.roomID),
