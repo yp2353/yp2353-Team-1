@@ -3,7 +3,6 @@ from rich.console import Console
 from django.shortcuts import render, redirect
 from utils import get_spotify_token
 import spotipy
-from .models import RoomModel
 from .forms import SearchRoomFrom
 
 
@@ -16,6 +15,7 @@ def open_chatroom(request):
     from user_profile.models import User
     global user_exists
     token_info = get_spotify_token(request)
+    from chatroom.models import RoomModel
 
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
