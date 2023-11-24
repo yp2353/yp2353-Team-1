@@ -89,7 +89,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     def save_chat_db(self):
         from chatroom.models import ChatMessage, RoomModel
         message = ChatMessage.objects.create(
-            sender=self.sender,
+            sender=self.get_user(),
             room=RoomModel.objects.get(roomID=self.roomID),
             content=self.message,
         )
