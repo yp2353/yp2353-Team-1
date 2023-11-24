@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect
 from utils import get_spotify_token
 import spotipy
 from django.contrib import messages
-from user_profile.models import User, Vibe, UserFriendRelation
+from user_profile.models import User, Vibe, UserFriendRelation, UserTop
 from django.db.models import Q
 
 
 # Create your views here.
-def other(request, other_user_id):
+def compare(request, other_user_id):
     token_info = get_spotify_token(request)
 
     if token_info:
@@ -34,7 +34,41 @@ def other(request, other_user_id):
         other_recent_vibe = (
             Vibe.objects.filter(user_id=other_user_id).order_by("-vibe_time").first()
         )
+        user_top_items = (
+            UserTop.objects.filter(user_id=user_id).order_by("-time").first()
+        )
+        other_top_items = (
+            UserTop.objects.filter(user_id=other_user_id).order_by("-time").first()
+        )
 
+        info = {
+            "user": {
+                "recent_vibe": user_recent_vibe,
+                "recent_tracks": sp.tracks(user_recent_vibe.recent_track[:5]),
+                "top_tracks": sp.tracks(user_top_items.top_track[:5]),
+                "top_artists": sp.artists(user_top_items.top_artist[:5]),
+                "top_genres": user_top_items.top_genre[:5],
+                "iteratorRecentTracks": range(
+                    min(5, len(user_recent_vibe.recent_track))
+                ),
+                "iteratorTopTracks": range(min(5, len(user_top_items.top_track))),
+                "iteratorTopArtists": range(min(5, len(user_top_items.top_artist))),
+            },
+            "other": {
+                "recent_vibe": other_recent_vibe,
+                "recent_tracks": sp.tracks(other_recent_vibe.recent_track[:5]),
+                "top_tracks": sp.tracks(other_top_items.top_track[:5]),
+                "top_artists": sp.artists(other_top_items.top_artist[:5]),
+                "top_genres": other_top_items.top_genre[:5],
+                "iteratorRecentTracks": range(
+                    min(5, len(other_recent_vibe.recent_track))
+                ),
+                "iteratorTopTracks": range(min(5, len(other_top_items.top_track))),
+                "iteratorTopArtists": range(min(5, len(other_top_items.top_artist))),
+            },
+        }
+
+        # FRIEND REQUEST STATUSES -----
         # Check if there's a friend request involving the user
         friend_request = UserFriendRelation.objects.filter(
             (Q(user1_id=user_id) & Q(user2_id=other_user_id))
@@ -53,13 +87,13 @@ def other(request, other_user_id):
                 status = friend_request.status
         else:
             status = "not_friend"
+        # FRIEND REQUEST STATUSES END -----
 
         context = {
             "username": username,
             "user": user,
-            "user_recent_vibe": user_recent_vibe,
             "other_user": other_user,
-            "other_recent_vibe": other_recent_vibe,
+            "info": info,
             "status": status,
             "default_image_path": "user_profile/blank_user_profile_image.jpeg",
         }
@@ -150,7 +184,7 @@ def process_fr(request):
                     return redirect("search:search_page")
                 else:
                     # from "view_profile"
-                    return redirect("view_profile:other", other_user_id=other_user_id)
+                    return redirect("view_profile:compare", other_user_id=other_user_id)
 
         messages.error(request, "Process_fr form failed, please try again later.")
         return redirect("dashboard:index")

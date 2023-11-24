@@ -5,6 +5,18 @@
 
 {% block content %}
 
+<div class="container">
+    <div class="user_search_container">
+        <br>
+        <h3>Search User</h3>
+        <form method="get" action="{% url 'search:search_user' %}">
+            {{ UsersearchForm.as_p }}
+            <button class="btn btn-dark default-btn" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+
+
 {% if request_list%}
     <div class="request_received container ">
         <h2>Received Request</h2>
@@ -12,7 +24,7 @@
             <ul>
                 {% for user in request_list %}
                     <li>
-                        <a href="{% url 'view_profile:other' user.user_id %}">
+                        <a href="{% url 'view_profile:compare' user.user_id %}">
                             {{ user.username }}
                         </a>
                         <form method="post" action="{% url 'view_profile:process_fr' %}">
@@ -29,14 +41,7 @@
     </div>
 {% endif %}
 
-<div class="container">
-    <div class="user_search_container">
-        <form method="get" action="{% url 'search:search_user' %}">
-            {{ UsersearchForm.as_p }}
-            <button type="submit">Search</button>
-        </form>
-    </div>
-</div>
+
 
 <div class="search_result container">
     {% if results %}
@@ -45,7 +50,7 @@
             <ul>
                 {% for user in results %}
                     <li>
-                        <a href="{% url 'view_profile:other' user.user.user_id %}">
+                        <a href="{% url 'view_profile:compare' user.user.user_id %}">
                             {{ user.user.username }}
                         </a>
                     </li>
@@ -62,7 +67,7 @@
             <ul>
                 {% for user in friends %}
                     <li>
-                        <a href="{% url 'view_profile:other' user.user_id %}">
+                        <a href="{% url 'view_profile:compare' user.user_id %}">
                             {{ user.username }}
                         </a>
                     </li>
