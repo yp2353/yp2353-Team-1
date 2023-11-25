@@ -106,11 +106,9 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": "redis://redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
     }
 }
+
 
 
 
