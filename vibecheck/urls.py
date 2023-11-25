@@ -29,6 +29,7 @@ urlpatterns = [
     path("chatroom/", include("chatroom.urls")),
     path("search/", include("search.urls")),
     path("vibematch/", include("vibematch.urls")),
+    path("view/", include("view_profile.urls")),
     path("admin/", admin.site.urls),
     path("", RedirectView.as_view(url="/login/", permanent=True)),
 ]
