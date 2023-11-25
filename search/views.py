@@ -82,26 +82,7 @@ def user_search(request):
                         # You should not be able to search yourself
                         continue
 
-                    # Check if there's a friend request involving the user
-                    friend_request = UserFriendRelation.objects.filter(
-                        (Q(user1_id=current_user_id) & Q(user2_id=query_user_id))
-                        | (Q(user2_id=current_user_id) & Q(user1_id=query_user_id))
-                    ).first()
-
-                    # Determine the status of the friend request
-                    if friend_request:
-                        if (
-                            friend_request.user1_id.user_id == current_user_id
-                            and friend_request.status == "pending"
-                        ):
-                            # Current user sent friend request
-                            status = "user_sent_fr"
-                        else:
-                            status = friend_request.status
-                    else:
-                        status = "not_friend"
-
-                    results.append({"user": entry, "status": status})
+                    results.append({"user": entry})
             else:
                 results = None
         else:
@@ -120,83 +101,6 @@ def user_search(request):
         "friends": current_friend_list(current_user_id),
     }
     return render(request, "search/search.html", context)
-
-
-def process_friend_request(request, friend_user_id):
-    token_info = get_spotify_token(request)
-
-    if token_info:
-        action = request.GET.get("action")
-        sp = spotipy.Spotify(auth=token_info["access_token"])
-
-        user_info = sp.current_user()
-        user_id = user_info["id"]
-
-        try:
-            friend_request = UserFriendRelation.objects.filter(
-                (
-                    Q(user1_id=user_id, user2_id=friend_user_id)
-                    | Q(user1_id=friend_user_id, user2_id=user_id)
-                )
-            ).first()
-            if not friend_request:
-                raise UserFriendRelation.DoesNotExist
-
-            if action == "cancel" or action == "unfriend":
-                friend_request.status = "not_friend"
-
-            elif action == "send":
-                # swaping a,b = b,a
-                # as in, user1 (the sender) should now be current user
-
-                # TROUBLE: GOT A FRIEND REQ FROM ANOTHER USER AND I CHANGE LINK TO SEND
-                if friend_request.user1_id.user_id != user_id:
-                    print("before", friend_request.user1_id)
-                    (
-                        friend_request.user1_id,
-                        friend_request.user2_id,
-                    ) = (
-                        friend_request.user2_id,
-                        friend_request.user1_id,
-                    )
-                friend_request.status = "pending"
-                print("after", friend_request.user1_id)
-
-            elif action == "accept":
-                friend_request = UserFriendRelation.objects.filter(
-                    (Q(user1_id=friend_user_id)) & (Q(user2_id=user_id))
-                ).first()
-                friend_request.status = "friends"
-
-            elif action == "decline":
-                friend_request = UserFriendRelation.objects.filter(
-                    (Q(user1_id=friend_user_id)) & (Q(user2_id=user_id))
-                ).first()
-                friend_request.status = "not_friend"
-
-            friend_request.save()
-
-        except UserFriendRelation.DoesNotExist:
-            if action == "send":
-                friend_request = UserFriendRelation(
-                    user1_id=User.objects.get(user_id=user_id),
-                    user2_id=User.objects.get(user_id=friend_user_id),
-                    status="pending",
-                )
-                friend_request.save()
-
-        # print('message -> Friend request processed successfully')
-        # response_data = {'message': 'Friend request processed successfully'}
-        # return JsonResponse(response_data)
-
-        return open_search_page(request)
-
-    else:
-        # No token, redirect to login again
-        messages.error(
-            request, "Process_friend_request failed, please try again later."
-        )
-        return redirect("login:index")
 
 
 def current_friend_list(user_id):
