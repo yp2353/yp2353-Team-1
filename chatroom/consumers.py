@@ -58,7 +58,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                 {
                     "type": "chat_message",
                     "message": self.message,
-                    "sender": self.scope.get("user").username,
+                    "sender": self.username,
                 },
             )
 
