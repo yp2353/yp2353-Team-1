@@ -50,8 +50,8 @@ def check_and_store_profile(request):
             if user.total_followers != user_info["followers"]["total"]:
                 user.total_followers = user_info["followers"]["total"]
             new_profile_image_url = (
-                user_info["images"][0]["url"]
-                if ("images" in user_info and user_info["images"])
+                user_info["images"][1]["url"]
+                if ("images" in user_info and len(user_info["images"]) > 1)
                 else None
             )
             if user.profile_image_url != new_profile_image_url:
