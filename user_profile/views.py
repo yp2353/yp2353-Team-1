@@ -15,63 +15,16 @@ load_dotenv()
 
 
 def check_and_store_profile(request):
-    token_info = get_spotify_token(request)
 
-    if token_info:
-        sp = spotipy.Spotify(auth=token_info["access_token"])
-
-        time = timezone.now()
-
-        user_info = sp.current_user()
-        user_id = user_info["id"]
-        # Pass username to navbar
-        username = user_info["display_name"]
-        user_exists = User.objects.filter(user_id=user_id).first()
-
-        if not user_exists:
-            user = User(
-                user_id=user_id,
-                username=user_info["display_name"],
-                total_followers=user_info["followers"]["total"],
-                profile_image_url=(
-                    user_info["images"][0]["url"]
-                    if ("images" in user_info and user_info["images"])
-                    else None
-                ),
-                user_country=user_info["country"],
-                user_last_login=time,
-                user_token = token_info,
-            )
-            user.save()
-        else:
-            user = user_exists
-
-            if user.username != user_info["display_name"]:
-                user.username = user_info["display_name"]
-            if user.total_followers != user_info["followers"]["total"]:
-                user.total_followers = user_info["followers"]["total"]
-            new_profile_image_url = (
-                user_info["images"][0]["url"]
-                if ("images" in user_info and user_info["images"])
-                else None
-            )
-            if user.profile_image_url != new_profile_image_url:
-                user.profile_image_url = new_profile_image_url
-            if user.user_country != user_info["country"]:
-                user.user_country = user_info["country"]
-            if(user.user_token != token_info):
-                user.user_token = token_info
-
-            user.user_last_login = time
-            user.save()
+    # Check if the user is authenticated
+    if request.user.is_authenticated:
+        user = request.user
 
         # Get user's most recent vibe, order by descending time
-        recent_vibe = (
-            Vibe.objects.filter(user_id=user_id).order_by("-vibe_time").first()
-        )
-
+        recent_vibe = Vibe.objects.filter(user_id=user.user_id).order_by("-vibe_time").first()
+        
         context = {
-            "username": username,
+            "username": user.username,
             "user": user,
             "vibe": recent_vibe,
             "default_image_path": "user_profile/blank_user_profile_image.jpeg",
@@ -79,10 +32,12 @@ def check_and_store_profile(request):
         return render(request, "user_profile/user_profile.html", context)
     else:
         # No token, redirect to login again
+        print("User Missing!!!!!")
         messages.error(
-            request, "Check_and_store_profile failed, please try again later."
+            request, "Check_and_store_profile failed, please try again later. User unavailable."
         )
         return redirect("login:index")
+
 
 
 def update_user_profile(request, user_id):

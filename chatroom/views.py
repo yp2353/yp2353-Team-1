@@ -1,4 +1,4 @@
-# views.py
+# chatroom/views.py
 from rich.console import Console
 from django.shortcuts import render, redirect
 import spotipy
@@ -58,11 +58,12 @@ def search_room(request):
     return None
 
 
-def get_user_exist():
-    global user_exists
-    if user_exists:
-        print("User exists")
+def get_user_exist(user_id):
+    from user_profile.models import User
+    if user_id:
+        user_exists = User.objects.filter(user_id=user_id).first()
         return user_exists
     else:
-        print("No get_user_exist")
+        return None
+
 

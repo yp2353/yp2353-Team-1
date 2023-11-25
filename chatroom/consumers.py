@@ -9,7 +9,10 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     message = ""
 
     async def connect(self):
-        self.sender = await self.get_user()
+        user_id = self.scope["session"].get("user_id")
+        self.sender = await self.get_user(user_id)
+        print("USER ----> $", self.sender)
+        
         await self.channel_layer.group_add(self.roomID, self.channel_name)
         await self.accept()
 
@@ -55,7 +58,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                 {
                     "type": "chat_message",
                     "message": self.message,
-                    "sender": self.sender.username,
+                    "sender": self.scope.get("user").username,
                 },
             )
 
@@ -74,8 +77,8 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def get_user(self):
-        user = get_user_exist()
+    def get_user(self,user_id):
+        user = get_user_exist(user_id)
         return user
 
 
@@ -85,17 +88,23 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         room_messages = ChatMessage.objects.filter(room=self.roomID)
         return room_messages
 
-    @database_sync_to_async
-    def save_chat_db(self):
+    
+    async def save_chat_db(self):
         from chatroom.models import ChatMessage, RoomModel
+        
+        user_id = self.scope["session"].get("user_id")
+        self.sender = await self.get_user(user_id)
+        
+        print("Before saving =", self.sender)
 
-        user = self.sender
-        room = RoomModel.objects.get(roomID=self.roomID)
+        if self.sender:
+            room = await database_sync_to_async(RoomModel.objects.get)(roomID=self.roomID)
 
-        message = ChatMessage.objects.create(
-            sender=user,
-            room=room,
-            content=self.message,
-        )
-        message.save()
+            message = await database_sync_to_async(ChatMessage.objects.create)(
+                sender=self.sender,
+                room=room,
+                content=self.message,
+            )
+            await database_sync_to_async(message.save)()
+
 
