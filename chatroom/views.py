@@ -1,11 +1,7 @@
-# views.py
+# chatroom/views.py
 from rich.console import Console
 from django.shortcuts import render, redirect
-from utils import get_spotify_token
 import spotipy
-from user_profile.models import User
-from .models import RoomModel
-from .forms import SearchRoomFrom
 
 
 console = Console(style="bold green")
@@ -14,8 +10,14 @@ user_exists = None
 
 
 def open_chatroom(request):
+    from user_profile.models import User
+    from utils import get_spotify_token
+
     global user_exists
     token_info = get_spotify_token(request)
+    from chatroom.models import RoomModel
+    from .forms import SearchRoomFrom
+
 
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
@@ -56,10 +58,12 @@ def search_room(request):
     return None
 
 
-def get_user_exist():
-    global user_exists
-    if user_exists:
-        # print("Got user", user_exists)
+def get_user_exist(user_id):
+    from user_profile.models import User
+    if user_id:
+        user_exists = User.objects.filter(user_id=user_id).first()
         return user_exists
     else:
-        print("No get_user_exist")
+        return None
+
+

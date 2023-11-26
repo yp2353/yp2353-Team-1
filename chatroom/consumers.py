@@ -1,9 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .models import ChatMessage, RoomModel
-from .views import get_user_exist
-
+from chatroom.views import get_user_exist
 
 class GlobalChatConsumer(AsyncWebsocketConsumer):
     roomID = "global_room"
@@ -11,22 +9,17 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     message = ""
 
     async def connect(self):
+        user_id = self.scope["session"].get("user_id")
+        self.sender = await self.get_user(user_id)
+        print("USER ----> $", self.sender)
+        
         await self.channel_layer.group_add(self.roomID, self.channel_name)
         await self.accept()
 
-        self.sender = await self.get_user()
-
-        # Retrieve and send existing messages for the room
-        # messages = await self.retrieve_messages()
-
         messages = await self.retrieve_room_messages()
-        # messages_cycle = cycle(messages)
 
-        # Use async for directly on the coroutine result
         async for message in messages:
-            sender_username = await database_sync_to_async(
-                lambda: message.sender.username
-            )()
+            sender_username = await database_sync_to_async(lambda: message.sender.username)()
             await self.send(
                 text_data=json.dumps(
                     {
@@ -60,7 +53,6 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
 
         elif message_type == "chat_message":
             await self.save_chat_db()
-            # Send message to room group
             await self.channel_layer.group_send(
                 self.roomID,
                 {
@@ -74,7 +66,6 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         message = event["message"]
         sender = event["sender"]
 
-        # Send the message to the WebSocket
         await self.send(
             text_data=json.dumps(
                 {
@@ -86,20 +77,34 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def get_user(self):
-        return get_user_exist()
+    def get_user(self,user_id):
+        user = get_user_exist(user_id)
+        return user
+
 
     @database_sync_to_async
     def retrieve_room_messages(self):
+        from chatroom.models import ChatMessage
         room_messages = ChatMessage.objects.filter(room=self.roomID)
         return room_messages
 
-    @database_sync_to_async
-    def save_chat_db(self):
-        print("Doing DB work")
-        message = ChatMessage.objects.create(
-            sender=self.sender,
-            room=RoomModel.objects.get(roomID=self.roomID),
-            content=self.message,
-        )
-        message.save()
+    
+    async def save_chat_db(self):
+        from chatroom.models import ChatMessage, RoomModel
+        
+        user_id = self.scope["session"].get("user_id")
+        self.sender = await self.get_user(user_id)
+        
+        print("Before saving =", self.sender)
+
+        if self.sender:
+            room = await database_sync_to_async(RoomModel.objects.get)(roomID=self.roomID)
+
+            message = await database_sync_to_async(ChatMessage.objects.create)(
+                sender=self.sender,
+                room=room,
+                content=self.message,
+            )
+            await database_sync_to_async(message.save)()
+
+

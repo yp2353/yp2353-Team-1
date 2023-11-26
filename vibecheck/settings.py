@@ -41,9 +41,12 @@ INSTALLED_APPS = [
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
-    "user_profile",
+    'user_profile.apps.UserProfileConfig',
     "chatroom",
     "search",
+    "channels",
+    "vibematch",
+    "view_profile",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -51,9 +54,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    "channels",
-    "vibematch",
-    "view_profile",
 ]
 
 MIDDLEWARE = [
@@ -62,11 +62,14 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    'vibecheck.middleware.UserProfileMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "vibecheck.urls"
+
+AUTH_USER_MODEL = 'user_profile.User'
 
 TEMPLATES = [
     {
@@ -87,14 +90,27 @@ WSGI_APPLICATION = "vibecheck.wsgi.application"
 # Daphne
 ASGI_APPLICATION = "vibecheck.asgi.application"
 
+
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com", 6379)],
+            # "hosts": [("127.0.0.1", 6579)],
         },
     },
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
+    }
+}
+
+
+
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
