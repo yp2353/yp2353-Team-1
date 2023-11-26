@@ -27,7 +27,7 @@ urlpatterns = [
     path("dashboard/", include("dashboard.urls")),
     path("profile/", include("user_profile.urls")),
     path("chatroom/", include("chatroom.urls")),
-    path("search/", include("search.urls")),
+    path("friends/", include("search.urls")),
     path("vibematch/", include("vibematch.urls")),
     path("view/", include("view_profile.urls")),
     path("admin/", admin.site.urls),

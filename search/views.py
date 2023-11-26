@@ -31,6 +31,7 @@ def open_search_page(request, username=""):
             "UsersearchForm": form,
             "request_list": request_list,
             "friends": current_friend_list(user_id),
+            "default_image_path": "user_profile/blank_user_profile_image.jpeg",
         }
 
         return render(request, "search/search.html", context)
@@ -99,6 +100,7 @@ def user_search(request):
         "UsersearchForm": form,
         "request_list": request_list,
         "friends": current_friend_list(current_user_id),
+        "default_image_path": "user_profile/blank_user_profile_image.jpeg",
     }
     return render(request, "search/search.html", context)
 

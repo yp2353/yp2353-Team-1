@@ -44,29 +44,26 @@ def compare(request, other_user_id):
         info = {
             "user": {
                 "recent_vibe": user_recent_vibe,
-                "recent_tracks": sp.tracks(user_recent_vibe.recent_track[:5]),
-                "top_tracks": sp.tracks(user_top_items.top_track[:5]),
-                "top_artists": sp.artists(user_top_items.top_artist[:5]),
-                "top_genres": user_top_items.top_genre[:5],
-                "iteratorRecentTracks": range(
-                    min(5, len(user_recent_vibe.recent_track))
-                ),
-                "iteratorTopTracks": range(min(5, len(user_top_items.top_track))),
-                "iteratorTopArtists": range(min(5, len(user_top_items.top_artist))),
+                "recent_tracks": sp.tracks(user_recent_vibe.recent_track[:5]) if user_recent_vibe and user_recent_vibe.recent_track else None,
+                "top_tracks": sp.tracks(user_top_items.top_track[:5]) if user_top_items and user_top_items.top_track else None,
+                "top_artists": sp.artists(user_top_items.top_artist[:5]) if user_top_items and user_top_items.top_artist else None,
+                "top_genres": user_top_items.top_genre[:5] if user_top_items else None,
+                "iteratorRecentTracks": range(min(5, len(user_recent_vibe.recent_track))) if user_recent_vibe else [],
+                "iteratorTopTracks": range(min(5, len(user_top_items.top_track))) if user_top_items else [],
+                "iteratorTopArtists": range(min(5, len(user_top_items.top_artist))) if user_top_items else [],
             },
             "other": {
                 "recent_vibe": other_recent_vibe,
-                "recent_tracks": sp.tracks(other_recent_vibe.recent_track[:5]),
-                "top_tracks": sp.tracks(other_top_items.top_track[:5]),
-                "top_artists": sp.artists(other_top_items.top_artist[:5]),
-                "top_genres": other_top_items.top_genre[:5],
-                "iteratorRecentTracks": range(
-                    min(5, len(other_recent_vibe.recent_track))
-                ),
-                "iteratorTopTracks": range(min(5, len(other_top_items.top_track))),
-                "iteratorTopArtists": range(min(5, len(other_top_items.top_artist))),
+                "recent_tracks": sp.tracks(other_recent_vibe.recent_track[:5]) if other_recent_vibe and other_recent_vibe.recent_track else None,
+                "top_tracks": sp.tracks(other_top_items.top_track[:5]) if other_top_items and other_top_items.top_track else None,
+                "top_artists": sp.artists(other_top_items.top_artist[:5]) if other_top_items and other_top_items.top_artist else None,
+                "top_genres": other_top_items.top_genre[:5] if other_top_items else None,
+                "iteratorRecentTracks": range(min(5, len(other_recent_vibe.recent_track))) if other_recent_vibe else [],
+                "iteratorTopTracks": range(min(5, len(other_top_items.top_track))) if other_top_items else [],
+                "iteratorTopArtists": range(min(5, len(other_top_items.top_artist))) if other_top_items else [],
             },
         }
+
 
         # FRIEND REQUEST STATUSES -----
         # Check if there's a friend request involving the user
