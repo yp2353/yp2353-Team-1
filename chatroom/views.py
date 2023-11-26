@@ -18,7 +18,6 @@ def open_chatroom(request):
     from chatroom.models import RoomModel
     from .forms import SearchRoomFrom
 
-
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
 
@@ -60,10 +59,9 @@ def search_room(request):
 
 def get_user_exist(user_id):
     from user_profile.models import User
+
     if user_id:
         user_exists = User.objects.filter(user_id=user_id).first()
         return user_exists
     else:
         return None
-
-

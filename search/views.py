@@ -28,6 +28,7 @@ def open_search_page(request, username=""):
 
         context = {
             "username": username,
+            "current_user_id": user_id,
             "UsersearchForm": form,
             "request_list": request_list,
             "friends": current_friend_list(user_id),
@@ -96,6 +97,7 @@ def user_search(request):
 
     context = {
         "username": current_username,
+        "current_user_id": current_user_id,
         "results": results,
         "UsersearchForm": form,
         "request_list": request_list,

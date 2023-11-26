@@ -1,7 +1,8 @@
 from django.utils import timezone
 from user_profile.models import User
-from user_profile.views import get_spotify_token
+from utils import get_spotify_token
 import spotipy
+
 
 class UserProfileMiddleware:
     def __init__(self, get_response):
@@ -54,7 +55,7 @@ class UserProfileMiddleware:
                 user.save()
 
             request.user = user  # Attach the user object to the request for later use
-            request.session["user_id"] = user.user_id 
+            request.session["user_id"] = user.user_id
 
         response = self.get_response(request)
         return response

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
-    'user_profile.apps.UserProfileConfig',
+    "user_profile.apps.UserProfileConfig",
     "chatroom",
     "search",
     "channels",
@@ -62,14 +62,14 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    'vibecheck.middleware.UserProfileMiddleware',
+    "vibecheck.middleware.UserProfileMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "vibecheck.urls"
 
-AUTH_USER_MODEL = 'user_profile.User'
+AUTH_USER_MODEL = "user_profile.User"
 
 TEMPLATES = [
     {
@@ -91,7 +91,6 @@ WSGI_APPLICATION = "vibecheck.wsgi.application"
 ASGI_APPLICATION = "vibecheck.asgi.application"
 
 
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -108,8 +107,6 @@ CHANNEL_LAYERS = {
 #         "LOCATION": "redis://redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
 #     }
 # }
-
-
 
 
 # Database

@@ -336,13 +336,13 @@
                       <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Dashboard</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'search:search_page'%}">Friends</a>
+                      </li>
+                    <li class="nav-item">
                             <a class="nav-link" href="{% url 'vibematch:vibe_match'%}">VibeMatch</a>
                     </li>
                     <li class="nav-item">
                             <a class="nav-link" href="{% url 'chatroom:open_chatroom'%}">Chatrooms</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{% url 'search:search_page'%}">Friends</a>
                     </li>
                   </ul>
                   <ul class="navbar-nav ms-auto">

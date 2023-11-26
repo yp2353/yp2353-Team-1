@@ -44,26 +44,55 @@ def compare(request, other_user_id):
         info = {
             "user": {
                 "recent_vibe": user_recent_vibe,
-                "recent_tracks": sp.tracks(user_recent_vibe.recent_track[:5]) if user_recent_vibe and user_recent_vibe.recent_track else None,
-                "top_tracks": sp.tracks(user_top_items.top_track[:5]) if user_top_items and user_top_items.top_track else None,
-                "top_artists": sp.artists(user_top_items.top_artist[:5]) if user_top_items and user_top_items.top_artist else None,
+                "recent_tracks": sp.tracks(user_recent_vibe.recent_track[:5])
+                if user_recent_vibe and user_recent_vibe.recent_track
+                else None,
+                "top_tracks": sp.tracks(user_top_items.top_track[:5])
+                if user_top_items and user_top_items.top_track
+                else None,
+                "top_artists": sp.artists(user_top_items.top_artist[:5])
+                if user_top_items and user_top_items.top_artist
+                else None,
                 "top_genres": user_top_items.top_genre[:5] if user_top_items else None,
-                "iteratorRecentTracks": range(min(5, len(user_recent_vibe.recent_track))) if user_recent_vibe else [],
-                "iteratorTopTracks": range(min(5, len(user_top_items.top_track))) if user_top_items else [],
-                "iteratorTopArtists": range(min(5, len(user_top_items.top_artist))) if user_top_items else [],
+                "iteratorRecentTracks": range(
+                    min(5, len(user_recent_vibe.recent_track))
+                )
+                if user_recent_vibe
+                else [],
+                "iteratorTopTracks": range(min(5, len(user_top_items.top_track)))
+                if user_top_items
+                else [],
+                "iteratorTopArtists": range(min(5, len(user_top_items.top_artist)))
+                if user_top_items
+                else [],
             },
             "other": {
                 "recent_vibe": other_recent_vibe,
-                "recent_tracks": sp.tracks(other_recent_vibe.recent_track[:5]) if other_recent_vibe and other_recent_vibe.recent_track else None,
-                "top_tracks": sp.tracks(other_top_items.top_track[:5]) if other_top_items and other_top_items.top_track else None,
-                "top_artists": sp.artists(other_top_items.top_artist[:5]) if other_top_items and other_top_items.top_artist else None,
-                "top_genres": other_top_items.top_genre[:5] if other_top_items else None,
-                "iteratorRecentTracks": range(min(5, len(other_recent_vibe.recent_track))) if other_recent_vibe else [],
-                "iteratorTopTracks": range(min(5, len(other_top_items.top_track))) if other_top_items else [],
-                "iteratorTopArtists": range(min(5, len(other_top_items.top_artist))) if other_top_items else [],
+                "recent_tracks": sp.tracks(other_recent_vibe.recent_track[:5])
+                if other_recent_vibe and other_recent_vibe.recent_track
+                else None,
+                "top_tracks": sp.tracks(other_top_items.top_track[:5])
+                if other_top_items and other_top_items.top_track
+                else None,
+                "top_artists": sp.artists(other_top_items.top_artist[:5])
+                if other_top_items and other_top_items.top_artist
+                else None,
+                "top_genres": other_top_items.top_genre[:5]
+                if other_top_items
+                else None,
+                "iteratorRecentTracks": range(
+                    min(5, len(other_recent_vibe.recent_track))
+                )
+                if other_recent_vibe
+                else [],
+                "iteratorTopTracks": range(min(5, len(other_top_items.top_track)))
+                if other_top_items
+                else [],
+                "iteratorTopArtists": range(min(5, len(other_top_items.top_artist)))
+                if other_top_items
+                else [],
             },
         }
-
 
         # FRIEND REQUEST STATUSES -----
         # Check if there's a friend request involving the user
@@ -103,90 +132,79 @@ def compare(request, other_user_id):
 
 
 def process_fr(request):
-    token_info = get_spotify_token(request)
+    if request.method == "POST":
+        user_id = request.POST.get("user_id", None)
+        other_user_id = request.POST.get("other_user_id", None)
+        action = request.POST.get("action", None)
+        where_from = request.POST.get("where_from", None)
 
-    if token_info:
-        sp = spotipy.Spotify(auth=token_info["access_token"])
+        if (
+            user_id is not None
+            and other_user_id is not None
+            and action is not None
+            and where_from is not None
+        ):
+            try:
+                friend_request = UserFriendRelation.objects.filter(
+                    (
+                        Q(user1_id=user_id, user2_id=other_user_id)
+                        | Q(user1_id=other_user_id, user2_id=user_id)
+                    )
+                ).first()
+                if not friend_request:
+                    raise UserFriendRelation.DoesNotExist
 
-        user_info = sp.current_user()
-        user_id = user_info["id"]
+                if action == "message":
+                    # Redirect to private message
+                    print("to be implemented...")
 
-        if request.method == "POST":
-            other_user_id = request.POST.get("other_user_id", None)
-            action = request.POST.get("action", None)
-            where_from = request.POST.get("where_from", None)
+                elif action == "cancel" or action == "unfriend":
+                    friend_request.status = "not_friend"
 
-            if (
-                other_user_id is not None
-                and action is not None
-                and where_from is not None
-            ):
-                try:
-                    friend_request = UserFriendRelation.objects.filter(
+                elif action == "send":
+                    # swaping a,b = b,a
+                    # as in, user1 (the sender) should now be current user
+
+                    if friend_request.user1_id.user_id != user_id:
+                        print("before", friend_request.user1_id)
                         (
-                            Q(user1_id=user_id, user2_id=other_user_id)
-                            | Q(user1_id=other_user_id, user2_id=user_id)
+                            friend_request.user1_id,
+                            friend_request.user2_id,
+                        ) = (
+                            friend_request.user2_id,
+                            friend_request.user1_id,
                         )
+                    friend_request.status = "pending"
+                    print("after", friend_request.user1_id)
+
+                elif action == "accept":
+                    friend_request = UserFriendRelation.objects.filter(
+                        (Q(user1_id=other_user_id)) & (Q(user2_id=user_id))
                     ).first()
-                    if not friend_request:
-                        raise UserFriendRelation.DoesNotExist
+                    friend_request.status = "friends"
 
-                    if action == "message":
-                        # Redirect to private message
-                        print("to be implemented...")
+                elif action == "decline":
+                    friend_request = UserFriendRelation.objects.filter(
+                        (Q(user1_id=other_user_id)) & (Q(user2_id=user_id))
+                    ).first()
+                    friend_request.status = "not_friend"
 
-                    elif action == "cancel" or action == "unfriend":
-                        friend_request.status = "not_friend"
+                friend_request.save()
 
-                    elif action == "send":
-                        # swaping a,b = b,a
-                        # as in, user1 (the sender) should now be current user
-
-                        if friend_request.user1_id.user_id != user_id:
-                            print("before", friend_request.user1_id)
-                            (
-                                friend_request.user1_id,
-                                friend_request.user2_id,
-                            ) = (
-                                friend_request.user2_id,
-                                friend_request.user1_id,
-                            )
-                        friend_request.status = "pending"
-                        print("after", friend_request.user1_id)
-
-                    elif action == "accept":
-                        friend_request = UserFriendRelation.objects.filter(
-                            (Q(user1_id=other_user_id)) & (Q(user2_id=user_id))
-                        ).first()
-                        friend_request.status = "friends"
-
-                    elif action == "decline":
-                        friend_request = UserFriendRelation.objects.filter(
-                            (Q(user1_id=other_user_id)) & (Q(user2_id=user_id))
-                        ).first()
-                        friend_request.status = "not_friend"
-
+            except UserFriendRelation.DoesNotExist:
+                if action == "send":
+                    friend_request = UserFriendRelation(
+                        user1_id=User.objects.get(user_id=user_id),
+                        user2_id=User.objects.get(user_id=other_user_id),
+                        status="pending",
+                    )
                     friend_request.save()
 
-                except UserFriendRelation.DoesNotExist:
-                    if action == "send":
-                        friend_request = UserFriendRelation(
-                            user1_id=User.objects.get(user_id=user_id),
-                            user2_id=User.objects.get(user_id=other_user_id),
-                            status="pending",
-                        )
-                        friend_request.save()
+            if where_from == "search_request_list":
+                return redirect("search:search_page")
+            else:
+                # from "view_profile"
+                return redirect("view_profile:compare", other_user_id=other_user_id)
 
-                if where_from == "search_request_list":
-                    return redirect("search:search_page")
-                else:
-                    # from "view_profile"
-                    return redirect("view_profile:compare", other_user_id=other_user_id)
-
-        messages.error(request, "Process_fr form failed, please try again later.")
-        return redirect("dashboard:index")
-
-    else:
-        # No token, redirect to login again
-        messages.error(request, "Process_fr failed, please try again later.")
-        return redirect("login:index")
+    messages.error(request, "Process_fr form failed, please try again later.")
+    return redirect("dashboard:index")

@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
+
 class User(AbstractUser):
     user_id = models.CharField(max_length=250, primary_key=True)
     total_followers = models.IntegerField()
@@ -14,9 +15,8 @@ class User(AbstractUser):
     user_total_friends = models.IntegerField(null=True)
 
     # Specify other fields that should be required when creating a user
-    REQUIRED_FIELDS = ['user_id']
+    REQUIRED_FIELDS = ["user_id"]
 
-    
     def save(self, *args, **kwargs):
         if not self.pk and not self.password:
             self.set_password(self.user_id)
@@ -24,7 +24,6 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return f"User -> {self.user_id} ->  {self.username}"
-
 
 
 # storing User vibe

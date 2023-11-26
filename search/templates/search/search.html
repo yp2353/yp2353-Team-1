@@ -68,6 +68,7 @@
                         </a>
                         <form method="post" action="{% url 'view_profile:process_fr' %}">
                             {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{current_user_id}}">
                             <input type="hidden" name="where_from" value="search_request_list">
                             <input type="hidden" name="other_user_id" value="{{user.user_id}}">
                             <button class="btn btn-dark default-btn" type="submit" name="action" value="accept">Accept</button>
