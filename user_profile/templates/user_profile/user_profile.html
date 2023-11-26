@@ -32,7 +32,7 @@
                 <form action="{% url 'user_profile:edit' %}" method="post">
                     {% csrf_token %}
                     <div >
-                      <button class="btn btn-dark default-btn" type="submit"><i class="bi bi-gear-wide-connected"></i>Edit</button>
+                      <button class="btn btn-dark default-btn" type="submit"><i class="bi bi-gear-wide-connected"></i> Edit</button>
                     </div>
                     <input type="hidden" name="user_id" value="{{ user.user_id }}">
                   </form>
