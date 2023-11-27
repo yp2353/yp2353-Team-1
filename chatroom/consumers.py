@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from chatroom.views import get_user_exist
 
+
 class GlobalChatConsumer(AsyncWebsocketConsumer):
     roomID = "global_room"
     sender = None
@@ -12,14 +13,16 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         user_id = self.scope["session"].get("user_id")
         self.sender = await self.get_user(user_id)
         print("USER ----> $", self.sender)
-        
+
         await self.channel_layer.group_add(self.roomID, self.channel_name)
         await self.accept()
 
         messages = await self.retrieve_room_messages()
 
         async for message in messages:
-            sender_username = await database_sync_to_async(lambda: message.sender.username)()
+            sender_username = await database_sync_to_async(
+                lambda: message.sender.username
+            )()
             await self.send(
                 text_data=json.dumps(
                     {
@@ -77,28 +80,29 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def get_user(self,user_id):
+    def get_user(self, user_id):
         user = get_user_exist(user_id)
         return user
-
 
     @database_sync_to_async
     def retrieve_room_messages(self):
         from chatroom.models import ChatMessage
+
         room_messages = ChatMessage.objects.filter(room=self.roomID)
         return room_messages
 
-    
     async def save_chat_db(self):
         from chatroom.models import ChatMessage, RoomModel
-        
+
         user_id = self.scope["session"].get("user_id")
         self.sender = await self.get_user(user_id)
-        
+
         print("Before saving =", self.sender)
 
         if self.sender:
-            room = await database_sync_to_async(RoomModel.objects.get)(roomID=self.roomID)
+            room = await database_sync_to_async(RoomModel.objects.get)(
+                roomID=self.roomID
+            )
 
             message = await database_sync_to_async(ChatMessage.objects.create)(
                 sender=self.sender,
@@ -106,5 +110,3 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                 content=self.message,
             )
             await database_sync_to_async(message.save)()
-
-

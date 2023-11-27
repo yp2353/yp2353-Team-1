@@ -1,7 +1,8 @@
 from django.utils import timezone
 from user_profile.models import User
-from user_profile.views import get_spotify_token
+from utils import get_spotify_token
 import spotipy
+
 
 class UserProfileMiddleware:
     def __init__(self, get_response):
@@ -25,8 +26,8 @@ class UserProfileMiddleware:
                     username=user_info["display_name"],
                     total_followers=user_info["followers"]["total"],
                     profile_image_url=(
-                        user_info["images"][0]["url"]
-                        if ("images" in user_info and user_info["images"])
+                        user_info["images"][1]["url"]
+                        if ("images" in user_info and len(user_info["images"]) > 1)
                         else None
                     ),
                     user_country=user_info["country"],
@@ -41,8 +42,8 @@ class UserProfileMiddleware:
                 if user.total_followers != user_info["followers"]["total"]:
                     user.total_followers = user_info["followers"]["total"]
                 new_profile_image_url = (
-                    user_info["images"][0]["url"]
-                    if ("images" in user_info and user_info["images"])
+                    user_info["images"][1]["url"]
+                    if ("images" in user_info and len(user_info["images"]) > 1)
                     else None
                 )
                 if user.profile_image_url != new_profile_image_url:
@@ -54,7 +55,7 @@ class UserProfileMiddleware:
                 user.save()
 
             request.user = user  # Attach the user object to the request for later use
-            request.session["user_id"] = user.user_id 
+            request.session["user_id"] = user.user_id
 
         response = self.get_response(request)
         return response

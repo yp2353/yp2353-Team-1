@@ -22,6 +22,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vibecheck.settings")
 # This application object is used by any ASGI server configured to use this file.
 
 from chatroom import routing  # noqa isort:skip
+
 application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),

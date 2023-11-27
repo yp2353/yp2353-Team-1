@@ -87,14 +87,15 @@ def k_nearest_neighbors(k, target_user_id):
 
     # Calculate distances, excluding the target user
     distances = [
-        (user_id, euclidean_distance(target_user_features[1:], features[1:]))
+        (user_id, euclidean_distance(target_user_features, features))
         for user_id, features in all_users_array
     ]
 
     # Sort by distance and select top k
     nearest_neighbors_ids = sorted(distances, key=lambda x: x[1])[:k]
     nearest_neighbors = [
-        User.objects.get(user_id=uid).username for uid, _ in nearest_neighbors_ids
+        {"user_id": uid, "username": User.objects.get(user_id=uid).username}
+        for uid, _ in nearest_neighbors_ids
     ]
 
     return nearest_neighbors

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Maven+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
         {% load static %}
@@ -18,6 +17,78 @@
         .default-btn {
             border-radius: 30px;
         }
+
+        /*SEARCH PAGE*/
+        .search_user_container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search_user_image {
+            border-radius: 50%;
+            margin-right: 20px;
+            overflow: hidden;
+            width: 50px;
+            height: 50px;
+        }
+
+        .search_user_image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .search_user_info {
+            flex-grow: 1;
+        }
+
+        .search_user_info a {
+            text-decoration: none;
+            color: white;
+            transition: text-decoration 0.3s;
+        }
+
+        .search_user_info a:hover {
+            text-decoration: underline;
+        }
+
+        .friend-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        @media (min-width: 768px) {
+            .friend-container {
+                max-width: 75%;
+            }
+        }
+
+        .friend {
+            padding: 20px;
+        }
+
+        .friend img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .friend a {
+            text-decoration: none;
+            color: white;
+            transition: text-decoration 0.3s;
+            display: block;
+        }
+
+        .friend a:hover {
+            text-decoration: underline;
+        }
+        /*SEARCH PAGE END*/
+
+        /*DASHBOARD PAGE*/
 
         /* Set a fixed height for the carousel items on larger screens */
         #topItemsCarousel .carousel-item {
@@ -35,8 +106,7 @@
             height: 100%;
             overflow-y: auto; /* Enable scrolling if content is taller than the slide */
         }
-
-        /*DASHBOARD PAGE*/
+      
         .vibe-background{
             height: 50vh;
             text-align: center;
@@ -92,164 +162,161 @@
 
 
         #vibe-status {
-    transition: transform 0.3s ease-in-out;
-    transform-origin: center center; /* Adjust as needed */
-}
+            transition: transform 0.3s ease-in-out;
+            transform-origin: center center; /* Adjust as needed */
+        }
 
 
+        #vibe-status + .col-6 {
+            margin-top: 0;
+        }
 
-#vibe-status + .col-6 {
-    margin-top: 0;
-}
+        .decomposition-section {
+            background-color: #1A1A1A;
+            color: #FFFFFF;
+            padding: 20px 0;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 50px;
+        }
 
-.decomposition-section {
-    background-color: #1A1A1A;
-    color: #FFFFFF;
-    padding: 20px 0;
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 50px;
-}
+        .decomposition-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #F1F1F1;
+            text-align: center; /* Center the title for emphasis */
+        }
 
-.decomposition-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 24px;
-    margin-bottom: 15px;
-    color: #F1F1F1;
-    text-align: center; /* Center the title for emphasis */
-}
+        .custom-container {
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px auto;
+            height: 50vh; /* Set a fixed height to match the vibe-background */
+            overflow-y: auto; /* Make the content scrollable */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align content to the top */
+            position: relative;
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
 
-.custom-container {
-    border-radius: 15px;
-    padding: 20px;
-    margin: 10px auto;
-    height: 50vh; /* Set a fixed height to match the vibe-background */
-    overflow-y: auto; /* Make the content scrollable */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align content to the top */
-    position: relative;
-    font-family: 'Inter', sans-serif;
-    box-sizing: border-box;
+        }
 
-}
+        .custom-container h2, .custom-container h3, .custom-container p {
+            margin-top: 0;
+        }
 
-.custom-container h2, .custom-container h3, .custom-container p {
-    margin-top: 0;
-}
-
-.reveal-prompt {
-    font-size: clamp(18px, 2.5vw, 22px);
-    color: floralwhite;
-    text-align: center;
-    margin-bottom: 20px;
-    /* cursor: pointer; Remove if not clickable */
-}
+        .reveal-prompt {
+            font-size: clamp(18px, 2.5vw, 22px);
+            color: floralwhite;
+            text-align: center;
+            margin-bottom: 20px;
+            /* cursor: pointer; Remove if not clickable */
+        }
 
 
-.description {
-    font-size: clamp(14px, 2vw, 16px);
-    color: #E5E5EA;
-    text-align: justify;
-    line-height: 1.6;
-    /* Removed transform property since the content is now scrollable */
-    display: block; /* Always show the description */
-}
+        .description {
+            font-size: clamp(14px, 2vw, 16px);
+            color: #E5E5EA;
+            text-align: justify;
+            line-height: 1.6;
+            /* Removed transform property since the content is now scrollable */
+            display: block; /* Always show the description */
+        }
 
-@media (max-width: 768px) {
-    .vibe-background, .custom-container {
-        height: auto; /* On mobile, allow the height to be automatic */
-        max-height: 100vh; /* Maximum height to ensure it is within the device's viewport */
-        overflow-y: auto; /* Enable scrolling for overflow content */
-        margin-bottom: 0.5rem; /* Adjusted bottom margin for spacing */
-    }
+        @media (max-width: 768px) {
+            .vibe-background, .custom-container {
+                height: auto; /* On mobile, allow the height to be automatic */
+                max-height: 100vh; /* Maximum height to ensure it is within the device's viewport */
+                overflow-y: auto; /* Enable scrolling for overflow content */
+                margin-bottom: 0.5rem; /* Adjusted bottom margin for spacing */
+            }
+        }
 
-    .custom-container {
-        /* Adjust padding as needed for mobile viewing */
-        padding: 15px;
-    }
+        .custom-container {
+            /* Adjust padding as needed for mobile viewing */
+            padding: 15px;
+        }
 
-    .reveal-prompt {
-        /* Adjust font size for better readability on small screens */
-        font-size: 18px;
-    }
+        .reveal-prompt {
+            /* Adjust font size for better readability on small screens */
+            font-size: 18px;
+        }
 
-    .description {
-        /* Ensure text is not too small on mobile devices */
-        font-size: 14px;
-    }
-
-     .navbar {
-        padding: 10px 15px; /* Adjust padding */
-    }
-    .nav-link, .navbar-brand {
-        font-size: smaller;
-}
-    }
-
+        .description {
+            /* Ensure text is not too small on mobile devices */
+            font-size: 14px;
+        }
 
         /*DASHBOARD PAGE END*/
-.navbar {
-    background-color: #1A1A1A; /* A darker shade for a sleek look */
-    font-family: 'Inter', sans-serif;
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
-}
 
-.navbar:hover {
-    background-color: #2D2D2D; /* Slightly lighter on hover for interactive feel */
-}
+        .navbar {
+            padding: 10px 15px; /* Adjust padding */
+        }
+    
+        .navbar {
+            background-color: #1A1A1A; /* A darker shade for a sleek look */
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease; /* Smooth transition for background color */
+        }
 
-.navbar-brand {
-    color: #F1F1F1; /* Light color for brand for better visibility */
-    transition: color 0.3s ease; /* Smooth transition for color */
-}
+        .navbar:hover {
+            background-color: #2D2D2D; /* Slightly lighter on hover for interactive feel */
+        }
+
+        .navbar-brand {
+            color: #F1F1F1; /* Light color for brand for better visibility */
+            transition: color 0.3s ease; /* Smooth transition for color */
+            font-family: 'Maven Pro', sans-serif;
+        }
 
 
-.nav-link, .navbar-toggler {
-    transition: transform 0.2s ease, color 0.2s ease;
-}
+        .nav-link, .navbar-toggler {
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
 
-.nav-link:hover, .navbar-toggler:hover {
-    transform: scale(1.1);
-    color: #E0E0E0; /* Lighter shade for hover */
-}
+        .nav-link:hover, .navbar-toggler:hover {
+            transform: scale(1.02);
+            color: #E0E0E0; /* Lighter shade for hover */
+        }
 
-.navbar-brand:hover {
-    color: #E1E1E1; /* Slightly change color on hover for interactive feel */
-}
+        .navbar-brand:hover {
+            color: #E1E1E1; /* Slightly change color on hover for interactive feel */
+        }
 
-.navbar-toggler {
-    border: none;
-    color: #F1F1F1; /* Set color for the toggler icon */
-}
+        .navbar-toggler {
+            border: none;
+            color: #F1F1F1; /* Set color for the toggler icon */
+        }
 
-.navbar-toggler:focus, .navbar-toggler:active {
-    box-shadow: none;
-    outline: none; /* Remove outline on focus for a cleaner look */
-}
+        .navbar-toggler:focus, .navbar-toggler:active {
+            box-shadow: none;
+            outline: none; /* Remove outline on focus for a cleaner look */
+        }
 
-/* Additional style for navbar items */
-.nav-item {
-    transition: transform 0.3s ease; /* Smooth transition for hover effect */
-}
+        /* Additional style for navbar items */
+        .nav-item {
+            transition: transform 0.3s ease; /* Smooth transition for hover effect */
+        }
 
-.nav-item:hover {
-    transform: scale(1.05); /* Slightly scale up navbar items on hover */
-}
+        .nav-item:hover {
+            transform: scale(1.02); /* Slightly scale up navbar items on hover */
+        }
 
-.nav-link {
-    color: #F1F1F1; /* Color for navbar links */
-    transition: color 0.3s ease; /* Smooth transition for color */
-}
+        .nav-link {
+            color: #F1F1F1; /* Color for navbar links */
+            transition: color 0.3s ease; /* Smooth transition for color */
+        }
 
-.nav-link:hover {
-    color: #E1E1E1; /* Slightly lighter color on hover for links */
-}
+        .nav-link:hover {
+            color: #E1E1E1; /* Slightly lighter color on hover for links */
+        }
 
-/* Style for active nav item */
-.nav-item.active .nav-link {
-    color: #C1C1C1; /* Different color for active nav link */
-}
+        /* Style for active nav item */
+        .nav-item.active .nav-link {
+            color: #C1C1C1; /* Different color for active nav link */
+        }
 
 
     </style>
@@ -269,13 +336,13 @@
                       <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Dashboard</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'search:search_page'%}">Friends</a>
+                      </li>
+                    <li class="nav-item">
                             <a class="nav-link" href="{% url 'vibematch:vibe_match'%}">VibeMatch</a>
                     </li>
                     <li class="nav-item">
                             <a class="nav-link" href="{% url 'chatroom:open_chatroom'%}">Chatrooms</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{% url 'search:search_page'%}">Search</a>
                     </li>
                   </ul>
                   <ul class="navbar-nav ms-auto">
