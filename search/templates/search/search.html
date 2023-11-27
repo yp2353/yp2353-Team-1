@@ -5,75 +5,104 @@
 
 {% block content %}
 
-{% if request_list%}
-    <div class="request_received container ">
-        <h2>Received Request</h2>
-        <div class="container">
-            <ul>
-                {% for user in request_list %}
-                    <li>{{ user.username }}  
-                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=accept">Accept</a>
-                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=decline">Decline</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-{% endif %}
-
-<div class="container">
-    <div class="user_search_container">
-        <form method="get" action="{% url 'search:search_user' %}">
-            {{ UsersearchForm.as_p }}
-            <button type="submit">Search</button>
-        </form>
-    </div>
+<div class="user_search_container container">
+    <br>
+    <h3>Search User</h3>
+    <form method="get" action="{% url 'search:search_user' %}">
+        {% for field in UsersearchForm %}
+            <div class="form-field" style="display: inline-block;">
+                <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                {{ field }}
+            </div>
+        {% endfor %}
+    
+        <button class="btn btn-dark default-btn" type="submit">Search</button>
+    </form>
 </div>
+
+
 
 <div class="search_result container">
     {% if results %}
-        <h2>Matched Users</h2>
+        <br>
+        <h3>Search Results</h3>
         <div class="container">
-            <ul>
-                {% for user in results %}
-                    <li>
-                        {{ user.user.username }}  
-                        {% if user.status == 'pending' %}
-                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=cancel">Cancel Request</a>
-                        {% elif user.status == 'friends' %}
-                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=unfriend">Unfriend</a>
+            {% for user in results %}
+                <div class="search_user_container">
+                    <div class="search_user_image">
+                        {% if user.user.profile_image_url %}
+                            <img src="{{ user.user.profile_image_url }}" alt="Profile Image">
                         {% else %}
-                            <a href="{% url 'search:process_friend_request' user.user.user_id %}?action=send">Send Request</a>
+                            <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Profile Image">
                         {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
+                    </div>
+                    <div class="search_user_info">
+                        <a href="{% url 'view_profile:compare' user.user.user_id %}">
+                            {{ user.user.username }}
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     {% endif %}
 </div>
 
-<div class="currentFriends">
-    {% if friends %}
-        <h2>Friends:</h2>
+<br>
+
+<div class="friend_request container">
+    <h3>Friend Requests</h3>
+    {% if request_list%}
         <div class="container">
-            <ul>
-                {% for user in friends %}
-                    <li>
-                        {{ user.username }}  
-                        <a href="{% url 'search:process_friend_request' user.user_id %}?action=unfriend">Unfriend</a>
-                    </li>
-                {% endfor %}
-            </ul>
+            {% for user in request_list %}
+                <div class="search_user_container">
+                    <div class="search_user_image">
+                        {% if user.profile_image_url %}
+                            <img src="{{ user.profile_image_url }}" alt="Profile Image">
+                        {% else %}
+                            <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Profile Image">
+                        {% endif %}
+                    </div>
+                    <div class="search_user_info">
+                        <a href="{% url 'view_profile:compare' user.user_id %}">
+                            {{ user.username }}
+                        </a>
+                        <form method="post" action="{% url 'view_profile:process_fr' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{current_user_id}}">
+                            <input type="hidden" name="where_from" value="search_request_list">
+                            <input type="hidden" name="other_user_id" value="{{user.user_id}}">
+                            <button class="btn btn-dark default-btn" type="submit" name="action" value="accept">Accept</button>
+                            <button class="btn btn-dark default-btn" type="submit" name="action" value="decline">Decline</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<br>
+
+<div class="currentFriends container">
+    <h3>Friends</h3>
+    {% if friends %}
+        <div class="friend-container">
+            {% for user in friends %}
+                <div class="friend">
+                    {% if user.profile_image_url %}
+                        <img src="{{ user.profile_image_url }}" alt="Profile Image">
+                    {% else %}
+                        <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Profile Image">
+                    {% endif %}
+                    <a href="{% url 'view_profile:compare' user.user_id %}">{{ user.username }}</a>
+                </div>
+            {% endfor %}
         </div>
     {% else %}
         <div class="container">
-            <p>Sorry to say, You have NO FRIEND!!!</p>
+            <p>Sorry to say, You have NO FRIENDS!!!</p>
         </div>
     {% endif %}
 </div>
-
-</div>
-
-
 
 {% endblock %}

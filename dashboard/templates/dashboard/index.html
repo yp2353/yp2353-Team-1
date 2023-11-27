@@ -5,6 +5,17 @@
 {% block body_class %}background{% endblock %}
 
 {% block content %}
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-danger alert-dismissible fade show position-fixed w-100" role="alert" style="left: 0; top: 50; z-index: 1000;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
     <div class="container mt-5">
     <div class="row" style="padding-top:30px;">
     <div class="col-md-5 col-12">
@@ -164,7 +175,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            var user_id = "{{ user_id }}";
             var midnight = "{{ midnight }}";
             var vibe_or_not = "{{ vibe_or_not }}";
 
@@ -179,7 +189,7 @@
             } else {
                 function pollVibeStatus() {
                     $.ajax({
-                        url: '{% url "dashboard:get_task_status" user_id=user_id midnight=midnight %}',
+                        url: '{% url "dashboard:get_task_status" midnight=midnight %}',
                         type: 'GET',
                         success: function(data) {
                             if (data.status === 'SUCCESS') {
@@ -201,7 +211,7 @@
 
                             } else if (data.status === 'PENDING') {
                                 // Task is still in progress, continue polling
-                                setTimeout(pollVibeStatus, 5000);  // Poll every 5 seconds
+                                setTimeout(pollVibeStatus, 10000);  // Poll every 10 seconds
                             }
                         },
                         error: function() {

@@ -26,9 +26,10 @@ urlpatterns = [
     path("login/", include("login.urls")),
     path("dashboard/", include("dashboard.urls")),
     path("profile/", include("user_profile.urls")),
-    path("chats/", include("chats.urls")),
-    path("search/", include("search.urls")),
+    path("chatroom/", include("chatroom.urls")),
+    path("friends/", include("search.urls")),
     path("vibematch/", include("vibematch.urls")),
+    path("view/", include("view_profile.urls")),
     path("admin/", admin.site.urls),
     path("", RedirectView.as_view(url="/login/", permanent=True)),
 ]
