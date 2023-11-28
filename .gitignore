@@ -2,6 +2,9 @@
 *.ipynb
 eight_moods.csv
 
+# Trunck
+.trunk/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

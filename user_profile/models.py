@@ -13,6 +13,7 @@ class User(AbstractUser):
     user_bio = models.TextField(null=True)
     user_city = models.CharField(max_length=255, null=True)
     user_total_friends = models.IntegerField(null=True)
+    track_id = models.CharField(max_length=200, null=True)
 
     # Specify other fields that should be required when creating a user
     REQUIRED_FIELDS = ["user_id"]
