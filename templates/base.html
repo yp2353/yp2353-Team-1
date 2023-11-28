@@ -367,66 +367,64 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
-        window.addEventListener('load', (event) => {
-        const vibematchTab = document.getElementById('vibematch-tab');
-        if (vibematchTab) {
-            vibematchTab.addEventListener('click', function(event) {
-                event.preventDefault();  // Prevent the default navigation
-
-                // First, check if the location has already been stored today
-                fetch('/vibematch/check_location_stored/', {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.locationStored) {
-                        // If location not stored, retrieve and send location
-                        getLocationAndStore(vibematchTab.href);
-                    } else {
-                        // If already stored, just navigate
-                        window.location.href = vibematchTab.href;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+        window.addEventListener('load', () => {
+            const vibematchTab = document.getElementById('vibematch-tab');
+            if (vibematchTab) {
+                vibematchTab.addEventListener('click', function(event) {
+                    event.preventDefault();  // Prevent the default navigation
+    
+                    // First, check if the location has already been stored today
+                    fetch('/vibematch/check_location_stored/', {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.locationStored && 'geolocation' in navigator) {
+                            
+                            navigator.geolocation.getCurrentPosition(position => {
+                                storeLocation(position.coords.latitude, position.coords.longitude);
+                            }, () => {
+                                
+                                window.location.href = vibematchTab.href;
+                            });
+                        } else {
+                            
+                            window.location.href = vibematchTab.href;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        window.location.href = vibematchTab.href;  // Navigate even if there's an error
+                    });
                 });
+            }
+        });
+    
+        function storeLocation(latitude, longitude) {
+            fetch('/vibematch/store_location/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({latitude, longitude})
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Location stored successfully');
+                }
+            })
+            .catch(error => {
+                console.error('Error storing location:', error);
+            })
+            .finally(() => {
+                // Proceed to navigate after attempting to store location
+                window.location.href = document.getElementById('vibematch-tab').href;
             });
         }
-    });
-
-    function getLocationAndStore(redirectUrl) {
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-                fetch('/vibematch/store_location/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({latitude, longitude})
-                })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Location stored successfully');
-                        window.location.href = redirectUrl;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error storing location:', error);
-                });
-            }, function(error) {
-                console.error('Error getting location:', error);
-            });
-        } else {
-            alert('Geolocation is not supported by this browser.');
-        }
-    }
         
         function getCookie(name) {
             let cookieValue = null;
