@@ -39,6 +39,80 @@
             </div>
         </div>
 
+        <br>
+
+        <h3>Vibing to...</h3>
+        {% if track %}
+        <div class="row">
+            <div class="col-md-11" style="border: 1px solid #000; border-radius: 0; background: black;">
+                <div>
+                    <img src="{{ track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
+                </div>
+                <br>
+                <div class="text-center">
+                    <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
+                    <p>
+                        {% for artist in track.artists %}
+                        {{ artist.name }}
+                        {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p>{{ track.album.release_date }}</p>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <form method="post" action="{% url 'user_profile:changeTrack' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.user_id }}">
+
+                    <button class="btn btn-dark default-btn" type="submit" name="action" value="remove">x</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <br>
+
+        <div class="row">
+            <div>
+                <p>Listening to something?</p>
+                <form method="get" action="{% url 'user_profile:search' %}">
+                    {% for field in SearchForm %}
+                        <div class="form-field" style="display: inline-block;">
+                            <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                
+                    <button class="btn btn-dark default-btn" type="submit">Search</button>
+                </form>
+                {% if results %}
+                    <br>
+
+                    <div class="container">
+                        {% for track in results %}
+                            <div class="row mb-2">
+                                <div class="col-md-1 mb-2 mb-md-0">
+                                    <img src="{{ track.image }}" alt="Track Image" class="img-fluid">
+                                </div>
+                                <div class="col-md-9">
+                                    <p><strong>{{ track.name }}</strong> ({{ track.release_date }}) by {{ track.artists }}</p>
+                                </div>
+                                <div class="col-md-2">
+                                    <form method="post" action="{% url 'user_profile:changeTrack' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="user_id" value="{{ user.user_id }}">
+                                        <input type="hidden" name="track_id" value="{{ track.id }}">
+                    
+                                        <button class="btn btn-dark default-btn" type="submit" name="action" value="add">+</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
 {% endblock %}
