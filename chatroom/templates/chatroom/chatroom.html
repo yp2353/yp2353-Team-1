@@ -1,67 +1,60 @@
+
 {% extends 'base.html' %}
 
 {% load static %}
 {% block body_class %}background{% endblock %}
 {% block content %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Group Chatroom</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Chat Room</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/chatroom/css/style.css">
 </head>
 <body>
-    <div id="chat">
-        {% for message in messages %}
-            <p>{{ message.sender }}: {{ message.content }} - {{ message.timestamp }}</p>
-        {% endfor %}
+
+    <!-- Include JQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="static/chatroom/js/startScript.js"></script>
+
+    <br>
+    <div class="container">
+        <div class="row">
+            
+            <div id = "room-list" class="col-md-3">
+                <h2>Room List</h2>
+                <!-- {{ SearchRoomFrom.as_p }} -->
+                <ul>
+                    {% for room in rooms_list %}
+                    <li class="room-list-item" data-room-id="{{ room.roomID }}">{{ room.room_name }}</li>   
+                    {% endfor %}
+                </ul>
+                
+            </div>
+            <div id="room-container" class="col-md-9">
+                <div class="row justify-content-center">
+                    <div class="col-md">
+                        <div class="card">
+                            <div class="card-header" id="room-name"></div>
+                            <div class="card-body" id="chat-messages">
+                                <!-- Messages will be displayed here -->
+                            </div>
+                            <div class="card-footer">
+                                <input type="text" id="chat-message-input" class="form-control" placeholder="Type your message...">
+                                <button id="chat-message-submit" class="btn btn-primary btn-block mt-3">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <form id="message-form">
-        <input type="text" id="message-input" placeholder="Type your message">
-        <input type="text" id="sender-input" placeholder="Your name">
-        <button type="submit">Send</button>
-    </form>
+    
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#message-form').submit(function(e) {
-                e.preventDefault();
-                var content = $('#message-input').val();
-                var sender = $('#sender-input').val();
-
-                if (content && sender) {
-                    $.post('/send_message/', {content: content, sender: sender}, function() {
-                        $('#message-input').val('');
-                    });
-                }
-            });
-
-            function updateChat(messages) {
-                $('#chat').html('');
-                messages.forEach(function(message) {
-                    $('#chat').append('<p>' + message.sender + ': ' + message.content + ' - ' + message.timestamp + '</p>');
-                });
-            }
-
-            function getMessages() {
-                $.get('/get_messages/', function(data) {
-                    updateChat(data);
-                    getMessages();
-                });
-            }
-
-            getMessages();
-
-            var pusher = new Pusher('your_pusher_key', {
-                cluster: 'your_pusher_cluster'
-            });
-
-            var channel = pusher.subscribe('chatroom');
-            channel.bind('new_message', function(data) {
-                updateChat([{content: data.message, sender: data.sender, timestamp: new Date()}]);
-            });
-        });
-    </script>
+    <script src="static/chatroom/js/endScript.js"></script>
 </body>
 </html>
 
