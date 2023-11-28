@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
+from django.contrib.auth.decorators import login_required
 
 
 def vibe_match(request):
@@ -148,3 +149,10 @@ def store_location(request):
     except (KeyError, json.JSONDecodeError, TypeError) as e:
         # Return an error message if something goes wrong
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    
+
+@login_required
+def check_location_stored(request):
+    today = timezone.localdate()
+    location_exists = UserLocation.objects.filter(user=request.user, created_at__date=today).exists()
+    return JsonResponse({'locationStored': location_exists})
