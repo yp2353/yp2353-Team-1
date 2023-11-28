@@ -1,12 +1,18 @@
 from django.shortcuts import redirect, render
 from utils import get_spotify_token
+from django.utils import timezone
 import spotipy
 from user_profile.models import Vibe, User
 import numpy as np
+from vibematch.models import UserLocation
 import re
 from dashboard.models import EmotionVector
 from django.db.models import OuterRef, Subquery, F
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
 
 
 def vibe_match(request):
@@ -112,3 +118,33 @@ def vector_to_array(vector_str):
     clean = clean.split()
     clean = [float(e) for e in clean]
     return np.array(clean)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def store_location(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"status": "unauthorized"}, status=401)
+
+    # Get today's date
+    today = timezone.localdate()
+
+    # Check if a location for today already exists
+    if UserLocation.objects.filter(user=request.user, created_at__date=today).exists():
+        # If it does, return a success response without creating a new entry
+        return JsonResponse({"status": "location already stored for today"}, status=200)
+
+    try:
+        data = json.loads(request.body)
+        latitude = data["latitude"]
+        longitude = data["longitude"]
+
+        # Create a new UserLocation instance and save it to the database
+        UserLocation.objects.create(
+            user=request.user, latitude=latitude, longitude=longitude
+        )
+
+        return JsonResponse({"status": "success"}, status=200)
+    except (KeyError, json.JSONDecodeError, TypeError) as e:
+        # Return an error message if something goes wrong
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
