@@ -69,7 +69,9 @@ def compare(request, other_user_id):
             },
             "other": {
                 "recent_vibe": other_recent_vibe,
-                "fav_track": sp.track(other_user.track_id) if other_user.track_id else None,
+                "fav_track": sp.track(other_user.track_id)
+                if other_user.track_id
+                else None,
                 "recent_tracks": sp.tracks(other_recent_vibe.recent_track[:5])
                 if other_recent_vibe and other_recent_vibe.recent_track
                 else None,

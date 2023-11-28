@@ -116,23 +116,25 @@ def search(request):
                 form = SearchForm(request.GET)
 
                 if form.is_valid():
-                    search_query = form.cleaned_data['search_query']
+                    search_query = form.cleaned_data["search_query"]
                     results = []
-                    track_results = sp.search(q=search_query, type='track', limit=10)
-                    for track in track_results['tracks']['items']:
+                    track_results = sp.search(q=search_query, type="track", limit=10)
+                    for track in track_results["tracks"]["items"]:
                         track_info = {
-                            'id': track['id'],
-                            'name': track['name'],
-                            'artists': ', '.join([artist['name'] for artist in track['artists']]),
-                            'album': track['album']['name'],
-                            'image': track['album']['images'][0]['url'],
-                            'release_date': track['album']['release_date'],
+                            "id": track["id"],
+                            "name": track["name"],
+                            "artists": ", ".join(
+                                [artist["name"] for artist in track["artists"]]
+                            ),
+                            "album": track["album"]["name"],
+                            "image": track["album"]["images"][0]["url"],
+                            "release_date": track["album"]["release_date"],
                         }
                         results.append(track_info)
-                    
+
                 else:
                     results = None
-            
+
             else:
                 form = SearchForm()
                 results = None
@@ -151,7 +153,7 @@ def search(request):
                 "track": track,
             }
             return render(request, "user_profile/user_profile.html", context)
-        
+
     messages.error(
         request,
         "Profile track search failed, please try again later.",
@@ -163,7 +165,7 @@ def changeTrack(request):
     if request.method == "POST":
         user_id = request.POST.get("user_id", None)
         action = request.POST.get("action", None)
-        
+
         if user_id is not None and action is not None:
             user = User.objects.filter(user_id=user_id).first()
             if not user:
@@ -177,14 +179,14 @@ def changeTrack(request):
             if action == "remove":
                 user.track_id = None
                 user.save()
-            
+
             elif action == "add":
                 track_id = request.POST.get("track_id", None)
                 if track_id:
                     user.track_id = track_id
                     user.save()
-            
+
             return redirect("user_profile:profile_page")
-        
+
     messages.error(request, "Change track failed, please try again later.")
     return redirect("dashboard:index")
