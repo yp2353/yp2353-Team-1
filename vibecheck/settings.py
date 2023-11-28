@@ -104,7 +104,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis-cluster.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
+        "LOCATION": "redis://redis-cluster.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
     }
 }
 
