@@ -19,6 +19,8 @@ script:
   - black --check .
   - flake8 .
   - coverage run --source=chatroom,vibematch,login,static,templates,dashboard,vibecheck,user_profile,search manage.py test --no-input
+  - python manage.py migrate
+
 
 
 deploy:

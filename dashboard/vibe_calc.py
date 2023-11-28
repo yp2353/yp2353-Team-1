@@ -7,7 +7,7 @@ import time
 from gradio_client import Client
 import numpy as np
 import re
-from dashboard.models import EmotionVector
+from dashboard.models import TrackVibe, EmotionVector
 from user_profile.models import Vibe
 
 MAX_RETRIES = 2
@@ -46,13 +46,42 @@ def calculate_vibe_async(
 
 
 def check_vibe(track_names, track_artists, track_ids, audio_features_list):
+    # Calculate the overall audio vibe for the list of tracks
     audio_final_vibe = deduce_audio_vibe(audio_features_list)
 
-    lyrics_vibes = deduce_lyrics(track_names, track_artists, track_ids)
-    lyrics_final_vibe = lyrics_vectorize(lyrics_vibes)
+    # Fetch existing vibes from the database
+    existing_vibes = TrackVibe.objects.filter(track_id__in=track_ids)
+    existing_vibes_dict = {vibe.track_id: vibe for vibe in existing_vibes}
 
-    if not lyrics_final_vibe:
+    # Determine tracks that need processing for lyrics vibes
+    tracks_needing_lyrics = []
+    for track_name, track_artist, track_id in zip(
+        track_names, track_artists, track_ids
+    ):
+        track_vibe = existing_vibes_dict.get(track_id)
+        if not track_vibe or track_vibe.track_lyrics_vibe is None:
+            tracks_needing_lyrics.append((track_name, track_artist, track_id))
+
+    # Process lyrics vibes if needed
+    if tracks_needing_lyrics:
+        names, artists, ids = zip(*tracks_needing_lyrics)
+        lyrics_vibes = deduce_lyrics(names, artists, ids)
+        lyrics_final_vibe = lyrics_vectorize(lyrics_vibes)
+    else:
         lyrics_final_vibe = None
+
+    # Update the database with the newly computed vibes
+    for index, track_id in enumerate(track_ids):
+        track_vibe = existing_vibes_dict.get(track_id, TrackVibe(track_id=track_id))
+
+        # Update lyrics vibe if needed
+        if track_id in [id for _, _, id in tracks_needing_lyrics]:
+            track_vibe.track_lyrics_vibe = lyrics_final_vibe
+
+        # Update audio vibe for each track, doesn't matter if it was already in the database
+        track_vibe.track_audio_vibe = deduce_audio_vibe([audio_features_list[index]])
+
+        track_vibe.save()
 
     return audio_final_vibe, lyrics_final_vibe
 
