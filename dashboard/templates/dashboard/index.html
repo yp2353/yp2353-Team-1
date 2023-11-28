@@ -19,7 +19,7 @@
 
 <div class="container mt-5">
     <div class="row" style="padding-top:30px;">
-        <div class="col-md-5 col-12">
+        <div class="col-md-12 col-12">
             <div id="vibe-status" class="px-2 py-2 d-flex justify-content-center align-items-center vibe-background">
                 <div class="vibe-loading-text">
                     <h3>Loading Vibe...</h3>
@@ -47,31 +47,91 @@
     <div class="container">
         <h2 class="decomposition-title">Your vibe decomposed...</h2>
         <div class="row">
-            <div class="col-md-4 mt-4 d-flex flex-column justify-content-center align-items-center">
-                <div class="container" style="max-width: 800px; margin: auto; padding: 20px;  border-radius: 16px;">
-                    <h3>{{ currentYear }} Vibes</h3>
-                    <br>
-                    {% for day in iteratorDay %}
-                    <div class="row">
-                        {% for month in iteratorMonth %}
-                        {% if day == 0 %}
-                        <div class="vibe-history-cell text-center"> {{ month.short_name }} </div>
-                        {% elif month.number == 0 and day > 0 %}
-                        <div class="vibe-history-cell text-center">{{ day }}</div>
-                        {% else %}
-                        <div class="vibe-history-cell mood-none
-                            {% for entry in vibe_history %}
-                                {% if entry.vibe_time|timezone:'UTC'|date:'F' == month.long_name and entry.vibe_time|timezone:'UTC'|date:'j'|add:0 == day and entry.user_audio_vibe %}
-                                    mood-{{ entry.user_audio_vibe }}" data-toggle="tooltip" data-placement="top" title="{{ entry.user_audio_vibe }}
-                                        {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
-                                {% endif %}
-                            {% endfor %}">
-                        </div>
-                        {% endif %}
+
+            <div class="col-md-8 mt-4 d-flex flex-column justify-content-center align-items-center">
+                <!-- Recent Tracks Carousel -->
+                <div id="recentTracksCarousel" class="carousel slide mt-4 w-200" data-bs-ride="carousel"
+                    data-bs-touch="true">
+
+                    <!-- Carousel indicators -->
+                    <div class="carousel-indicators">
+                        {% for track in recent_tracks %}
+                        <button type="button" data-bs-target="#recentTracksCarousel"
+                            data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"
+                            aria-current="true" {% endif %} aria-label="Slide {{ forloop.counter }}"></button>
                         {% endfor %}
                     </div>
-                    {% endfor %}
+
+                    <!-- Carousel inner -->
+                    <div id="recentTracksCarouselInner" class="carousel-inner">
+                        {% for track in recent_tracks %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <div class="row align-items-center" style="background-color: black; color: white;">
+                                <!-- Music attributes section -->
+                                <div class="col-md-6">
+                                    <div class="music-attributes">
+                                        <!-- Loop through each attribute to create meters -->
+                                        {% for attribute, value in track.attributes.items %}
+                                        <div class="attribute-meter">
+                                            <label>{{ attribute }}</label>
+                                            <div class="meter">
+                                                <div class="meter-value" role="progressbar" style="width: {{ value }}%" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        <br/>
+                                        <!-- Vibe attribute with thumb buttons -->
+                                        <div class='recent-track-vibe-container'>
+                                            <label>Vibe</label>
+                                            <div class="d-flex align-items-center">
+                                                <div class="recent-track-vibe" style="padding-right: 10px;">
+                                                    {{track.audio_vibe}} {{track.lyrics_vibe}}
+                                                </div>
+                                                <button type="button" class="btn" aria-label="Thumbs up">
+                                                    <label class="thumb-up-container">
+                                                        <input type="checkbox" id="thumb-up-{{ forloop.counter }}" data-track-id="{{ track.id }}" data-down-id="thumb-down-{{ forloop.counter }}" class="thumb-up">
+                                                        <div class="checkmark">
+                                                            <svg fill="none" viewBox="0 0 24 24">
+                                                                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="1.3" stroke="#FFFFFF" d="M8 10V20M8 10L4 9.99998V20L8 20M8 10L13.1956 3.93847C13.6886 3.3633 14.4642 3.11604 15.1992 3.29977L15.2467 3.31166C16.5885 3.64711 17.1929 5.21057 16.4258 6.36135L14 9.99998H18.5604C19.8225 9.99998 20.7691 11.1546 20.5216 12.3922L19.3216 18.3922C19.1346 19.3271 18.3138 20 17.3604 20L8 20"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </label>
+                                                </button>
+                                                <button type="button" class="btn" aria-label="Thumbs down">
+                                                    <label class="thumb-down-container">
+                                                        <input type="checkbox" id="thumb-down-{{ forloop.counter }}" data-track-id="{{ track.id }}" data-up-id="thumb-up-{{ forloop.counter }}" class="thumb-down">
+                                                        <div class="checkmark">
+                                                            <svg fill="none" viewBox="0 0 24 24">
+                                                                <path stroke-linejoin="round" stroke-linecap="round" transform="translate(0,5)" stroke-width="1.3" stroke="#FFFFFF" d="M8 10.0V0.0M8 10.0L4 10.00002V0.0L8 0.0M8 10.0L13.1956 16.06153C13.6886 16.6367 14.4642 16.883960000000002 15.1992 16.70023L15.2467 16.68834C16.5885 16.35289 17.1929 14.78943 16.4258 13.63865L14 10.00002H18.5604C19.8225 10.00002 20.7691 8.8454 20.5216 7.607799999999999L19.3216 1.607800000000001C19.1346 0.6728999999999985 18.3138 0.0 17.3604 0.0L8 0.0"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </label>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Album art and track info section -->
+                                <div class="col-md-6 text-center">
+                                    <img src="{{ track.large_album_cover }}" alt="Album cover for {{ track.name }}"
+                                        class="img-fluid mx-auto d-block" style="padding: 30px 30px 0 30px;">
+                                    <p style="padding-top: 5px; margin-bottom: 3px; font-size: 18px; font-weight: 600;">
+                                        {{ track.name }}</p>
+                                    <p style="padding-top: 1px; font-size: 16px; font-weight: 500">{{ track.artists }} ·
+                                        {{ track.album }} · {{ track.year }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Carousel controls -->
+
+
                 </div>
+            </div>
+        <div class="col-md-4 mt-4 d-flex flex-column justify-content-center align-items-center">
                 <div id="topItemsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel"
                     data-bs-touch="true">
                     <!-- Indicators -->
@@ -159,95 +219,36 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-8 mt-4 d-flex flex-column justify-content-center align-items-center">
-                <!-- Recent Tracks Carousel -->
-                <div id="recentTracksCarousel" class="carousel slide mt-4 w-200" data-bs-ride="carousel"
-                    data-bs-touch="true">
-
-                    <!-- Carousel indicators -->
-                    <div class="carousel-indicators">
-                        {% for track in recent_tracks %}
-                        <button type="button" data-bs-target="#recentTracksCarousel"
-                            data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"
-                            aria-current="true" {% endif %} aria-label="Slide {{ forloop.counter }}"></button>
-                        {% endfor %}
-                    </div>
-
-                    <!-- Carousel inner -->
-                    <div id="recentTracksCarouselInner" class="carousel-inner">
-                        {% for track in recent_tracks %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <div class="row align-items-center" style="background-color: black; color: white;">
-                                <!-- Music attributes section -->
-                                <div class="col-md-6">
-                                    <div class="music-attributes">
-                                        <!-- Loop through each attribute to create meters -->
-                                        {% for attribute, value in track.attributes.items %}
-                                        <div class="attribute-meter">
-                                            <label>{{ attribute }}</label>
-                                            <div class="meter">
-                                                <div class="meter-value" role="progressbar" style="width: {{ value }}%" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                        </div>
-                                        {% endfor %}
-                                        <br/>
-                                        <!-- Vibe attribute with thumb buttons -->
-                                        <div class='recent-track-vibe-container'>
-                                            <label>Vibe</label>
-                                            <div class="d-flex align-items-center">
-                                                <div class="recent-track-vibe" style="padding-right: 10px;">
-                                                    {{track.audio_vibe}} {{track.lyrics_vibe}}
-                                                </div>
-                                                <button type="button" class="btn" aria-label="Thumbs up">
-                                                    <label class="thumb-up-container">
-                                                        <input type="checkbox" id="thumb-up-{{ forloop.counter }}" data-track-id="{{ track.id }}" data-down-id="thumb-down-{{ forloop.counter }}" class="thumb-up">
-                                                        <div class="checkmark">
-                                                            <svg fill="none" viewBox="0 0 24 24">
-                                                                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="1.3" stroke="#FFFFFF" d="M8 10V20M8 10L4 9.99998V20L8 20M8 10L13.1956 3.93847C13.6886 3.3633 14.4642 3.11604 15.1992 3.29977L15.2467 3.31166C16.5885 3.64711 17.1929 5.21057 16.4258 6.36135L14 9.99998H18.5604C19.8225 9.99998 20.7691 11.1546 20.5216 12.3922L19.3216 18.3922C19.1346 19.3271 18.3138 20 17.3604 20L8 20"></path>
-                                                            </svg>
-                                                        </div>
-                                                    </label>
-                                                </button>
-                                                <button type="button" class="btn" aria-label="Thumbs down">
-                                                    <label class="thumb-down-container">
-                                                        <input type="checkbox" id="thumb-down-{{ forloop.counter }}" data-track-id="{{ track.id }}" data-up-id="thumb-up-{{ forloop.counter }}" class="thumb-down">
-                                                        <div class="checkmark">
-                                                            <svg fill="none" viewBox="0 0 24 24">
-                                                                <path stroke-linejoin="round" stroke-linecap="round" transform="translate(0,5)" stroke-width="1.3" stroke="#FFFFFF" d="M8 10.0V0.0M8 10.0L4 10.00002V0.0L8 0.0M8 10.0L13.1956 16.06153C13.6886 16.6367 14.4642 16.883960000000002 15.1992 16.70023L15.2467 16.68834C16.5885 16.35289 17.1929 14.78943 16.4258 13.63865L14 10.00002H18.5604C19.8225 10.00002 20.7691 8.8454 20.5216 7.607799999999999L19.3216 1.607800000000001C19.1346 0.6728999999999985 18.3138 0.0 17.3604 0.0L8 0.0"></path>
-                                                            </svg>
-                                                        </div>
-                                                    </label>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Album art and track info section -->
-                                <div class="col-md-6 text-center">
-                                    <img src="{{ track.large_album_cover }}" alt="Album cover for {{ track.name }}"
-                                        class="img-fluid mx-auto d-block" style="padding: 30px 30px 0 30px;">
-                                    <p style="padding-top: 5px; margin-bottom: 3px; font-size: 18px; font-weight: 600;">
-                                        {{ track.name }}</p>
-                                    <p style="padding-top: 1px; font-size: 16px; font-weight: 500">{{ track.artists }} ·
-                                        {{ track.album }} · {{ track.year }}</p>
-                                </div>
+                            <div class="col-md-8 mt-4 d-flex flex-column justify-content-center align-items-center">
                             </div>
+        
+                    <div class="col-md-4 mt-4 d-flex flex-column justify-content-center align-items-center">
+
+        <div class="container" style="max-width: 800px; margin: auto; padding: 20px;  border-radius: 16px;">
+                    <h3>{{ currentYear }} Vibes</h3>
+                    <br>
+                    {% for day in iteratorDay %}
+                    <div class="row">
+                        {% for month in iteratorMonth %}
+                        {% if day == 0 %}
+                        <div class="vibe-history-cell text-center"> {{ month.short_name }} </div>
+                        {% elif month.number == 0 and day > 0 %}
+                        <div class="vibe-history-cell text-center">{{ day }}</div>
+                        {% else %}
+                        <div class="vibe-history-cell mood-none
+                            {% for entry in vibe_history %}
+                                {% if entry.vibe_time|timezone:'UTC'|date:'F' == month.long_name and entry.vibe_time|timezone:'UTC'|date:'j'|add:0 == day and entry.user_audio_vibe %}
+                                    mood-{{ entry.user_audio_vibe }}" data-toggle="tooltip" data-placement="top" title="{{ entry.user_audio_vibe }}
+                                        {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
+                                {% endif %}
+                            {% endfor %}">
                         </div>
+                        {% endif %}
                         {% endfor %}
                     </div>
-
-                    <!-- Carousel controls -->
-                    <a class="carousel-control-prev" href="#recentTracksCarousel" role="button" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" href="#recentTracksCarousel" role="button" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </a>
+                    {% endfor %}
                 </div>
-            </div>
+        </div>
         </div>
     </div>
 
