@@ -24,9 +24,13 @@
     <div class="container">
         <div class="row">
             
+            
             <div id = "room-list" class="col-md-3">
-                <h2>Room List</h2>
-                <!-- {{ SearchRoomFrom.as_p }} -->
+                <h2>Room List <span><i class="bi bi-plus"></i></span></h2>
+                <div class="search-container">
+                    <div class="add-button"></div>
+                    <div class="searchbar"></div>
+                </div>
                 <ul>
                     {% for room in rooms_list %}
                     <li class="room-list-item" data-room-id="{{ room.roomID }}">{{ room.room_name }}</li>   
