@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block body_class %}background{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Group Chatroom</title>
+</head>
+<body>
+    <div id="chat">
+        {% for message in messages %}
+            <p>{{ message.sender }}: {{ message.content }} - {{ message.timestamp }}</p>
+        {% endfor %}
+    </div>
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Type your message">
+        <input type="text" id="sender-input" placeholder="Your name">
+        <button type="submit">Send</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#message-form').submit(function(e) {
+                e.preventDefault();
+                var content = $('#message-input').val();
+                var sender = $('#sender-input').val();
+
+                if (content && sender) {
+                    $.post('/send_message/', {content: content, sender: sender}, function() {
+                        $('#message-input').val('');
+                    });
+                }
+            });
+
+            function updateChat(messages) {
+                $('#chat').html('');
+                messages.forEach(function(message) {
+                    $('#chat').append('<p>' + message.sender + ': ' + message.content + ' - ' + message.timestamp + '</p>');
+                });
+            }
+
+            function getMessages() {
+                $.get('/get_messages/', function(data) {
+                    updateChat(data);
+                    getMessages();
+                });
+            }
+
+            getMessages();
+
+            var pusher = new Pusher('your_pusher_key', {
+                cluster: 'your_pusher_cluster'
+            });
+
+            var channel = pusher.subscribe('chatroom');
+            channel.bind('new_message', function(data) {
+                updateChat([{content: data.message, sender: data.sender, timestamp: new Date()}]);
+            });
+        });
+    </script>
+</body>
+</html>
+
+{% endblock content %}

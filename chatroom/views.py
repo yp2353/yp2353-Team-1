@@ -1,22 +1,42 @@
-# chatroom/views.py
-from rich.console import Console
+# views.py
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
+from .models import RoomModel
+from .forms import SearchRoomFrom
+from .consumer import GlobalChatConsumer
+from utils import get_spotify_token
+from user_profile.models import User
 import spotipy
+from .models import ChatMessage
 
 
-console = Console(style="bold green")
+class ChatRoomView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    def post(self, request, *args, **kwargs):
+        room_id = request.POST.get("roomID")
+        if room_id:
+            consumer = GlobalChatConsumer()
+            response = consumer.post(request, roomID=room_id, type="join_room")
+            messages = response.get("messages", [])
+            return JsonResponse({"messages": messages})
+        return JsonResponse({"error": "Invalid request"})
+
 
 user_exists = None
 
 
 def open_chatroom(request):
-    from user_profile.models import User
-    from utils import get_spotify_token
-
     global user_exists
     token_info = get_spotify_token(request)
-    from chatroom.models import RoomModel
-    from .forms import SearchRoomFrom
 
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
@@ -57,11 +77,75 @@ def search_room(request):
     return None
 
 
-def get_user_exist(user_id):
-    from user_profile.models import User
-
-    if user_id:
-        user_exists = User.objects.filter(user_id=user_id).first()
+def get_user_exist():
+    global user_exists
+    if user_exists:
+        # print("Got user", user_exists)
         return user_exists
     else:
-        return None
+        print("No get_user_exist")
+
+
+# New view for handling chat room API requests
+@csrf_exempt
+def chatroom_api(request):
+    if request.method == "POST":
+        data = request.POST
+        print("Received data:", data)  # Add print statements for debugging purposes
+        message_type = data.get("type")
+
+        if message_type == "join_room":
+            room_id = data.get("roomID")
+
+            # Retrieve previous messages from the database
+            room_messages = ChatMessage.objects.filter(room=room_id)
+            messages = []
+
+            for message in room_messages:
+                sender_username = message.sender.username
+                messages.append(
+                    {
+                        "type": "chat_message",
+                        "message": message.content,
+                        "sender": sender_username,
+                    }
+                )
+
+            return JsonResponse(
+                {
+                    "messages": messages,
+                    "sender": get_user_exist().username,
+                }
+            )
+
+        elif message_type == "chat_message":
+            # Handle sending a chat message
+            room_id = data.get("roomID")
+            message = data.get("message")
+            sender_username = get_user_exist().username
+            save_message = ChatMessage.objects.create(
+                sender=get_user_exist(),
+                room=RoomModel.objects.get(roomID=room_id),
+                content=message,
+            )
+            save_message.save()
+
+            return JsonResponse(
+                {"sender": sender_username, "message": message, "success": True}
+            )
+
+    return JsonResponse({"error": "Invalid request"})
+
+def get_latest_messages(request, room_id):
+    room_messages = ChatMessage.objects.filter(room=room_id)
+    messages = []
+
+    for message in room_messages:
+        sender_username = message.sender.username
+        messages.append({
+            "type": "chat_message",
+            "message": message.content,
+            "sender": sender_username,
+        })
+
+    return JsonResponse({"messages": messages, "sender": get_user_exist().username})
