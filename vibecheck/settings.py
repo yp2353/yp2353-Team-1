@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
-    "user_profile.apps.UserProfileConfig",
+    # "user_profile.apps.UserProfileConfig",
+    'user_profile',
     "chatroom",
     "search",
     "channels",
@@ -69,7 +70,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "vibecheck.urls"
 
-AUTH_USER_MODEL = "user_profile.User"
+AUTH_USER_MODEL = 'user_profile.User'
 
 TEMPLATES = [
     {
