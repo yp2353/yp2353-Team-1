@@ -218,8 +218,6 @@ node_modules
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
-00_supervisord.config
-
 # .ebextensions/01_environment_variables.config
 
 .DS_Store
