@@ -101,7 +101,13 @@ def k_nearest_neighbors(k, target_user_id):
     # Sort by distance and select top k
     nearest_neighbors_ids = sorted(distances, key=lambda x: x[1])[:k]
     nearest_neighbors = [
-        {"user_id": uid, "username": User.objects.get(user_id=uid).username}
+        {
+            "user_id": uid,
+            "username": User.objects.get(user_id=uid).username,
+            "vibe": all_users.filter(user_id=uid)
+            .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
+            .first(),
+        }
         for uid, _ in nearest_neighbors_ids
     ]
 
@@ -149,10 +155,12 @@ def store_location(request):
     except (KeyError, json.JSONDecodeError, TypeError) as e:
         # Return an error message if something goes wrong
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
-    
+
 
 @login_required
 def check_location_stored(request):
     today = timezone.localdate()
-    location_exists = UserLocation.objects.filter(user=request.user, created_at__date=today).exists()
-    return JsonResponse({'locationStored': location_exists})
+    location_exists = UserLocation.objects.filter(
+        user=request.user, created_at__date=today
+    ).exists()
+    return JsonResponse({"locationStored": location_exists})
