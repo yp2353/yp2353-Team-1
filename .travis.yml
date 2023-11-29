@@ -21,6 +21,7 @@ script:
   # - coverage run --source=chatroom,vibematch,login,static,templates,dashboard,vibecheck,user_profile,search manage.py test --no-input
 
 
+
 deploy:
   provider: elasticbeanstalk
   access_key_id: $AWS_ACCESS_KEY_ID
