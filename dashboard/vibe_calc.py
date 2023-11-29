@@ -88,23 +88,32 @@ def check_vibe(track_names, track_artists, track_ids, audio_features_list):
 
 def deduce_lyrics(track_names, track_artists, track_ids):
     genius = lyricsgenius.Genius(os.getenv("GENIUS_CLIENT_ACCESS_TOKEN"))
+    genius.timeout = 15
 
     lyrics_vibes = []
 
-    # CHECK TRACK DATABASE BASED ON ID, ADD TRACK VIBE TO LYRICS_VIBES IF ALREADY IN DATABASE!!!
-
     lyrics_data = {}
     for track, artist, id in zip(track_names, track_artists, track_ids):
-        # SKIP TRACKS ALRDY IN DATABASE!!!
-        query = f'"{track}" "{artist}"'
-        song = genius.search_song(query)
-        if song:
-            # Genius song object sometimes has trailing space, so need to strip
-            geniusTitle = song.title.lower().replace("\u200b", " ").strip()
-            geniusArtist = song.artist.lower().replace("\u200b", " ").strip()
-            if geniusTitle == track.lower() and geniusArtist == artist.lower():
-                print("Inputting lyrics..")
-                lyrics_data[(track, artist, id)] = song.lyrics
+        genius_retries = 0
+        while genius_retries < 2:
+            try:
+                query = f'"{track}" "{artist}"'
+                song = genius.search_song(query)
+
+            except Exception as e:
+                retries += 1
+                continue
+
+            if song is not None:
+                # Genius song object sometimes has trailing space, so need to strip
+                geniusTitle = song.title.lower().replace("\u200b", " ").strip()
+                geniusArtist = song.artist.lower().replace("\u200b", " ").strip()
+                if geniusTitle == track.lower() and geniusArtist == artist.lower():
+                    print("Inputting lyrics..")
+                    lyrics_data[(track, artist, id)] = song.lyrics
+            
+            break
+
 
     openai.api_key = os.getenv("OPEN_AI_TOKEN")
 
