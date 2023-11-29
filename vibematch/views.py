@@ -103,7 +103,7 @@ def k_nearest_neighbors(k, target_user_id):
     nearest_neighbors = [
         {
             "user_id": uid,
-            "username": User.objects.get(user_id=uid).username,
+            "username": User.objects.get(user_id=uid),
             "vibe": all_users.filter(user_id=uid)
             .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
             .first(),
