@@ -1,70 +1,50 @@
-// my endScripts.js
-// Function to send a chat message
 
-var roomID = "";
-function sendChatMessage(message) {
+document.querySelector('#chat-message-submit').onclick = function(e) {
     
-    $.ajax({
-        type: 'POST',
-        url: '/chatroom/api/chatroom/',
-        data: {
-            csrfmiddlewaretoken: getCookie('csrftoken'),
-            type: 'chat_message',
-            roomID: roomID,
-            message: message
-        },
-        success: function (response) {
-            console.log("Function Sucess");
-            handleMessage({
-                type: "chat_message",
-                sender: response.sender,
-                message: response.message
-            });
-        },
-        error: function (error) {
-            console.log("Erroororro")
-            console.error('Error sending chat message:', error);
-        }
-    });
-}
+    const messageInputDom = document.querySelector('#chat-message-input');
+    const message = messageInputDom.value;
+    
+    chatSocket.send(JSON.stringify({
+        'type': 'chat_message',
+        'message': message
+    }));
 
-// Attach event listener to chat message input
-$('#your-form-id').on('keyup', '#chat-message-input', function (e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        $('#chat-message-submit').click();
+    messageInputDom.value = '';
+};
+
+
+document.querySelector('#chat-message-input').focus();
+document.querySelector('#chat-message-input').onkeyup = function(e) {
+    if (e.key === 'Enter') {  // enter, return
+        document.querySelector('#chat-message-submit').click();
     }
-});
-
-// Attach event listener to chat message submit button
-$('#your-form-id').on('click', '#chat-message-submit', function (e) {
-    e.preventDefault();
-
-    const messageInputDom = $('#chat-message-input');
-    const message = messageInputDom.val();
-    sendChatMessage(message);
-
-    messageInputDom.val('');
-});
-
+};
 
 var roomContainer = document.getElementById("room-container");
 roomContainer.style.visibility = "hidden";
 
 function room_list_click_handler(roomID){
     console.log("Rood with ID ", roomID)
+
+    chatSocket.send(JSON.stringify({
+        'type': 'join_room',
+        'roomID': roomID
+    }));
 }   
 
-$('#room-list').on('click', 'li', function(e) {
-    if (e.target && e.target.nodeName === "LI") {
-        roomID = $(e.target).data('room-id');
-        room_list_click_handler(roomID);
+// it is also node that will be observed for mutations
+var roomList = document.getElementById("room-list").addEventListener("click",function(e) {
+    // e.target is our targetted element.
+                // try doing console.log(e.target.nodeName), it will result LI
+    if(e.target && e.target.nodeName == "LI") {
 
-        if (roomContainer.style.visibility === "hidden") {
+        var roomID = e.target.dataset.roomId
+        room_list_click_handler(roomID)
+        
+        if(roomContainer.style.visibility == "hidden"){
             roomContainer.style.visibility = "visible";
         }
-
-        $('#room-name').html($(e.target).html());
+        
+        document.getElementById("room-name").innerHTML = e.target.innerHTML;
     }
 });
-

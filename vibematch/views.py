@@ -1,22 +1,17 @@
 from django.shortcuts import redirect, render
-from utils import get_spotify_token
 from django.utils import timezone
-import spotipy
-from user_profile.models import Vibe, User
-import numpy as np
-from vibematch.models import UserLocation
-import re
-from dashboard.models import EmotionVector
-from django.db.models import OuterRef, Subquery, F
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-import json
 from django.contrib.auth.decorators import login_required
+import numpy as np
 
 
 def vibe_match(request):
+    from utils import get_spotify_token
+    import spotipy
+
     token_info = get_spotify_token(request)
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
@@ -33,8 +28,10 @@ def vibe_match(request):
         messages.error(request, "Vibe_match failed, please try again later.")
         return redirect("login:index")
 
-
 def k_nearest_neighbors(k, target_user_id):
+    from user_profile.models import Vibe, User
+    from dashboard.models import EmotionVector
+    from django.db.models import OuterRef, Subquery, F
     # Fetch Emotion Vectors
     emotion_vectors = {
         str(emotion.emotion).lower(): vector_to_array(emotion.vector)
@@ -115,6 +112,7 @@ def euclidean_distance(user_1, user_2):
 
 
 def vector_to_array(vector_str):
+    import re
     clean = re.sub(r"[\[\]\n\t]", "", vector_str)
     clean = clean.split()
     clean = [float(e) for e in clean]
@@ -124,6 +122,8 @@ def vector_to_array(vector_str):
 @csrf_exempt
 @require_http_methods(["POST"])
 def store_location(request):
+    from vibematch.models import UserLocation
+
     if not request.user.is_authenticated:
         return JsonResponse({"status": "unauthorized"}, status=401)
 
@@ -135,24 +135,11 @@ def store_location(request):
         # If it does, return a success response without creating a new entry
         return JsonResponse({"status": "location already stored for today"}, status=200)
 
-    try:
-        data = json.loads(request.body)
-        latitude = data["latitude"]
-        longitude = data["longitude"]
-
-        # Create a new UserLocation instance and save it to the database
-        UserLocation.objects.create(
-            user=request.user, latitude=latitude, longitude=longitude
-        )
-
-        return JsonResponse({"status": "success"}, status=200)
-    except (KeyError, json.JSONDecodeError, TypeError) as e:
-        # Return an error message if something goes wrong
-        return JsonResponse({"status": "error", "message": str(e)}, status=400)
-    
 
 @login_required
 def check_location_stored(request):
+    from vibematch.models import UserLocation
+
     today = timezone.localdate()
     location_exists = UserLocation.objects.filter(user=request.user, created_at__date=today).exists()
     return JsonResponse({'locationStored': location_exists})
