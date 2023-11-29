@@ -26,10 +26,13 @@
             
             
             <div id = "room-list" class="col-md-3">
-                <h2>Room List <span><i class="bi bi-plus"></i></span></h2>
+                <h2>Room List <span id="add-icon"><i class="bi bi-plus"></i></span></h2>
                 <div class="search-container">
-                    <div class="add-button"></div>
-                    <div class="searchbar"></div>
+                    <div id="searchbar">
+                        <div class="mb-3">
+                            <input type="email" class="form-control" id="chatroom-searchbar" placeholder="Chat Name">
+                          </div>
+                    </div>
                 </div>
                 <ul>
                     {% for room in rooms_list %}

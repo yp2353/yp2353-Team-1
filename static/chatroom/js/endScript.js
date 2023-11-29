@@ -29,7 +29,7 @@ function sendChatMessage(message) {
 }
 
 // Attach event listener to chat message input
-$('#your-form-id').on('keyup', '#chat-message-input', function (e) {
+$('#chat-form').on('keyup', '#chat-message-input', function (e) {
     if (e.key === 'Enter') {
         e.preventDefault();
         $('#chat-message-submit').click();
@@ -37,7 +37,7 @@ $('#your-form-id').on('keyup', '#chat-message-input', function (e) {
 });
 
 // Attach event listener to chat message submit button
-$('#your-form-id').on('click', '#chat-message-submit', function (e) {
+$('#chat-form').on('click', '#chat-message-submit', function (e) {
     e.preventDefault();
 
     const messageInputDom = $('#chat-message-input');
@@ -47,15 +47,13 @@ $('#your-form-id').on('click', '#chat-message-submit', function (e) {
     messageInputDom.val('');
 });
 
+// Toggle search bar visibility
+$("#add-icon").click(function (e) {
+    $("#searchbar").toggle();
+});
 
-var roomContainer = document.getElementById("room-container");
-roomContainer.style.visibility = "hidden";
-
-function room_list_click_handler(roomID){
-    console.log("Rood with ID ", roomID)
-}   
-
-$('#room-list').on('click', 'li', function(e) {
+// Click event listener for room list items
+$('#room-list').on('click', 'li', function (e) {
     if (e.target && e.target.nodeName === "LI") {
         roomID = $(e.target).data('room-id');
         room_list_click_handler(roomID);
@@ -68,3 +66,10 @@ $('#room-list').on('click', 'li', function(e) {
     }
 });
 
+// Set initial visibility of the room container
+var roomContainer = document.getElementById("room-container");
+roomContainer.style.visibility = "hidden";
+
+function room_list_click_handler(roomID) {
+    console.log("Room with ID ", roomID);
+}

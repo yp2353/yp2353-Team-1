@@ -41,8 +41,7 @@ INSTALLED_APPS = [
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
-    # "user_profile.apps.UserProfileConfig",
-    'user_profile',
+    "user_profile.apps.UserProfileConfig",
     "chatroom",
     "search",
     "channels",
@@ -96,18 +95,18 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis-cluster.ki72ah.ng.0001.use1.cache.amazonaws.com", 6379)],
-            # "hosts": [("127.0.0.1", 6579)],
+            # "hosts": [("redis-cluster.ki72ah.ng.0001.use1.cache.amazonaws.com", 6379)],
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://redis-cluster.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#         "LOCATION": "redis://redis-cluster.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
+#     }
+# }
 
 
 # Database
