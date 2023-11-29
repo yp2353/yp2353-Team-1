@@ -13,5 +13,5 @@ class DashboardConfig(AppConfig):
                 audio_model_path = "assets/Gradient_Boosting_Classifier_3.11.bin"
                 self.model = joblib.load(audio_model_path)
             else:
-                # If Python version lower than 3.11, raise an error
-                raise RuntimeError("Python version lower than 3.11 is not supported")
+                # If Python version lower than 3.7, raise an error
+                raise RuntimeError("Python version lower than 3.7 is not supported")
