@@ -69,7 +69,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "vibecheck.urls"
 
-AUTH_USER_MODEL = 'user_profile.User'
+AUTH_USER_MODEL = "user_profile.User"
 
 TEMPLATES = [
     {
