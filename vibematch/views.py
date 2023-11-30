@@ -23,7 +23,7 @@ def vibe_match(request):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
-        matches = k_nearest_neighbors(2, user_id)
+        matches = k_nearest_neighbors(5, user_id, sp)
 
         context = {"neighbors": matches}
 
@@ -34,7 +34,7 @@ def vibe_match(request):
         return redirect("login:index")
 
 
-def k_nearest_neighbors(k, target_user_id):
+def k_nearest_neighbors(k, target_user_id, sp):
     # Fetch Emotion Vectors
     emotion_vectors = {
         str(emotion.emotion).lower(): vector_to_array(emotion.vector)
@@ -107,6 +107,9 @@ def k_nearest_neighbors(k, target_user_id):
             "vibe": all_users.filter(user_id=uid)
             .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
             .first(),
+            "fav_track": sp.track(User.objects.get(user_id=uid).track_id)
+            if User.objects.get(user_id=uid).track_id
+            else None,
         }
         for uid, _ in nearest_neighbors_ids
     ]

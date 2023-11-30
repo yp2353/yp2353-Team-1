@@ -7,40 +7,68 @@
 <style>
 /* Add this CSS to your existing stylesheet or within a <style> tag in your HTML head */
 
-.container {
+.container
+{
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* This centers the cards horizontally */
 }
 
-.user_card {
-    background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
-    border-radius: 15px;
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around; /* Ensures even spacing around items */
+    align-items: flex-start; /* Aligns items to the start of the flex container */
+}
+
+.is-flipped {
+    transform: rotateY(180deg);
+}
+
+
+.card-container {
+    width: 400px; /* Fixed width for each card */
+    margin: 15px; /* Space between cards */
+    perspective: 1000px; /* Perspective for 3D rotation */
+
+}
+
+.card {
+    background: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%);
+    border-radius: 20px;
     color: white;
     padding: 20px;
-    margin: 10px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.3s;
-    width: 400px;
-    text-align: center;
     height: 400px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    transform-origin: center;
     cursor: pointer;
 }
 
-.user_card:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
+
+
+.card-front, .card-back {
+
+ position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+
+
 }
 
-.user_card h3 {
-    margin: 0;
-    font-weight: normal;
+.card-front {
+    /* Front styling */
 }
 
-.match_component {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+.card-back {
+        transform: rotateY(180deg);
+
+
+
+
 }
+
 
 </style>
 <div class="container mt-5">
@@ -50,25 +78,37 @@
 </div>
 
 <div class="container mt-5">
-    <br>
     <div class="row">
-        <div class="match_component">
-            {% if neighbors %}
-                {% for user in neighbors %}
-                    <div class="user_card" onclick="loadCompareView('{{ user.user_id }}')">
+        {% if neighbors %}
+            {% for user in neighbors %}
+                <div class="card-container">
+                <div class="card">
+                        <div class="card-front">
                      {% if user.username.profile_image_url %}
                                 <img src="{{ user.username.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image" width="80" height="80">
                             {% else %}
                                 <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image" width="80" height="80">
                             {% endif %}
     <h3>{{ user.username.username }}</h3>
-    <p>{{ user.vibe.0 }} {{ user.vibe.1 }}</p>
+    <p>{{ user.vibe.1 }} {{ user.vibe.0 }}</p>
+                        {% if user.fav_track %}
+                    <p>Vibing to: </p>
+                        <img src="{{ user.fav_track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 30px; max-height: 30px;">
+                    <p>{{ user.fav_track.name }}</p>
+                        {%  endif %}
+                        </div>
+
+                        <div class="card-back">
+                            <!-- Back card content here -->
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
 </div>
-                {% endfor %}
-            {% endif %}
-        </div>
+
+
     </div>
-</div>
     <div id="compareViewModal" style="display:none;">
     <div id="compareViewContainer"></div>
     <button onclick="closeCompareView()">Close</button>
@@ -99,6 +139,14 @@ function closeCompareView() {
     document.getElementById('compareViewModal').style.display = 'none';
 }
 </script>
+
+    <script>
+document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+        card.classList.toggle('is-flipped');
+    });
+});
+    </script>
 
 
 {% endblock %}
