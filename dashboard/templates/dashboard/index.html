@@ -61,8 +61,18 @@
     
                     </div>
                 </div>
-                <!-- Recent Tracks Carousel end -->
             </div>
+            <!-- Recent Tracks Carousel end -->
+
+            <!-- Hour day plot start -->
+            <div class="row my-4">
+                <!-- Container for the Hour of Day Plot -->
+                <div id="hour_plot" class="col-lg-6"></div>
+        
+                <!-- Container for the Day of Week Plot -->
+                <div id="day_plot" class="col-lg-6"></div>
+            </div>
+            <!-- Hour day plot end -->
 
         </div>
 
@@ -202,7 +212,7 @@
     </div>
     <!-- Decomposition Section end-->
     
-
+    <br>
 </div>
 
 
@@ -378,55 +388,25 @@
 </script>
 
 
-<div class="container mt-5">
-    <div class="container text-center">
-        <div class="row">
-            <!-- Container for the Hour of Day Plot -->
-            <div id="hourPlot" class="col"></div>
-
-            <!-- Container for the Day of Week Plot -->
-            <div id="dayPlot" class="col"></div>
-        </div>
-    </div>
-</div>
-
+<!-- For hour day plot -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-1.58.4.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch('{% static "login/day_data.json" %}')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const dayData = JSON.parse(data);
-                Plotly.newPlot('dayPlot', dayData.data, dayData.layout);
-            })
-            .catch(error => {
-                console.log('There was a problem with the fetch operation:', error.message);
-            });
-        // Your fetch and plot code here
+    // Not sure why syntax error here but it runs and works
+    var hourData = {{ hour_data|safe }};
+    if (hourData) {
+        var hourPlot = Plotly.plot('hour_plot', hourData.data, hourData.layout);
+    }
 
-        fetch('{% static "login/hour_data.json" %}')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const hourData = JSON.parse(data);
-                Plotly.newPlot('hourPlot', hourData.data, hourData.layout);
-            })
-            .catch(error => {
-                console.log('There was a problem with the fetch operation:', error.message);
-            });
-    });
+    var dayData = {{ day_data|safe }};
+    if (dayData) {
+        var dayPlot = Plotly.plot('day_plot', dayData.data, dayData.layout);
+    }
 </script>
 
+
+<!-- Recent tracks like and dislike button logic -->
 <script>
-    // Like and dislike button logic
     document.getElementById('recentTracksCarouselInner').addEventListener('change', function (event) {
         var target = event.target;
 

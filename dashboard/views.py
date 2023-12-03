@@ -3,10 +3,7 @@ import spotipy
 import plotly.graph_objects as go
 from datetime import datetime
 from collections import Counter
-import json
-import shutil
 import threading
-from user_profile.views import check_and_store_profile
 
 # from dotenv import load_dotenv
 from utils import get_spotify_token, vibe_calc_threads
@@ -19,7 +16,7 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 
-from .vibe_calc import calculate_vibe_async, deduce_audio_vibe
+from .vibe_calc import calculate_vibe_async
 
 
 def index(request):
@@ -79,10 +76,14 @@ def index(request):
             {"number": 12, "short_name": "D", "long_name": "December"},
         ]
 
-        vibe_or_not = calculate_vibe(sp, midnight)
+        user_recent_tracks = sp.current_user_recently_played(limit=10)
+
+        vibe_or_not = calculate_vibe(sp, midnight, user_recent_tracks)
         # Possible values: already_loaded if vibe already calculated within today,
         # asyn_started if vibe calculation is started and still loading,
         # no_songs if user has 0 recent songs to analyze
+
+        hour_data, day_data = day_and_hour_info(user_recent_tracks)
 
         context = {
             "username": username,
@@ -96,9 +97,9 @@ def index(request):
             "currentYear": current_year,
             "midnight": midnight,
             "vibe_or_not": vibe_or_not,
+            "hour_data": hour_data,
+            "day_data": day_data,
         }
-
-        extract_tracks(sp)
 
         return render(request, "dashboard/index.html", context)
     else:
@@ -190,7 +191,7 @@ def get_recommendations(sp, top_tracks):
     return recommendedtracks
 
 
-def calculate_vibe(sp, midnight):
+def calculate_vibe(sp, midnight, recent_tracks):
     # Check if user vibe already been calculated for today
     user_info = sp.current_user()
     user_id = user_info["id"]
@@ -199,8 +200,6 @@ def calculate_vibe(sp, midnight):
     if recent_vibe:
         return "already_loaded"
     # If vibe today is already in database, RETURN, do not schedule vibe calculation
-
-    recent_tracks = sp.current_user_recently_played(limit=10)
 
     if not recent_tracks.get("items", []):
         return "no_songs"
@@ -241,9 +240,11 @@ def logout(request):
     return redirect("login:index")
 
 
-def extract_tracks(sp):
-    recently_played = sp.current_user_recently_played()
-    timestamps = [track["played_at"] for track in recently_played["items"]]
+def day_and_hour_info(recent_tracks):
+    if not recent_tracks.get("items", []):
+        return None, None
+    
+    timestamps = [track["played_at"] for track in recent_tracks["items"]]
     # Convert to datetime and extract hour and day
     hours_of_day = [datetime.fromisoformat(ts[:-1]).hour for ts in timestamps]
     days_of_week = [datetime.fromisoformat(ts[:-1]).weekday() for ts in timestamps]
@@ -267,6 +268,7 @@ def extract_tracks(sp):
         plot_bgcolor="black",  # Background color of the plotting area
         paper_bgcolor="black",  # Background color of the entire paper
         font=dict(color="white"),
+        autosize=True,
     )
 
     # Plot by Day of Week
@@ -292,22 +294,15 @@ def extract_tracks(sp):
         plot_bgcolor="black",  # Background color of the plotting area
         paper_bgcolor="black",  # Background color of the entire paper
         font=dict(color="white"),  # To make the font color white for better visibility
+        autosize=True,
     )
 
-    # Save as HTML
 
     hour_json = hour_fig.to_json()
     day_json = day_fig.to_json()
 
-    # You can save this JSON data to a file or use some other method to transfer it to your webpage.
-    with open("hour_data.json", "w") as f:
-        json.dump(hour_json, f)
 
-    with open("day_data.json", "w") as f:
-        json.dump(day_json, f)
-
-    shutil.move("hour_data.json", "login/static/login/hour_data.json")
-    shutil.move("day_data.json", "login/static/login/day_data.json")
+    return hour_json, day_json
 
 
 """
