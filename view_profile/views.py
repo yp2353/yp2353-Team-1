@@ -136,12 +136,29 @@ def compare(request, other_user_id):
         return redirect("login:index")
 
 
-def generate_direct_room_id(user1_id, user2_id):
-    # Use a hash function to generate a consistent room ID for direct messaging
-    room_id_hash = hash((user1_id, user2_id))
-    # Convert the hash value to a positive integer and create the room ID
+def generate_room_id(user_ids):
+    sorted_user_ids = sorted(user_ids)
+    room_id_hash = hash(tuple(sorted_user_ids))
     positive_hash = abs(room_id_hash)
-    return f'direct_{positive_hash}'
+    return f"group_{positive_hash}"
+
+
+def make_private_chatroom(user_id, other_user_id):
+    room = (
+        RoomModel.objects.filter(room_participants=user_id, room_type="direct_message")
+        .filter(room_participants=other_user_id)
+        .first()
+    )
+    if room is None:
+        room_ID = generate_room_id([user_id, other_user_id])
+        room_name = f"{other_user_id}"
+        room = RoomModel.objects.create(
+            roomID=room_ID,
+            room_name=room_name,
+            room_type="direct_message",
+        )
+        room.room_participants.add(user_id, other_user_id)
+        room.save()
 
 
 def process_fr(request):
@@ -168,15 +185,8 @@ def process_fr(request):
                     raise UserFriendRelation.DoesNotExist
 
                 if action == "message":
-                    room = RoomModel.objects.filter(room_participants=user_id, room_type='direct_message').filter(room_participants=other_user_id).first()
-                    if room is None:
-                        room_ID = generate_direct_room_id(user_id, other_user_id)
-                        room_name = f"{other_user_id}"
-                        room = RoomModel.objects.create(roomID=room_ID, room_name=room_name, room_type='direct_message')
-                        room.room_participants.add(user_id, other_user_id)
-                        room.save()
+                    make_private_chatroom(user_id, other_user_id)
                     return redirect("chatroom:open_chatroom")
-
 
                 elif action == "cancel" or action == "unfriend":
                     friend_request.status = "not_friend"
