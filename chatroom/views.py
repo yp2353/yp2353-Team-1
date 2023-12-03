@@ -28,10 +28,19 @@ def open_chatroom(request):
         user_exists = User.objects.filter(user_id=user_id).first()
         rooms_list = RoomModel.objects.filter(room_participants=user_id)
 
+
+
         if not rooms_list:
             room = RoomModel.objects.get(roomID="global_room")
             room.room_participants.add(user_exists)
             print("=====New User Added to global room +++++")
+
+        for room in rooms_list: 
+            if room.room_type == 'direct_message':
+                other_user = room.room_participants.exclude(user_id=user_id).first()
+                print(other_user)
+                room.room_name = other_user.username
+                print(room.room_name)
 
         form = SearchRoomFrom()
         print(rooms_list)

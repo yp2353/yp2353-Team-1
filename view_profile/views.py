@@ -3,6 +3,7 @@ from utils import get_spotify_token
 import spotipy
 from django.contrib import messages
 from user_profile.models import User, Vibe, UserFriendRelation, UserTop
+from chatroom.models import RoomModel
 from django.db.models import Q
 
 
@@ -135,6 +136,14 @@ def compare(request, other_user_id):
         return redirect("login:index")
 
 
+def generate_direct_room_id(user1_id, user2_id):
+    # Use a hash function to generate a consistent room ID for direct messaging
+    room_id_hash = hash((user1_id, user2_id))
+    # Convert the hash value to a positive integer and create the room ID
+    positive_hash = abs(room_id_hash)
+    return f'direct_{positive_hash}'
+
+
 def process_fr(request):
     if request.method == "POST":
         user_id = request.POST.get("user_id", None)
@@ -159,8 +168,15 @@ def process_fr(request):
                     raise UserFriendRelation.DoesNotExist
 
                 if action == "message":
-                    # Redirect to private message
-                    print("to be implemented...")
+                    room = RoomModel.objects.filter(room_participants=user_id, room_type='direct_message').filter(room_participants=other_user_id).first()
+                    if room is None:
+                        room_ID = generate_direct_room_id(user_id, other_user_id)
+                        room_name = f"{other_user_id}"
+                        room = RoomModel.objects.create(roomID=room_ID, room_name=room_name, room_type='direct_message')
+                        room.room_participants.add(user_id, other_user_id)
+                        room.save()
+                    return redirect("chatroom:open_chatroom")
+
 
                 elif action == "cancel" or action == "unfriend":
                     friend_request.status = "not_friend"
