@@ -64,16 +64,6 @@
             </div>
             <!-- Recent Tracks Carousel end -->
 
-            <!-- Hour day plot start -->
-            <div class="row my-4">
-                <!-- Container for the Hour of Day Plot -->
-                <div id="hour_plot" class="col-lg-6"></div>
-        
-                <!-- Container for the Day of Week Plot -->
-                <div id="day_plot" class="col-lg-6"></div>
-            </div>
-            <!-- Hour day plot end -->
-
         </div>
 
         <div class="col-md-4">
@@ -385,23 +375,6 @@
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
-</script>
-
-
-<!-- For hour day plot -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script src="https://cdn.plot.ly/plotly-1.58.4.min.js"></script>
-<script>
-    // Not sure why syntax error here but it runs and works
-    var hourData = {{ hour_data|safe }};
-    if (hourData) {
-        var hourPlot = Plotly.plot('hour_plot', hourData.data, hourData.layout);
-    }
-
-    var dayData = {{ day_data|safe }};
-    if (dayData) {
-        var dayPlot = Plotly.plot('day_plot', dayData.data, dayData.layout);
-    }
 </script>
 
 

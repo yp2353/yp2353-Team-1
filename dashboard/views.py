@@ -1,8 +1,5 @@
 from django.shortcuts import render, redirect
 import spotipy
-import plotly.graph_objects as go
-from datetime import datetime
-from collections import Counter
 import threading
 
 # from dotenv import load_dotenv
@@ -83,7 +80,6 @@ def index(request):
         # asyn_started if vibe calculation is started and still loading,
         # no_songs if user has 0 recent songs to analyze
 
-        hour_data, day_data = day_and_hour_info(user_recent_tracks)
 
         context = {
             "username": username,
@@ -97,8 +93,6 @@ def index(request):
             "currentYear": current_year,
             "midnight": midnight,
             "vibe_or_not": vibe_or_not,
-            "hour_data": hour_data,
-            "day_data": day_data,
         }
 
         return render(request, "dashboard/index.html", context)
@@ -238,71 +232,6 @@ def logout(request):
     # Clear Django session data
     request.session.clear()
     return redirect("login:index")
-
-
-def day_and_hour_info(recent_tracks):
-    if not recent_tracks.get("items", []):
-        return None, None
-    
-    timestamps = [track["played_at"] for track in recent_tracks["items"]]
-    # Convert to datetime and extract hour and day
-    hours_of_day = [datetime.fromisoformat(ts[:-1]).hour for ts in timestamps]
-    days_of_week = [datetime.fromisoformat(ts[:-1]).weekday() for ts in timestamps]
-    hours_count = Counter(hours_of_day)
-    days_count = Counter(days_of_week)
-
-    # Plot by Hour of Day
-    hour_fig = go.Figure()
-    hour_fig.add_trace(
-        go.Bar(
-            x=list(hours_count.keys()),
-            y=list(hours_count.values()),
-            marker_color="blue",
-        )
-    )
-    hour_fig.update_layout(
-        title="Listening Patterns by Hour of Day",
-        xaxis_title="Hour of Day",
-        yaxis_title="Number of Tracks Played",
-        xaxis=dict(tickvals=list(range(24)), ticktext=list(range(24))),
-        plot_bgcolor="black",  # Background color of the plotting area
-        paper_bgcolor="black",  # Background color of the entire paper
-        font=dict(color="white"),
-        autosize=True,
-    )
-
-    # Plot by Day of Week
-    days_labels = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-    ]
-    day_fig = go.Figure()
-    day_fig.add_trace(
-        go.Bar(x=days_labels, y=[days_count[i] for i in range(7)], marker_color="green")
-    )
-
-    # Update the layout
-    day_fig.update_layout(
-        title="Listening Patterns by Day of Week",
-        xaxis_title="Day of Week",
-        yaxis_title="Number of Tracks Played",
-        plot_bgcolor="black",  # Background color of the plotting area
-        paper_bgcolor="black",  # Background color of the entire paper
-        font=dict(color="white"),  # To make the font color white for better visibility
-        autosize=True,
-    )
-
-
-    hour_json = hour_fig.to_json()
-    day_json = day_fig.to_json()
-
-
-    return hour_json, day_json
 
 
 """
