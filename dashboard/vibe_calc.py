@@ -1,5 +1,5 @@
 from django.utils import timezone
-from utils import deduce_audio_vibe, vibe_calc_threads
+from utils import vibe_calc_threads
 import lyricsgenius
 import os
 import openai
@@ -9,6 +9,9 @@ import numpy as np
 import re
 from dashboard.models import TrackVibe, EmotionVector
 from user_profile.models import Vibe
+import pandas as pd
+from collections import Counter
+from django.apps import apps
 
 MAX_RETRIES = 2
 
@@ -46,45 +49,118 @@ def calculate_vibe_async(
 
 
 def check_vibe(track_names, track_artists, track_ids, audio_features_list):
-    # Calculate the overall audio vibe for the list of tracks
-    audio_final_vibe = deduce_audio_vibe(audio_features_list)
-
     # Fetch existing vibes from the database
     existing_vibes = TrackVibe.objects.filter(track_id__in=track_ids)
     existing_vibes_dict = {vibe.track_id: vibe for vibe in existing_vibes}
 
-    # Determine tracks that need processing for lyrics vibes
+    # Ids and features of new tracks that need audio analysis
+    track_needing_audio = []
+    # Audio vibes of old tracks that had analysis already
+    track_has_audio = []
+
+    # Ids of new tracks that need lyric analysis
     tracks_needing_lyrics = []
-    for track_name, track_artist, track_id in zip(
-        track_names, track_artists, track_ids
-    ):
+    # Lyric vibes of old tracks that had analysis already
+    tracks_has_lyrics = []
+
+    for name, artist, track_id, audio_features in zip(track_names, track_artists, track_ids, audio_features_list):
         track_vibe = existing_vibes_dict.get(track_id)
-        if not track_vibe or track_vibe.track_lyrics_vibe is None:
-            tracks_needing_lyrics.append((track_name, track_artist, track_id))
+        if not track_vibe:
+            track_needing_audio.append((track_id, audio_features))
+            tracks_needing_lyrics.append((name, artist, track_id))
+        else:
+            track_has_audio.append(track_vibe.track_audio_vibe)
+            if track_vibe.track_lyrics_vibe is None:
+                tracks_needing_lyrics.append((name, artist, track_id))
+            else:
+                tracks_has_lyrics.append(track_vibe.track_lyrics_vibe)
 
-    # Process lyrics vibes if needed
-    if tracks_needing_lyrics:
-        names, artists, ids = zip(*tracks_needing_lyrics)
-        lyrics_vibes = deduce_lyrics(names, artists, ids)
-        lyrics_final_vibe = lyrics_vectorize(lyrics_vibes)
-    else:
-        lyrics_final_vibe = None
 
-    # Update the database with the newly computed vibes
-    for index, track_id in enumerate(track_ids):
-        track_vibe = existing_vibes_dict.get(track_id, TrackVibe(track_id=track_id))
+    # Audio vibe analysis for tracks that need it, also saves track audio vibes into database
+    audio_vibes_new = deduce_audio_vibe(*zip(*track_needing_audio)) if track_needing_audio else []
+    # Get final audio vibe with new audio vibes and audio vibes already in database
+    audio_final_vibe = get_most_count(audio_vibes_new + track_has_audio)
 
-        # Update lyrics vibe if needed
-        if track_id in [id for _, _, id in tracks_needing_lyrics]:
-            track_vibe.track_lyrics_vibe = lyrics_final_vibe
 
-        # Update audio vibe for each track, doesn't matter if it was already in the database
-        track_vibe.track_audio_vibe = deduce_audio_vibe([audio_features_list[index]])
-
-        track_vibe.save()
+    # Lyric vibe analysis for tracks that need it, also saves track lyric vibes into database
+    names, artists, ids = zip(*tracks_needing_lyrics)
+    lyrics_vibes_new = deduce_lyrics(names, artists, ids) if tracks_needing_lyrics else []
+    # Get final lyric vibe with new lyric vibes and lyric vibes already in database
+    lyrics_final_vibe = lyrics_vectorize(lyrics_vibes_new + tracks_has_lyrics)
+    
 
     return audio_final_vibe, lyrics_final_vibe
 
+
+def deduce_audio_vibe(track_ids, audio_features_list):
+    # Create a DataFrame from the list of audio features dictionaries
+    spotify_data = pd.DataFrame(audio_features_list)
+
+    # Rename 'duration_ms' to 'length' and normalize by dividing by the maximum value
+    spotify_data.rename(columns={"duration_ms": "length"}, inplace=True)
+    if not spotify_data["length"].empty:
+        max_length = spotify_data["length"].max()
+        spotify_data["length"] = spotify_data["length"] / max_length
+
+    # Reorder columns based on the model's expectations
+    ordered_features = [
+        "length",
+        "danceability",
+        "acousticness",
+        "energy",
+        "instrumentalness",
+        "liveness",
+        "valence",
+        "loudness",
+        "speechiness",
+        "tempo",
+        "key",
+        "time_signature",
+    ]
+
+    # Ensure the DataFrame has all the required columns in the correct order
+    spotify_data = spotify_data[ordered_features]
+
+    # Predict the moods using the model
+    model = apps.get_app_config("dashboard").model
+    pred = model.predict(spotify_data)
+
+    # Define the mood dictionary
+    mood_dict = {
+        0: "happy",
+        1: "sad",
+        2: "energetic",
+        3: "calm",
+        4: "anxious",
+        5: "cheerful",
+        6: "gloomy",
+        7: "content",
+    }
+
+    audio_vibes = []
+
+    # Save track audio into database
+    for track_id, prediction in zip(track_ids, pred):
+        mood = mood_dict[prediction]
+
+        track_data = TrackVibe(
+            track_id=track_id,
+            track_audio_vibe=mood,
+        )
+        track_data.save()
+
+        audio_vibes.append(mood)
+
+    return audio_vibes
+
+
+def get_most_count(vibes):
+    # Returns the most commonly appeared word in a list of words
+
+    vibe_counts = Counter(vibes)
+    most_common_vibe = vibe_counts.most_common(1)[0][0]
+    return most_common_vibe
+ 
 
 def deduce_lyrics(track_names, track_artists, track_ids):
     genius = lyricsgenius.Genius(os.getenv("GENIUS_CLIENT_ACCESS_TOKEN"))
@@ -139,8 +215,12 @@ def deduce_lyrics(track_names, track_artists, track_ids):
                 checkLength = vibe.split()
                 if len(checkLength) == 1:
                     lyrics_vibes.append(vibe.lower())
+                    track_entry = TrackVibe.objects.filter(track_id=id).first()
+                    if track_entry:
+                        # track_entry should always exist since we did audio analysis first!
+                        track_entry.track_lyrics_vibe = vibe.lower()
+                        track_entry.save()
 
-                    # INSERT VIBE HERE INTO TRACK DATABASE!!!!!
                 print(f"The vibe for {track} is: {vibe}")
 
                 break

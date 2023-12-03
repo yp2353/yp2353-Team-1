@@ -9,7 +9,7 @@ import threading
 from user_profile.views import check_and_store_profile
 
 # from dotenv import load_dotenv
-from utils import get_spotify_token, vibe_calc_threads, deduce_audio_vibe
+from utils import get_spotify_token, vibe_calc_threads
 from django.http import JsonResponse
 from dashboard.models import TrackVibe
 from user_profile.models import Vibe, UserTop
@@ -19,7 +19,7 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 
-from .vibe_calc import calculate_vibe_async
+from .vibe_calc import calculate_vibe_async, deduce_audio_vibe
 
 
 def index(request):
@@ -34,20 +34,8 @@ def index(request):
         user_info = sp.current_user()
         username = user_info["display_name"]
 
-        def run_check_and_store_profile():
-            check_and_store_profile(request)
-
-        # Create a thread to run the function
-        thread = threading.Thread(target=run_check_and_store_profile)
-
-        # Start the thread
-        thread.start()
-
         # Get top tracks
         top_tracks = get_top_tracks(sp)
-
-        # Get recent tracks
-        recent_tracks = get_recent_tracks(sp)
 
         # Get top artists and top genres based on artist
         top_artists, top_genres = get_top_artist_and_genres(sp)
@@ -99,7 +87,6 @@ def index(request):
         context = {
             "username": username,
             "top_tracks": top_tracks,
-            "recent_tracks": recent_tracks,
             "top_artists": top_artists,
             "top_genres": top_genres,
             "recommendedtracks": recommendedtracks,
@@ -125,7 +112,7 @@ def index(request):
 
 
 def get_top_tracks(sp):
-    top_tracks = sp.current_user_top_tracks(limit=10, time_range="short_term")
+    top_tracks = sp.current_user_top_tracks(limit=5, time_range="short_term")
     tracks = []
     for track in top_tracks["items"]:
         tracks.append(
@@ -144,60 +131,6 @@ def get_top_tracks(sp):
                 "small_album_cover": track["album"]["images"][2]["url"]
                 if len(track["album"]["images"]) >= 3
                 else None,
-            }
-        )
-    return tracks
-
-
-def get_recent_tracks(sp):
-    recent_tracks = sp.current_user_recently_played(limit=10)
-    tracks = []
-
-    track_ids = [track["track"]["id"] for track in recent_tracks["items"]]
-    audio_features_list = sp.audio_features(track_ids)
-
-    existing_tracks = TrackVibe.objects.filter(track_id__in=track_ids)
-    existing_tracks_dict = {track.track_id: track for track in existing_tracks}
-
-    for track, audio_features in zip(recent_tracks["items"], audio_features_list):
-        track_vibe = existing_tracks_dict.get(
-            track["track"]["id"], TrackVibe(track_id=track["track"]["id"])
-        )
-        # Compute audio vibe for each track, doesn't matter if it was already in the database
-        track_vibe.track_audio_vibe = deduce_audio_vibe([audio_features])
-        track_vibe.save()
-        display_lyrics_vibe = ""
-        if track_vibe.track_lyrics_vibe is not None:
-            display_lyrics_vibe = track_vibe.track_lyrics_vibe.capitalize()
-        tracks.append(
-            {
-                "name": track["track"]["name"],
-                "id": track["track"]["id"],
-                "year": track["track"]["album"]["release_date"][:4],
-                "artists": ", ".join(
-                    [artist["name"] for artist in track["track"]["artists"]]
-                ),
-                "album": track["track"]["album"]["name"],
-                "uri": track["track"]["uri"],
-                "large_album_cover": track["track"]["album"]["images"][0]["url"]
-                if len(track["track"]["album"]["images"]) >= 1
-                else None,
-                "medium_album_cover": track["track"]["album"]["images"][1]["url"]
-                if len(track["track"]["album"]["images"]) >= 2
-                else None,
-                "small_album_cover": track["track"]["album"]["images"][2]["url"]
-                if len(track["track"]["album"]["images"]) >= 3
-                else None,
-                "attributes": {
-                    "Acousticness": audio_features["acousticness"] * 100,
-                    "Danceability": audio_features["danceability"] * 100,
-                    "Energy": audio_features["energy"] * 100,
-                    "Instrumentalness": audio_features["instrumentalness"] * 100,
-                    "Valence": audio_features["valence"] * 100,
-                    "Loudness": (min(60, audio_features["loudness"] * -1) / 60) * 100,
-                },
-                "audio_vibe": track_vibe.track_audio_vibe.capitalize(),
-                "lyrics_vibe": display_lyrics_vibe,
             }
         )
     return tracks
@@ -267,7 +200,7 @@ def calculate_vibe(sp, midnight):
         return "already_loaded"
     # If vibe today is already in database, RETURN, do not schedule vibe calculation
 
-    recent_tracks = sp.current_user_recently_played(limit=15)
+    recent_tracks = sp.current_user_recently_played(limit=10)
 
     if not recent_tracks.get("items", []):
         return "no_songs"
@@ -406,10 +339,12 @@ def get_task_status(request, midnight):
             if recent_vibe.user_lyrics_vibe:
                 vibe_result += " " + recent_vibe.user_lyrics_vibe
             description = recent_vibe.description
+            recent_tracks = get_recent_tracks(sp, recent_vibe.recent_track)
             response_data = {
                 "status": "SUCCESS",
                 "result": vibe_result,
                 "description": description,
+                "recent_tracks": recent_tracks,
             }
             return JsonResponse(response_data)
         else:
@@ -419,6 +354,50 @@ def get_task_status(request, midnight):
         # No token, redirect to login again
         messages.error(request, "Get_task_status failed, please try again later.")
         return redirect("login:index")
+
+
+def get_recent_tracks(sp, track_ids):
+    # In theory, all tracks in track_ids should exist in database already!
+    existing_tracks = TrackVibe.objects.filter(track_id__in=track_ids)
+
+    final_tracks = []
+
+    for track in existing_tracks:
+        audio_features = sp.audio_features([track.track_id])
+        track_info = sp.track(track.track_id)
+
+        if not audio_features or not track_info:
+            continue
+
+        audio_features = audio_features[0]
+        
+        final_tracks.append(
+            {
+                "name": track_info["name"],
+                "id": track_info["id"],
+                "year": track_info["album"]["release_date"][:4],
+                "artists": ", ".join(
+                    [artist["name"] for artist in track_info["artists"]]
+                ),
+                "album": track_info["album"]["name"],
+                "uri": track_info["uri"],
+                "large_album_cover": track_info["album"]["images"][0]["url"] if len(track_info["album"]["images"]) >= 1 else None,
+                "medium_album_cover": track_info["album"]["images"][1]["url"] if len(track_info["album"]["images"]) >= 2 else None,
+                "small_album_cover": track_info["album"]["images"][2]["url"] if len(track_info["album"]["images"]) >= 3 else None,
+                "attributes": {
+                    "Acousticness": audio_features["acousticness"] * 100,
+                    "Danceability": audio_features["danceability"] * 100,
+                    "Energy": audio_features["energy"] * 100,
+                    "Instrumentalness": audio_features["instrumentalness"] * 100,
+                    "Valence": audio_features["valence"] * 100,
+                    "Loudness": (min(60, audio_features["loudness"] * -1) / 60) * 100,
+                },
+                "audio_vibe": track.track_audio_vibe.capitalize(),
+                "lyrics_vibe": track.track_lyrics_vibe if track.track_lyrics_vibe else "",
+            }
+        )
+    
+    return final_tracks
 
 
 @require_POST

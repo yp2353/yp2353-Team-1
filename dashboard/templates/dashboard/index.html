@@ -19,8 +19,8 @@
 
 <div class="container mt-5">
     <div class="row" style="padding-top:30px;">
-        <div class="col-md-12 col-12">
-            <div id="vibe-status" class="px-2 py-2 d-flex justify-content-center align-items-center vibe-background">
+        <div class="col-12 px-0">
+            <div id="vibe-status" class="d-flex justify-content-center align-items-center vibe-background">
                 <div class="vibe-loading-text">
                     <h3>Loading Vibe...</h3>
                 </div>
@@ -30,239 +30,180 @@
             </div>
 
         </div>
-
     </div>
-</div>
-<br>
+    
+    <br>
 
-<!-- Decomposition Section -->
-<div class="decomposition-section">
-    <div class="container">
-        <h2 class="decomposition-title">Your vibe decomposed...</h2>
-        <div class="row">
-        <div class="col-md-8 col-12">
-            <div class="container custom-container" onclick="toggleExpand(this)">
-                <div class="reveal-prompt" style="font-family: Inter"></div>
-                <div class="description" style="font-family: Inter">
-                    <!-- Placeholder for description content -->
+    <!-- Decomposition Section -->
+    <div class="decomposition-section row">
+        <h4 class="decomposition-title mt-4 mb-4">Your vibe decomposed...</h4>
+
+        <div class="col-md-8">
+            <!-- Description content start -->
+            <div class="row my-4 px-3">
+                <div class="description container px-3 py-3">
                 </div>
             </div>
+            <!-- Description content end -->
+
+            <!-- Recent Tracks Carousel start -->
+            <div class="row my-4"> 
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div id="recentTracksCarousel" class="carousel slide w-100" style="background:black;" data-bs-ride="carousel" data-bs-touch="true">
+    
+                        <!-- Carousel indicators -->
+                        <div id="recentTracksCarouselIndicators" class="carousel-indicators">
+                        </div>
+    
+                        <!-- Carousel inner -->
+                        <div id="recentTracksCarouselInner" class="carousel-inner">
+                        </div>
+    
+                    </div>
+                </div>
+                <!-- Recent Tracks Carousel end -->
+            </div>
+
         </div>
 
-         <div class="col-md-4 mt-4 d-flex flex-column justify-content-center align-items-center">
-                <div id="topItemsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel"
-                    data-bs-touch="true">
-                    <!-- Indicators -->
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="0" class="active"
-                            aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="1"
-                            aria-label="Slide 2"></button>
-                        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="2"
-                            aria-label="Slide 3"></button>
-                        <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="3"
-                            aria-label="Slide 4"></button>
-                    </div>
-
-                    <!-- Wrapper for slides -->
-                    <div class="carousel-inner">
-
-                        <!-- Top Tracks Slide -->
-                        <div class="carousel-item active">
-                            <div class="px-2 py-2 align-content-center" style=" border-radius: 0; background:black;">
-                                <h3>Top Tracks</h3>
-                                {% for track in top_tracks|slice:":6" %}
-                                <div class="row mb-2">
-                                    <div class="col-md-2 mb-2 mb-md-0">
-                                        <img src="{{ track.small_album_cover }}" alt="Album Thumbnail"
-                                            class="img-fluid">
-                                    </div>
-                                    <div class="col-md-10">
-                                        <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
-                                        <p>{{ track.artists }}</p>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
+        <div class="col-md-4">
+            <div class="row my-4">
+                <!-- Top content start -->
+                <div class="d-flex flex-column">
+                    <div id="topItemsCarousel" class="carousel slide w-100" style="background:black;" data-bs-ride="carousel" data-bs-touch="true">
+                        <!-- Indicators -->
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="0" class="active"
+                                aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="1"
+                                aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="2"
+                                aria-label="Slide 3"></button>
+                            <button type="button" data-bs-target="#topItemsCarousel" data-bs-slide-to="3"
+                                aria-label="Slide 4"></button>
                         </div>
 
-                        <!-- Top Artists Slide -->
-                        <div class="carousel-item">
-                            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background:black;">
-                                <h3>Top Artists</h3>
-                                {% for artist in top_artists|slice:":6" %}
-                                <div class="row mb-2">
-                                    <div class="col-md-2 mb-2 mb-md-0">
-                                        <img src="{{ artist.image_url }}" alt="Artist Thumbnail" class="img-fluid">
-                                    </div>
-                                    <div class="col-md-10">
-                                        <p>{{ artist.name }}</p>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner">
 
-                        <!-- Top Genres Slide -->
-                        <div class="carousel-item">
-                            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                <h3>Top Genres</h3>
-                                {% for genre in top_genres|slice:":5" %}
-                                <div class="row mb-2">
-                                    <p>{{ genre }}</p>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        <!-- Track Recommendations Slide -->
-                        <div class="carousel-item">
-                            <div class="px-2 py-2" style="border: 1px solid #000; border-radius: 0; background:black;">
-                                <h3>Recommended Tracks</h3>
-                                {% for track in recommendedtracks %}
-                                <div class="row mb-2">
-                                    <div class="col-md-2 mb-2 mb-md-0">
-                                        <img src="{{ track.small_album_cover }}" alt="Album Thumbnail"
-                                            class="img-fluid">
-                                    </div>
-                                    <div class="col-md-10">
-                                        <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
-                                        <p>{{ track.artists }}</p>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-8 mt-4 d-flex flex-column justify-content-center align-items-center">
-                <!-- Recent Tracks Carousel -->
-                <div id="recentTracksCarousel" class="carousel slide mt-4 w-200" data-bs-ride="carousel"
-                    data-bs-touch="true">
-
-                    <!-- Carousel indicators -->
-                    <div class="carousel-indicators">
-                        {% for track in recent_tracks %}
-                        <button type="button" data-bs-target="#recentTracksCarousel"
-                            data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"
-                            aria-current="true" {% endif %} aria-label="Slide {{ forloop.counter }}"></button>
-                        {% endfor %}
-                    </div>
-
-                    <!-- Carousel inner -->
-                    <div id="recentTracksCarouselInner" class="carousel-inner">
-                        {% for track in recent_tracks %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <div class="row align-items-center" style="background-color: black; color: white;">
-                                <!-- Music attributes section -->
-                                <div class="col-md-6">
-                                    <div class="music-attributes">
-                                        <!-- Loop through each attribute to create meters -->
-                                        {% for attribute, value in track.attributes.items %}
-                                        <div class="attribute-meter">
-                                            <label>{{ attribute }}</label>
-                                            <div class="meter">
-                                                <div class="meter-value" role="progressbar" style="width: {{ value }}%" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
+                            <!-- Top Tracks Slide -->
+                            <div class="carousel-item active">
+                                <div class="px-3 py-3">
+                                    <h3>Top Tracks</h3>
+                                    {% for track in top_tracks %}
+                                    <div class="row mb-2 mb-md-0">
+                                        <div class="col-2">
+                                            <img src="{{ track.small_album_cover }}" alt="Album Thumbnail" class="img-fluid">
                                         </div>
-                                        {% endfor %}
-                                        <br/>
-                                        <!-- Vibe attribute with thumb buttons -->
-                                        <div class='recent-track-vibe-container'>
-                                            <label>Vibe</label>
-                                            <div class="d-flex align-items-center">
-                                                <div class="recent-track-vibe" style="padding-right: 10px;">
-                                                    {{track.audio_vibe}} {{track.lyrics_vibe}}
-                                                </div>
-                                                <button type="button" class="btn" aria-label="Thumbs up">
-                                                    <label class="thumb-up-container">
-                                                        <input type="checkbox" id="thumb-up-{{ forloop.counter }}" data-track-id="{{ track.id }}" data-down-id="thumb-down-{{ forloop.counter }}" class="thumb-up">
-                                                        <div class="checkmark">
-                                                            <svg fill="none" viewBox="0 0 24 24">
-                                                                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="1.3" stroke="#FFFFFF" d="M8 10V20M8 10L4 9.99998V20L8 20M8 10L13.1956 3.93847C13.6886 3.3633 14.4642 3.11604 15.1992 3.29977L15.2467 3.31166C16.5885 3.64711 17.1929 5.21057 16.4258 6.36135L14 9.99998H18.5604C19.8225 9.99998 20.7691 11.1546 20.5216 12.3922L19.3216 18.3922C19.1346 19.3271 18.3138 20 17.3604 20L8 20"></path>
-                                                            </svg>
-                                                        </div>
-                                                    </label>
-                                                </button>
-                                                <button type="button" class="btn" aria-label="Thumbs down">
-                                                    <label class="thumb-down-container">
-                                                        <input type="checkbox" id="thumb-down-{{ forloop.counter }}" data-track-id="{{ track.id }}" data-up-id="thumb-up-{{ forloop.counter }}" class="thumb-down">
-                                                        <div class="checkmark">
-                                                            <svg fill="none" viewBox="0 0 24 24">
-                                                                <path stroke-linejoin="round" stroke-linecap="round" transform="translate(0,5)" stroke-width="1.3" stroke="#FFFFFF" d="M8 10.0V0.0M8 10.0L4 10.00002V0.0L8 0.0M8 10.0L13.1956 16.06153C13.6886 16.6367 14.4642 16.883960000000002 15.1992 16.70023L15.2467 16.68834C16.5885 16.35289 17.1929 14.78943 16.4258 13.63865L14 10.00002H18.5604C19.8225 10.00002 20.7691 8.8454 20.5216 7.607799999999999L19.3216 1.607800000000001C19.1346 0.6728999999999985 18.3138 0.0 17.3604 0.0L8 0.0"></path>
-                                                            </svg>
-                                                        </div>
-                                                    </label>
-                                                </button>
-                                            </div>
+                                        <div class="col-10">
+                                            <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
+                                            <p>{{ track.artists }}</p>
                                         </div>
                                     </div>
+                                    {% endfor %}
+                                    <br>
+                                    <br>
                                 </div>
+                            </div>
 
-                                <!-- Album art and track info section -->
-                                <div class="col-md-6 text-center">
-                                    <img src="{{ track.large_album_cover }}" alt="Album cover for {{ track.name }}"
-                                        class="img-fluid mx-auto d-block" style="padding: 30px 30px 0 30px;">
-                                    <p style="padding-top: 5px; margin-bottom: 3px; font-size: 18px; font-weight: 600;">
-                                        {{ track.name }}</p>
-                                    <p style="padding-top: 1px; font-size: 16px; font-weight: 500">{{ track.artists }} ·
-                                        {{ track.album }} · {{ track.year }}</p>
+                            <!-- Top Artists Slide -->
+                            <div class="carousel-item">
+                                <div class="px-3 py-3">
+                                    <h3>Top Artists</h3>
+                                    {% for artist in top_artists %}
+                                    <div class="row mb-3">
+                                        <div class="col-2">
+                                            <img src="{{ artist.image_url }}" alt="Artist Thumbnail" class="img-fluid">
+                                        </div>
+                                        <div class="col-10">
+                                            <p>{{ artist.name }}</p>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <br>
+                                    <br>
+                                </div>
+                            </div>
+
+                            <!-- Top Genres Slide -->
+                            <div class="carousel-item">
+                                <div class="px-3 py-3">
+                                    <h3>Top Genres</h3>
+                                    {% for genre in top_genres|slice:":5" %}
+                                    <div class="row mb-2 mb-md-0">
+                                        <p>{{ genre }}</p>
+                                    </div>
+                                    {% endfor %}
+                                    <br>
+                                    <br>
+                                </div>
+                            </div>
+
+                            <!-- Track Recommendations Slide -->
+                            <div class="carousel-item">
+                                <div class="px-3 py-3">
+                                    <h3>Recommended Tracks</h3>
+                                    {% for track in recommendedtracks %}
+                                    <div class="row mb-2 mb-md-0">
+                                        <div class="col-2">
+                                            <img src="{{ track.small_album_cover }}" alt="Album Thumbnail" class="img-fluid">
+                                        </div>
+                                        <div class="col-10">
+                                            <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
+                                            <p>{{ track.artists }}</p>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <br>
+                                    <br>
                                 </div>
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
-
-                    <!-- Carousel controls -->
-
-
                 </div>
+                <!-- Top content end -->
             </div>
 
-                            <div class="col-md-8 mt-4 d-flex flex-column justify-content-center align-items-center">
+            <div class="row my-4">
+                <!-- Vibe history start -->
+                <div class="d-flex flex-column">
+                    <div class="container px-3 py-3">
+                        <h3>{{ currentYear }} Vibes</h3>
+                        <br>
+                        {% for day in iteratorDay %}
+                        <div class="row">
+                            {% for month in iteratorMonth %}
+                            {% if day == 0 %}
+                            <div class="vibe-history-cell px-0"> {{ month.short_name }} </div>
+                            {% elif month.number == 0 and day > 0 %}
+                            <div class="vibe-history-cell px-0">{{ day }}</div>
+                            {% else %}
+                            <div class="vibe-history-cell mood-none
+                                {% for entry in vibe_history %}
+                                    {% if entry.vibe_time|timezone:'UTC'|date:'F' == month.long_name and entry.vibe_time|timezone:'UTC'|date:'j'|add:0 == day and entry.user_audio_vibe %}
+                                        mood-{{ entry.user_audio_vibe }}" data-toggle="tooltip" data-placement="top" title="{{ entry.user_audio_vibe }}
+                                            {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
+                                    {% endif %}
+                                {% endfor %}">
                             </div>
-
-                    <div class="col-md-4 mt-4 d-flex flex-column justify-content-center align-items-center">
-
-        <div class="container" style="max-width: 800px; margin: auto; padding: 20px;  border-radius: 16px;">
-                    <h3>{{ currentYear }} Vibes</h3>
-                    <br>
-                    {% for day in iteratorDay %}
-                    <div class="row">
-                        {% for month in iteratorMonth %}
-                        {% if day == 0 %}
-                        <div class="vibe-history-cell text-center"> {{ month.short_name }} </div>
-                        {% elif month.number == 0 and day > 0 %}
-                        <div class="vibe-history-cell text-center">{{ day }}</div>
-                        {% else %}
-                        <div class="vibe-history-cell mood-none
-                            {% for entry in vibe_history %}
-                                {% if entry.vibe_time|timezone:'UTC'|date:'F' == month.long_name and entry.vibe_time|timezone:'UTC'|date:'j'|add:0 == day and entry.user_audio_vibe %}
-                                    mood-{{ entry.user_audio_vibe }}" data-toggle="tooltip" data-placement="top" title="{{ entry.user_audio_vibe }}
-                                        {% if entry.user_lyrics_vibe %}{{ entry.user_lyrics_vibe }}{% endif %}
-                                {% endif %}
-                            {% endfor %}">
+                            {% endif %}
+                            {% endfor %}
                         </div>
-                        {% endif %}
                         {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
+                <!-- Vibe history end -->
+
+            </div>
+
         </div>
-        </div>
-    </div>
-
-    <div class="container mt-5">
 
 
     </div>
+    <!-- Decomposition Section end-->
+    
 
 </div>
-
-
 
 
 
@@ -289,8 +230,9 @@
                     type: 'GET',
                     success: function (data) {
                         if (data.status === 'SUCCESS') {
+                            updateCarouselInnerAndIndicators(data.recent_tracks);
                             var dataAsH1 = $('<h1>').text(data.result);
-                            var dataAsP = $('<h3>').text(data.description);
+                            var dataAsP = $('<h4>').text(data.description);
                             $('#vibe-status .vibe-loaded-text').append(dataAsH1).show();
                             $('.description').append(dataAsP).show();
                             $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
@@ -330,6 +272,96 @@
                     }, 2000); // Adjust time as needed
                 }
 
+
+                function updateCarouselInnerAndIndicators(recentTracks) {
+                    // Clear existing content
+                    $('#recentTracksCarouselInner').empty();
+                    $('#recentTracksCarouselIndicators').empty();
+
+                    // Append new content for each track
+                    recentTracks.forEach(function(track, index) {
+                        var isActive = index === 0 ? 'active' : '';
+                        var carouselItem = `
+                            <div class="carousel-item ${isActive}">
+                                <div class="row align-items-center">
+                                    <!-- Music attributes section -->
+                                    <div class="col-md-6">
+                                        <div class="music-attributes">
+                                            ${generateAttributeMeters(track.attributes)}
+                                            <br/>
+                                            <!-- Vibe attribute with thumb buttons -->
+                                            <div class='recent-track-vibe-container'>
+                                                <label>Vibe</label>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="recent-track-vibe" style="padding-right: 10px;">
+                                                        ${track.audio_vibe} ${track.lyrics_vibe}
+                                                    </div>
+                                                    <button type="button" class="btn" aria-label="Thumbs up">
+                                                        <label class="thumb-up-container">
+                                                            <input type="checkbox" id="thumb-up-${index}" data-track-id="${track.id}" data-down-id="thumb-down-${index}" class="thumb-up">
+                                                            <div class="checkmark">
+                                                                <svg fill="none" viewBox="0 0 28 28">
+                                                                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="1.3" stroke="#FFFFFF" d="M8 10V20M8 10L4 9.99998V20L8 20M8 10L13.1956 3.93847C13.6886 3.3633 14.4642 3.11604 15.1992 3.29977L15.2467 3.31166C16.5885 3.64711 17.1929 5.21057 16.4258 6.36135L14 9.99998H18.5604C19.8225 9.99998 20.7691 11.1546 20.5216 12.3922L19.3216 18.3922C19.1346 19.3271 18.3138 20 17.3604 20L8 20"></path>
+                                                                </svg>
+                                                            </div>
+                                                        </label>
+                                                    </button>
+                                                    <button type="button" class="btn" aria-label="Thumbs down">
+                                                        <label class="thumb-down-container">
+                                                            <input type="checkbox" id="thumb-down-${index}" data-track-id="${track.id}" data-up-id="thumb-up-${index}" class="thumb-down">
+                                                            <div class="checkmark">
+                                                                <svg fill="none" viewBox="0 0 28 28">
+                                                                    <path stroke-linejoin="round" stroke-linecap="round" transform="translate(0,5)" stroke-width="1.3" stroke="#FFFFFF" d="M8 10.0V0.0M8 10.0L4 10.00002V0.0L8 0.0M8 10.0L13.1956 16.06153C13.6886 16.6367 14.4642 16.883960000000002 15.1992 16.70023L15.2467 16.68834C16.5885 16.35289 17.1929 14.78943 16.4258 13.63865L14 10.00002H18.5604C19.8225 10.00002 20.7691 8.8454 20.5216 7.607799999999999L19.3216 1.607800000000001C19.1346 0.6728999999999985 18.3138 0.0 17.3604 0.0L8 0.0"></path>
+                                                                </svg>
+                                                            </div>
+                                                        </label>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 text-center">
+                                        <img src="${track.large_album_cover}" alt="Album cover for ${track.name}"
+                                            class="img-fluid mx-auto d-block" style="padding: 30px 30px 0 30px;">
+                                        <p style="padding-top: 5px; margin-bottom: 3px; font-size: 18px; font-weight: 600;">
+                                            ${track.name}
+                                        </p>
+                                        <p style="padding-top: 1px; font-size: 16px; font-weight: 400">
+                                            ${track.artists} (${track.year})
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        $('#recentTracksCarouselInner').append(carouselItem);
+
+                        // Add carousel indicator button
+                        var indicatorButton = `
+                            <button type="button" data-bs-target="#recentTracksCarousel"
+                                data-bs-slide-to="${index}" class="${isActive}" aria-label="Slide ${index}"></button>
+                        `;
+                        $('#recentTracksCarouselIndicators').append(indicatorButton);
+                    });
+                }
+
+                function generateAttributeMeters(attributes) {
+                    // Function to generate attribute meters based on the track's attributes
+                    var metersHTML = '';
+                    for (var attribute in attributes) {
+                        var value = attributes[attribute];
+                        metersHTML += `
+                            <div class="attribute-meter">
+                                <label>${attribute}</label>
+                                <div class="meter">
+                                    <div class="meter-value" role="progressbar" style="width: ${value}%"  
+                                        aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    return metersHTML;
+                }
+
             }
 
             // Start polling when the document is ready
@@ -356,145 +388,109 @@
             <div id="dayPlot" class="col"></div>
         </div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch('{% static "login/day_data.json" %}')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const dayData = JSON.parse(data);
-                    Plotly.newPlot('dayPlot', dayData.data, dayData.layout);
-                })
-                .catch(error => {
-                    console.log('There was a problem with the fetch operation:', error.message);
-                });
-            // Your fetch and plot code here
+</div>
 
-            fetch('{% static "login/hour_data.json" %}')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const hourData = JSON.parse(data);
-                    Plotly.newPlot('hourPlot', hourData.data, hourData.layout);
-                })
-                .catch(error => {
-                    console.log('There was a problem with the fetch operation:', error.message);
-                });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var container = document.querySelector('.custom-container');
-            if (container) {
-                // Assuming there's an event or function that triggers the generation of <h1> and collapsing
-                // Replace 'yourTriggerFunction' with the actual event/function
-                yourTriggerFunction(function () {
-                    var prompt = container.querySelector('.reveal-prompt');
-                    if (prompt) {
-                        // Decide when to hide or show the prompt based on your logic
-                        // For example:
-                        prompt.style.opacity = '1'; // Show the prompt
-                    }
-                });
-            }
-        });
-    </script>
-    <script>
-        // Like and dislike button logic
-        document.addEventListener("DOMContentLoaded", function () {
-            var thumbUps = document.querySelectorAll('.thumb-up');
-            var thumbDowns = document.querySelectorAll('.thumb-down');
-
-            thumbUps.forEach(function (thumbUp) {
-                thumbUp.addEventListener('change', function () {
-                    var downId = this.dataset.downId;
-                    if (this.checked) {
-                        // Disable the corresponding thumb down
-                        document.getElementById(downId).disabled = true;
-                        sendVoteRequest(this.dataset.trackId, 'upvote');
-                    } else {
-                        // Enable both thumb up and thumb down
-                        document.getElementById(downId).disabled = false;
-                        sendCancelVoteRequest(this.dataset.trackId, 'cancel_upvote');
-                    }
-                });
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('{% static "login/day_data.json" %}')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const dayData = JSON.parse(data);
+                Plotly.newPlot('dayPlot', dayData.data, dayData.layout);
+            })
+            .catch(error => {
+                console.log('There was a problem with the fetch operation:', error.message);
             });
+        // Your fetch and plot code here
 
-            thumbDowns.forEach(function (thumbDown) {
-                thumbDown.addEventListener('change', function () {
-                    var upId = this.dataset.upId;
-                    if (this.checked) {
-                        // Disable the corresponding thumb up
-                        document.getElementById(upId).disabled = true;
-                        sendVoteRequest(this.dataset.trackId, 'downvote');
-                    } else {
-                        // Enable both thumb up and thumb down
-                        document.getElementById(upId).disabled = false;
-                        sendCancelVoteRequest(this.dataset.trackId, 'cancel_downvote');
-                    }
-                });
+        fetch('{% static "login/hour_data.json" %}')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const hourData = JSON.parse(data);
+                Plotly.newPlot('hourPlot', hourData.data, hourData.layout);
+            })
+            .catch(error => {
+                console.log('There was a problem with the fetch operation:', error.message);
             });
+    });
+</script>
 
-            function sendVoteRequest(trackId, action) {
-                var xhr = new XMLHttpRequest();
-                var url = `/dashboard/track/${trackId}/${action}/`;
-                xhr.open('POST', url, true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('X-CSRFToken', getCsrfToken());
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                        var response = JSON.parse(this.responseText);
-                        console.log(response);
-                    }
-                };
-                xhr.send();
-            }
+<script>
+    // Like and dislike button logic
+    document.getElementById('recentTracksCarouselInner').addEventListener('change', function (event) {
+        var target = event.target;
 
-            function sendCancelVoteRequest(trackId, action) {
-                var xhr = new XMLHttpRequest();
-                var url = `/dashboard/track/${trackId}/${action}/`;
-                xhr.open('POST', url, true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('X-CSRFToken', getCsrfToken());
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                        var response = JSON.parse(this.responseText);
-                        console.log(response);
-                    }
-                };
-                xhr.send();
-            }
-
-            function getCsrfToken() {
-                return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            }
-        });
-    </script>
-    <script>
-        function toggleExpand(element, event) {
-            // This prevents the click from propagating to the parent elements
-            if (event) {
-                event.stopPropagation();
-            }
-
-            // Check if the clicked element is the close button
-            if (element.classList.contains('close-btn')) {
-                element.parentElement.parentElement.classList.remove('expanded');
+        if (target.classList.contains('thumb-up')) {
+            var downId = target.dataset.downId;
+            if (target.checked) {
+                // Disable the corresponding thumb down
+                document.getElementById(downId).disabled = true;
+                sendVoteRequest(target.dataset.trackId, 'upvote');
             } else {
-                element.classList.toggle('expanded');
+                // Enable both thumb up and thumb down
+                document.getElementById(downId).disabled = false;
+                sendCancelVoteRequest(target.dataset.trackId, 'cancel_upvote');
+            }
+        } else if (target.classList.contains('thumb-down')) {
+            var upId = target.dataset.upId;
+            if (target.checked) {
+                // Disable the corresponding thumb up
+                document.getElementById(upId).disabled = true;
+                sendVoteRequest(target.dataset.trackId, 'downvote');
+            } else {
+                // Enable both thumb up and thumb down
+                document.getElementById(upId).disabled = false;
+                sendCancelVoteRequest(target.dataset.trackId, 'cancel_downvote');
             }
         }
 
-    </script>
-</div>
+        function sendVoteRequest(trackId, action) {
+            var xhr = new XMLHttpRequest();
+            var url = `/dashboard/track/${trackId}/${action}/`;
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRFToken', getCsrfToken());
+            xhr.onreadystatechange = function () {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    console.log(response);
+                }
+            };
+            xhr.send();
+        }
+
+        function sendCancelVoteRequest(trackId, action) {
+            var xhr = new XMLHttpRequest();
+            var url = `/dashboard/track/${trackId}/${action}/`;
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRFToken', getCsrfToken());
+            xhr.onreadystatechange = function () {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    console.log(response);
+                }
+            };
+            xhr.send();
+        }
+
+        function getCsrfToken() {
+            return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        }
+    });
+
+</script>
+
 
 
 {% endblock %}
