@@ -104,11 +104,16 @@ def k_nearest_neighbors(k, target_user_id, sp):
             "distance": math.ceil(physical_distances[uid])
             if physical_distances[uid]
             else None,
+            "similarity": distance_to_similarity(_),
         }
         for uid, _ in nearest_neighbors_ids
     ]
 
     return nearest_neighbors
+
+
+def distance_to_similarity(distance):
+    return math.ceil((1 / (1 + distance)) * 100)
 
 
 def get_users(target_user_id, latest_vibes):

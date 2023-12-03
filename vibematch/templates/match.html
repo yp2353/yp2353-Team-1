@@ -90,6 +90,7 @@
                             {% endif %}
     <h3>{{ user.username.username }}</h3>
     <p>{{ user.vibe.1 }} {{ user.vibe.0 }}</p>
+                        <p>Vibe Similarity: {{ user.similarity }}%</p>
                         {% if user.fav_track %}
                     <p>Vibing to: </p>
                         <img src="{{ user.fav_track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 30px; max-height: 30px;">
