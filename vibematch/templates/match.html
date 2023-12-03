@@ -112,34 +112,10 @@
     </div>
     <div id="compareViewModal" style="display:none;">
     <div id="compareViewContainer"></div>
-    <button onclick="closeCompareView()">Close</button>
 </div>
 
 
-    {#<script>
-function loadCompareView(otherUserId) {
-        alert("Clicked user ID: " + otherUserId);
-        console.log("a")
 
-    // JavaScript to make an AJAX call
-    fetch(`/view/compare/${otherUserId}`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('compareViewContainer').innerHTML = html;
-            document.getElementById('compareViewModal').style.display = 'block';
-        });
-}
-</script>#}
-
-   {# <script>
-function closeCompareView() {
-    document.getElementById('compareViewModal').style.display = 'none';
-}
-</script>#}
 
     <script>
 document.querySelectorAll('.card-container .card').forEach(card => {
