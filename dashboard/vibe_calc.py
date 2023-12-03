@@ -174,12 +174,13 @@ def deduce_lyrics(track_names, track_artists, track_ids):
     lyrics_data = {}
     for track, artist, id in zip(track_names, track_artists, track_ids):
         genius_retries = 0
-        while genius_retries < 2:
+        while genius_retries < MAX_RETRIES:
             try:
                 query = f'"{track}" "{artist}"'
                 song = genius.search_song(query)
 
-            except Exception:
+            except Exception as e:
+                print(f"Error getting genius for {track}: {e}")
                 genius_retries += 1
                 continue
 
