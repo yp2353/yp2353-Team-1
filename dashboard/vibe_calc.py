@@ -63,7 +63,9 @@ def check_vibe(track_names, track_artists, track_ids, audio_features_list):
     # Lyric vibes of old tracks that had analysis already
     tracks_has_lyrics = []
 
-    for name, artist, track_id, audio_features in zip(track_names, track_artists, track_ids, audio_features_list):
+    for name, artist, track_id, audio_features in zip(
+        track_names, track_artists, track_ids, audio_features_list
+    ):
         track_vibe = existing_vibes_dict.get(track_id)
         if not track_vibe:
             track_needing_audio.append((track_id, audio_features))
@@ -75,19 +77,20 @@ def check_vibe(track_names, track_artists, track_ids, audio_features_list):
             else:
                 tracks_has_lyrics.append(track_vibe.track_lyrics_vibe)
 
-
     # Audio vibe analysis for tracks that need it, also saves track audio vibes into database
-    audio_vibes_new = deduce_audio_vibe(*zip(*track_needing_audio)) if track_needing_audio else []
+    audio_vibes_new = (
+        deduce_audio_vibe(*zip(*track_needing_audio)) if track_needing_audio else []
+    )
     # Get final audio vibe with new audio vibes and audio vibes already in database
     audio_final_vibe = get_most_count(audio_vibes_new + track_has_audio)
 
-
     # Lyric vibe analysis for tracks that need it, also saves track lyric vibes into database
     names, artists, ids = zip(*tracks_needing_lyrics)
-    lyrics_vibes_new = deduce_lyrics(names, artists, ids) if tracks_needing_lyrics else []
+    lyrics_vibes_new = (
+        deduce_lyrics(names, artists, ids) if tracks_needing_lyrics else []
+    )
     # Get final lyric vibe with new lyric vibes and lyric vibes already in database
     lyrics_final_vibe = lyrics_vectorize(lyrics_vibes_new + tracks_has_lyrics)
-    
 
     return audio_final_vibe, lyrics_final_vibe
 
@@ -160,7 +163,7 @@ def get_most_count(vibes):
     vibe_counts = Counter(vibes)
     most_common_vibe = vibe_counts.most_common(1)[0][0]
     return most_common_vibe
- 
+
 
 def deduce_lyrics(track_names, track_artists, track_ids):
     genius = lyricsgenius.Genius(os.getenv("GENIUS_CLIENT_ACCESS_TOKEN"))
@@ -176,8 +179,8 @@ def deduce_lyrics(track_names, track_artists, track_ids):
                 query = f'"{track}" "{artist}"'
                 song = genius.search_song(query)
 
-            except Exception as e:
-                retries += 1
+            except Exception:
+                genius_retries += 1
                 continue
 
             if song is not None:
@@ -187,9 +190,8 @@ def deduce_lyrics(track_names, track_artists, track_ids):
                 if geniusTitle == track.lower() and geniusArtist == artist.lower():
                     print("Inputting lyrics..")
                     lyrics_data[(track, artist, id)] = song.lyrics
-            
-            break
 
+            break
 
     openai.api_key = os.getenv("OPEN_AI_TOKEN")
 

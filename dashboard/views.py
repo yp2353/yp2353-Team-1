@@ -80,7 +80,6 @@ def index(request):
         # asyn_started if vibe calculation is started and still loading,
         # no_songs if user has 0 recent songs to analyze
 
-
         context = {
             "username": username,
             "top_tracks": top_tracks,
@@ -294,7 +293,7 @@ def get_recent_tracks(sp, track_ids):
             continue
 
         audio_features = audio_features[0]
-        
+
         final_tracks.append(
             {
                 "name": track_info["name"],
@@ -305,9 +304,15 @@ def get_recent_tracks(sp, track_ids):
                 ),
                 "album": track_info["album"]["name"],
                 "uri": track_info["uri"],
-                "large_album_cover": track_info["album"]["images"][0]["url"] if len(track_info["album"]["images"]) >= 1 else None,
-                "medium_album_cover": track_info["album"]["images"][1]["url"] if len(track_info["album"]["images"]) >= 2 else None,
-                "small_album_cover": track_info["album"]["images"][2]["url"] if len(track_info["album"]["images"]) >= 3 else None,
+                "large_album_cover": track_info["album"]["images"][0]["url"]
+                if len(track_info["album"]["images"]) >= 1
+                else None,
+                "medium_album_cover": track_info["album"]["images"][1]["url"]
+                if len(track_info["album"]["images"]) >= 2
+                else None,
+                "small_album_cover": track_info["album"]["images"][2]["url"]
+                if len(track_info["album"]["images"]) >= 3
+                else None,
                 "attributes": {
                     "Acousticness": audio_features["acousticness"] * 100,
                     "Danceability": audio_features["danceability"] * 100,
@@ -317,10 +322,12 @@ def get_recent_tracks(sp, track_ids):
                     "Loudness": (min(60, audio_features["loudness"] * -1) / 60) * 100,
                 },
                 "audio_vibe": track.track_audio_vibe.capitalize(),
-                "lyrics_vibe": track.track_lyrics_vibe if track.track_lyrics_vibe else "",
+                "lyrics_vibe": track.track_lyrics_vibe
+                if track.track_lyrics_vibe
+                else "",
             }
         )
-    
+
     return final_tracks
 
 

@@ -149,10 +149,12 @@ def store_location(request):
     except (KeyError, json.JSONDecodeError, TypeError) as e:
         # Return an error message if something goes wrong
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
-    
+
 
 @login_required
 def check_location_stored(request):
     today = timezone.localdate()
-    location_exists = UserLocation.objects.filter(user=request.user, created_at__date=today).exists()
-    return JsonResponse({'locationStored': location_exists})
+    location_exists = UserLocation.objects.filter(
+        user=request.user, created_at__date=today
+    ).exists()
+    return JsonResponse({"locationStored": location_exists})

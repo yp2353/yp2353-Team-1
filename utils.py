@@ -44,5 +44,3 @@ def get_spotify_token(request):
     else:
         # Error getting saved token
         return None
-
-
