@@ -14,6 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
 from django.contrib.auth.decorators import login_required
+from math import radians, cos, sin, asin, sqrt
+import math
 
 
 def vibe_match(request):
@@ -54,19 +56,8 @@ def k_nearest_neighbors(k, target_user_id, sp):
         latest_vibe_time=Subquery(latest_vibe_times)
     ).filter(vibe_time=F("latest_vibe_time"))
 
-    # Query to join latest vibes with the User model
-    all_users = latest_vibes.filter(
-        user_id__in=User.objects.all().values_list("user_id", flat=True)
-    ).values_list(
-        "user_id",
-        "user_lyrics_vibe",
-        "user_audio_vibe",
-        "user_acousticness",
-        "user_danceability",
-        "user_energy",
-        "user_valence",
-        flat=False,
-    )
+    physical_distances = {}
+    all_users, physical_distances = get_users(target_user_id, latest_vibes)
 
     all_users_array = []
     target_user_features = None
@@ -110,11 +101,78 @@ def k_nearest_neighbors(k, target_user_id, sp):
             "fav_track": sp.track(User.objects.get(user_id=uid).track_id)
             if User.objects.get(user_id=uid).track_id
             else None,
+            "distance": math.ceil(physical_distances[uid])
+            if physical_distances[uid]
+            else None,
         }
         for uid, _ in nearest_neighbors_ids
     ]
 
     return nearest_neighbors
+
+
+def get_users(target_user_id, latest_vibes):
+    today = timezone.localdate()
+
+    # Check if a location for today already exists
+    if UserLocation.objects.filter(
+        user=User.objects.get(user_id=target_user_id), created_at__date=today
+    ).exists():
+        # Filter for users within 60 miles of the target user
+        all_user_locations = UserLocation.objects.all()
+        phys_distances = {}
+        nearby_users, phys_distances = get_nearby_users(
+            all_user_locations, target_user_id
+        )
+
+        all_users = latest_vibes.filter(user_id__in=nearby_users).values_list(
+            "user_id",
+            "user_lyrics_vibe",
+            "user_audio_vibe",
+            "user_acousticness",
+            "user_danceability",
+            "user_energy",
+            "user_valence",
+            flat=False,
+        )
+    else:
+        # If no location for the target user, use the existing method
+        all_users = latest_vibes.filter(
+            user_id__in=User.objects.all().values_list("user_id", flat=True)
+        ).values_list(
+            "user_id",
+            "user_lyrics_vibe",
+            "user_audio_vibe",
+            "user_acousticness",
+            "user_danceability",
+            "user_energy",
+            "user_valence",
+            flat=False,
+        )
+
+    return all_users, phys_distances
+
+
+def get_nearby_users(all_user_locations, target_user_id):
+    today = timezone.localdate()
+    # Get target user's location
+    target_user_location = UserLocation.objects.get(
+        user=User.objects.get(user_id=target_user_id), created_at__date=today
+    )
+    nearby_users = []
+    user_distances = {}
+    for location in all_user_locations:
+        distance = haversine(
+            target_user_location.longitude,
+            target_user_location.latitude,
+            location.longitude,
+            location.latitude,
+        )
+        if distance <= 60:
+            nearby_users.append(location.user_id)
+            user_distances[location.user_id] = distance
+
+    return nearby_users, user_distances
 
 
 def euclidean_distance(user_1, user_2):
@@ -128,6 +186,20 @@ def vector_to_array(vector_str):
     clean = clean.split()
     clean = [float(e) for e in clean]
     return np.array(clean)
+
+
+# Haversine formula to calculate distance between two lat/long points
+def haversine(lon1, lat1, lon2, lat2):
+    # Convert decimal degrees to radians
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    # Haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    r = 3956  # Radius of Earth in miles
+    return c * r
 
 
 @csrf_exempt

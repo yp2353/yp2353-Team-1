@@ -27,7 +27,7 @@
 
 .card-container {
     width: 400px; /* Fixed width for each card */
-    margin: 15px; /* Space between cards */
+    margin: 20px; /* Space between cards */
     perspective: 1000px; /* Perspective for 3D rotation */
 
 }
@@ -36,13 +36,14 @@
     background: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%);
     border-radius: 20px;
     color: white;
-    padding: 20px;
+    padding-top: 20px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     height: 400px;
     transform-style: preserve-3d;
     transition: transform 0.6s;
     transform-origin: center;
     cursor: pointer;
+    width: 400px;
 }
 
 
@@ -59,13 +60,11 @@
 
 .card-front {
     /* Front styling */
+    text-align: center;
+
 }
 
 .card-back {
-        transform: rotateY(180deg);
-
-
-
 
 }
 
@@ -96,6 +95,8 @@
                         <img src="{{ user.fav_track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 30px; max-height: 30px;">
                     <p>{{ user.fav_track.name }}</p>
                         {%  endif %}
+                        <p>{{ user.distance }} miles away</p>
+                        <button>Vibe</button>
                         </div>
 
                         <div class="card-back">
@@ -115,7 +116,7 @@
 </div>
 
 
-    <script>
+    {#<script>
 function loadCompareView(otherUserId) {
         alert("Clicked user ID: " + otherUserId);
         console.log("a")
@@ -132,18 +133,22 @@ function loadCompareView(otherUserId) {
             document.getElementById('compareViewModal').style.display = 'block';
         });
 }
-</script>
+</script>#}
 
-    <script>
+   {# <script>
 function closeCompareView() {
     document.getElementById('compareViewModal').style.display = 'none';
 }
-</script>
+</script>#}
 
     <script>
-document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', () => {
-        card.classList.toggle('is-flipped');
+document.querySelectorAll('.card-container .card').forEach(card => {
+    card.addEventListener('click', (event) => {
+        // Check if the clicked element is the card itself or one of its children
+        if (event.currentTarget === card) {
+            console.log('Card or child of card clicked');
+            card.classList.toggle('is-flipped');
+        }
     });
 });
     </script>
