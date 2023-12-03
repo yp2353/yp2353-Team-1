@@ -90,24 +90,6 @@
         /*SEARCH PAGE END*/
 
         /*DASHBOARD PAGE*/
-
-        /* Set a fixed height for the carousel items on larger screens */
-        #topItemsCarousel .carousel-item {
-            height: 500px; /* Example height, adjust to fit the content */
-        }
-
-        /* Responsive adjustments for smaller screens */
-        @media (max-width: 768px) {
-            #topItemsCarousel .carousel-item {
-                height: auto; /* Height becomes flexible on small screens */
-            }
-        }
-
-        #topItemsCarousel .slide-content {
-            height: 100%;
-            overflow-y: auto; /* Enable scrolling if content is taller than the slide */
-        }
-
         .vibe-background{
             height: 50vh;
             text-align: center;
@@ -125,18 +107,9 @@
             background-size: cover;
         }
 
-        #dayPlot {
-            width: 80%;
-                height: 100%;
-            margin: 20px auto;
-            box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
-        }
-
-        #hourPlot {
-            width: 80%;
-            height: 100%;
-            margin: 20px auto;
-            box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
+        #vibe-status {
+            transition: transform 0.3s ease-in-out;
+            transform-origin: center center;
         }
 
         .vibe-history-table {
@@ -155,100 +128,150 @@
 
         .vibe-history-cell {
             margin: 2px;
-            width: 20px; /* Adjust as needed */
-            height: 20px; /* Adjust as needed */
-            border-radius: 2px; /* Optional, for rounded corners */
-            display: inline-block; /* Aligns the cells correctly */
+            width: 25px;
+            height: 25px;
+            border-radius: 2px;
+            display: inline-block;
         }
 
-
-        #vibe-status {
-            transition: transform 0.3s ease-in-out;
-            transform-origin: center center; /* Adjust as needed */
-        }
-
-
-        #vibe-status + .col-6 {
-            margin-top: 0;
-        }
 
         .decomposition-section {
             background-color: #1A1A1A;
             color: #FFFFFF;
-            padding: 20px 0;
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 50px;
         }
 
         .decomposition-title {
-            font-family: 'Inter', sans-serif;
-            font-size: 24px;
-            margin-bottom: 15px;
             color: #F1F1F1;
-            text-align: center; /* Center the title for emphasis */
-        }
-
-        .custom-container {
-            border-radius: 15px;
-            padding: 20px;
-            margin: 10px auto;
-            height: 50vh; /* Set a fixed height to match the vibe-background */
-            overflow-y: auto; /* Make the content scrollable */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; /* Align content to the top */
-            position: relative;
-            font-family: 'Inter', sans-serif;
-            box-sizing: border-box;
-
-        }
-
-        .custom-container h2, .custom-container h3, .custom-container p {
-            margin-top: 0;
-        }
-
-        .reveal-prompt {
-            font-size: clamp(18px, 2.5vw, 22px);
-            color: floralwhite;
             text-align: center;
-            margin-bottom: 20px;
-            /* cursor: pointer; Remove if not clickable */
         }
-
 
         .description {
-            font-size: clamp(14px, 2vw, 16px);
+            background-color: black;
             color: #E5E5EA;
             text-align: justify;
-            line-height: 1.6;
-            /* Removed transform property since the content is now scrollable */
-            display: block; /* Always show the description */
+            height: 50vh;
+            overflow-y: auto;
         }
 
-        @media (max-width: 768px) {
-            .vibe-background, .custom-container {
-                height: auto; /* On mobile, allow the height to be automatic */
-                max-height: 100vh; /* Maximum height to ensure it is within the device's viewport */
-                overflow-y: auto; /* Enable scrolling for overflow content */
-                margin-bottom: 0.5rem; /* Adjusted bottom margin for spacing */
-            }
+        #topItemsCarousel .carousel-item {
+            height: 450px;
+            overflow-y: auto;
         }
 
-        .custom-container {
-            /* Adjust padding as needed for mobile viewing */
-            padding: 15px;
+        #recentTracksCarouselInner {
+            padding: 20px 20px 20px 20px;
         }
 
-        .reveal-prompt {
-            /* Adjust font size for better readability on small screens */
-            font-size: 18px;
+        .meter {
+            background-color: #404040;
+            height: 15px;
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: .25rem;
         }
 
-        .description {
-            /* Ensure text is not too small on mobile devices */
-            font-size: 14px;
+        .meter-value {
+            background-color: #091c9b;
+            height: 15px; /* Make sure this is consistent with the .meter height if you want flat edges */
+            /* The width will be set inline based on the attribute value */
+            border-radius: .25rem; /* Optional: if you want rounded corners */
+            transition: width 0.6s ease; /* Optional: if you want a smooth transition for the bar loading */
         }
+
+        .recent-track-vibe {
+            color: #d71696;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .thumb-up-container input,
+        .thumb-down-container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+        }
+
+        .thumb-up-container,
+        .thumb-down-container {
+        display: block;
+        position: relative;
+        cursor: pointer;
+        font-size: 25px;
+        user-select: none;
+        transition: 100ms;
+        }
+
+        .thumb-up-container .checkmark,
+        .thumb-down-container .checkmark {
+        top: 0;
+        left: 0;
+        height: 2em;
+        width: 2em;
+        transition: 100ms;
+        }
+
+        /* Thumbs up specific styles */
+        .thumb-up-container input:checked ~ .checkmark path {
+        fill: #1db954; /* Fill color for thumbs up */
+        stroke-width: 1.2;
+        stroke: #212121;
+        }
+
+        .thumb-up-container input:checked ~ .checkmark {
+        animation: like_401 400ms ease;
+        }
+
+        /* Thumbs down specific styles */
+        .thumb-down-container .checkmark path {
+            fill: none; /* No fill initially */
+            stroke-width: 1.3;
+            stroke: #FFFFFF; /* White stroke for outlined look */
+        }
+
+        /* When the container is checked, change the fill to red */
+        .thumb-down-container input:checked ~ .checkmark path {
+        fill: #FF3B30; /* Fill color for thumbs down when checked */
+        stroke: #212121; /* Stroke color remains white */
+        }
+
+        /* Apply the animation when the state changes to checked */
+        .thumb-down-container input:checked ~ .checkmark {
+        animation: like_401 400ms ease;
+        }
+
+        .thumb-up-container:hover,
+        .thumb-down-container:hover {
+        transform: scale(1.1);
+        }
+
+        /* Animation keyframes for thumbs up */
+        @keyframes like_401 {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+        }
+        }
+
+        /* Animation keyframes for thumbs down */
+        @keyframes dislike_401 {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+        }
+        }
+
 
         /*DASHBOARD PAGE END*/
 
@@ -319,119 +342,6 @@
             color: #C1C1C1; /* Different color for active nav link */
         }
 
-        #recentTracksCarouselInner {
-            padding: 20px 20px 20px 20px;
-        }
-
-        .meter {
-            background-color: #777;
-            height: 15px;
-            width: 100%;
-            margin-bottom: 10px;
-            border-radius: .25rem; /* Optional: if you want rounded corners */
-        }
-
-        .meter-value {
-            background-color: #28a745;
-            height: 15px; /* Make sure this is consistent with the .meter height if you want flat edges */
-            /* The width will be set inline based on the attribute value */
-            border-radius: .25rem; /* Optional: if you want rounded corners */
-            transition: width 0.6s ease; /* Optional: if you want a smooth transition for the bar loading */
-        }
-
-        .recent-track-vibe {
-            color: #d71696;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-
-        .thumb-up-container input,
-        .thumb-down-container input {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        height: 0;
-        width: 0;
-        }
-
-        .thumb-up-container,
-        .thumb-down-container {
-        display: block;
-        position: relative;
-        cursor: pointer;
-        font-size: 25px;
-        user-select: none;
-        transition: 100ms;
-        }
-
-        .thumb-up-container .checkmark,
-        .thumb-down-container .checkmark {
-        top: 0;
-        left: 0;
-        height: 2em;
-        width: 2em;
-        transition: 100ms;
-        }
-
-        /* Thumbs up specific styles */
-        .thumb-up-container input:checked ~ .checkmark path {
-        fill: #1C7DFF; /* Fill color for thumbs up */
-        stroke-width: 1.2;
-        stroke: #212121;
-        }
-
-        .thumb-up-container input:checked ~ .checkmark {
-        animation: like_401 400ms ease;
-        }
-
-        /* Thumbs down specific styles */
-        .thumb-down-container .checkmark path {
-            fill: none; /* No fill initially */
-            stroke-width: 1.3;
-            stroke: #FFFFFF; /* White stroke for outlined look */
-        }
-
-        /* When the container is checked, change the fill to red */
-        .thumb-down-container input:checked ~ .checkmark path {
-        fill: #FF3B30; /* Fill color for thumbs down when checked */
-        stroke: #212121; /* Stroke color remains white */
-        }
-
-        /* Apply the animation when the state changes to checked */
-        .thumb-down-container input:checked ~ .checkmark {
-        animation: like_401 400ms ease;
-        }
-
-        .thumb-up-container:hover,
-        .thumb-down-container:hover {
-        transform: scale(1.1);
-        }
-
-        /* Animation keyframes for thumbs up */
-        @keyframes like_401 {
-        0% {
-            transform: scale(0);
-        }
-        50% {
-            transform: scale(1.2);
-        }
-        100% {
-            transform: scale(1);
-        }
-        }
-
-        /* Animation keyframes for thumbs down */
-        @keyframes dislike_401 {
-        0% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.2);
-        }
-        100% {
-            transform: scale(1);
-        }
-        }
 
     </style>
 
@@ -479,7 +389,7 @@
     {% endblock %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+   
     <script>
         window.addEventListener('load', () => {
             const vibematchTab = document.getElementById('vibematch-tab');
