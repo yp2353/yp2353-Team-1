@@ -10,16 +10,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="EmotionVector",
-            fields=[
-                (
-                    "emotion",
-                    models.CharField(max_length=250, primary_key=True, serialize=False),
-                ),
-                ("vector", models.TextField()),
-            ],
-        ),
-        migrations.CreateModel(
             name="Track",
             fields=[
                 (
