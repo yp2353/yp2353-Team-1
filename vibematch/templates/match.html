@@ -68,6 +68,14 @@
 
 }
 
+.vibe_button {
+    background: #4e4376;
+    border: #4e4376;
+    border-radius: 80px;
+    height: 30px;
+    width: 60px;
+    color: white;
+}
 
 </style>
 <div class="container mt-5">
@@ -97,7 +105,7 @@
                     <p>{{ user.fav_track.name }}</p>
                         {%  endif %}
                         <p>{{ user.distance }} miles away</p>
-                        <button>Vibe</button>
+                        <button class="vibe_button">Vibe</button>
                         </div>
 
                         <div class="card-back">
