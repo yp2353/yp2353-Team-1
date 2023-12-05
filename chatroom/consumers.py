@@ -5,6 +5,7 @@ from chatroom.views import get_user_exist
 
 
 class GlobalChatConsumer(AsyncWebsocketConsumer):
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.roomID = "default"
@@ -42,19 +43,18 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         user_id = self.scope["session"].get("user_id")
         self.sender = await self.get_user(user_id)
         print("USER ----> $", self.sender)
-
+        
         text_data_json = json.loads(text_data)
 
         message_type = text_data_json.get("type")
         self.message = text_data_json.get("message")
 
         print("Message type", message_type)
+        
 
         if message_type == "join_room":
-            new_roomID = text_data_json.get("roomID")
-            print("Joining Room -> ", new_roomID)
-            await self.channel_layer.group_discard(self.roomID, self.channel_name)
-            self.roomID = new_roomID
+            self.roomID = text_data_json.get("roomID")
+            print("Joining Room -> ", self.roomID)
             await self.channel_layer.group_add(self.roomID, self.channel_name)
 
             messages = await self.retrieve_room_messages(self.roomID)
@@ -85,22 +85,27 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                     "type": "chat_message",
                     "message": self.message,
                     "sender": self.sender.username,
+                    "roomID": self.roomID,  # Include roomID in the event payload
                 },
             )
 
     async def chat_message(self, event):
         message = event["message"]
         sender = event["sender"]
+        room_id = event["roomID"]  # Include roomID in the event payload
 
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "chat_message",
-                    "message": message,
-                    "sender": sender,
-                }
+        if self.roomID == room_id:
+            print("Room match")
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "chat_message",
+                        "message": message,
+                        "sender": sender,
+                    }
+                )
             )
-        )
+            
 
     @database_sync_to_async
     def get_user(self, user_id):
@@ -111,9 +116,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     def retrieve_room_messages(self, roomID):
         from chatroom.models import ChatMessage
 
-        room_messages = (
-            ChatMessage.objects.filter(room=roomID).order_by("timestamp").distinct()
-        )
+        room_messages = ChatMessage.objects.filter(room=roomID).order_by('timestamp').distinct()
         return room_messages
 
     async def save_chat_db(self):
@@ -122,7 +125,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         user_id = self.scope["session"].get("user_id")
         self.sender = await self.get_user(user_id)
 
-        print("Before saving  room = ", self.roomID, " ,user = ", self.sender)
+        print("Before saving  room = ",self.roomID, " ,user = " , self.sender)
 
         if self.sender:
             room = await database_sync_to_async(RoomModel.objects.get)(

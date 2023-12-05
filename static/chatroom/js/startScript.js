@@ -36,7 +36,7 @@ function initializeWebSocket(roomID) {
         console.log('WebSocket connection opened:', event);
         chatSocket.send(JSON.stringify({
             'type': 'join_room',
-            'roomID': roomID
+            'roomID': currentRoomID
         }));
     };
     chatSocket.onerror = function (error) {
@@ -49,6 +49,8 @@ function initializeWebSocket(roomID) {
         // observer.disconnect();  
     };
 }
+
+
 
 
 
