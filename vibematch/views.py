@@ -102,8 +102,8 @@ def k_nearest_neighbors(k, target_user_id, sp):
             "fav_track": sp.track(User.objects.get(user_id=uid).track_id)
             if User.objects.get(user_id=uid).track_id
             else None,
-            "distance": math.ceil(physical_distances[uid])
-            if physical_distances[uid]
+            "distance": math.ceil(physical_distances.get(uid, None))
+            if physical_distances.get(uid) is not None
             else None,
             "similarity": distance_to_similarity(_),
             "top_artist": sp.artists(
