@@ -25,7 +25,7 @@ def vibe_match(request):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
-        matches = k_nearest_neighbors(20, user_id, sp)
+        matches = k_nearest_neighbors(5, user_id, sp)
 
         context = {"neighbors": matches}
 
