@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "*",
@@ -95,18 +95,18 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com:6379", 6379)],
-            # "hosts": [("127.0.0.1", 6579)],
+            # "hosts": [("vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com:6379", 6379)],
+            "hosts": [("127.0.0.1", 6579)],
         },
     },
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com:6379:6379/1",
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#         "LOCATION": "redis://vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com:6379:6379/1",
+#     }
+# }
 
 
 # Database
