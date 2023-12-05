@@ -111,6 +111,14 @@ def k_nearest_neighbors(k, target_user_id, sp):
                 .order_by("-time")
                 .first()
                 .top_artist[:5]
+                if len(
+                    UserTop.objects.filter(user_id=uid)
+                    .order_by("-time")
+                    .first()
+                    .top_artist
+                )
+                > 0
+                else None,
             ),
         }
         for uid, _ in nearest_neighbors_ids

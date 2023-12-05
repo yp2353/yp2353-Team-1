@@ -61,9 +61,13 @@
 .left-arrow, .right-arrow {
      background: #4e4376;
     border: #4e4376;
-    border-radius: 80px;
     height: 30px;
     color: white;
+}
+
+.right-arrow {
+     border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
 }
 
 
@@ -96,7 +100,7 @@
                                 <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image" width="80" height="80">
                             {% endif %}
     <h3>{{ user.username.username }}</h3>
-    <p>{{ user.vibe.1 }} {{ user.vibe.0 }}</p>
+    <p>{{ user.vibe.1 }} {% if user.vibe.0 %} {{ user.vibe.0 }} {% endif %}</p>
                         <p>Vibe Similarity: {{ user.similarity }}%</p>
                         <p>{{ user.distance }} miles away</p>
                         <button class="vibe_button">Vibe</button>
