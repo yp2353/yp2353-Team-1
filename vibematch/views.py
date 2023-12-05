@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from utils import get_spotify_token
 from django.utils import timezone
 import spotipy
-from user_profile.models import Vibe, User
+from user_profile.models import Vibe, User, UserTop
 import numpy as np
 from vibematch.models import UserLocation
 import re
@@ -91,6 +91,7 @@ def k_nearest_neighbors(k, target_user_id, sp):
 
     # Sort by distance and select top k
     nearest_neighbors_ids = sorted(distances, key=lambda x: x[1])[:k]
+
     nearest_neighbors = [
         {
             "user_id": uid,
@@ -105,6 +106,12 @@ def k_nearest_neighbors(k, target_user_id, sp):
             if physical_distances[uid]
             else None,
             "similarity": distance_to_similarity(_),
+            "top_artist": sp.artists(
+                UserTop.objects.filter(user_id=uid)
+                .order_by("-time")
+                .first()
+                .top_artist[:5]
+            ),
         }
         for uid, _ in nearest_neighbors_ids
     ]
@@ -118,6 +125,7 @@ def distance_to_similarity(distance):
 
 def get_users(target_user_id, latest_vibes):
     today = timezone.localdate()
+    phys_distances = {}
 
     # Check if a location for today already exists
     if UserLocation.objects.filter(
@@ -125,7 +133,6 @@ def get_users(target_user_id, latest_vibes):
     ).exists():
         # Filter for users within 60 miles of the target user
         all_user_locations = UserLocation.objects.all()
-        phys_distances = {}
         nearby_users, phys_distances = get_nearby_users(
             all_user_locations, target_user_id
         )

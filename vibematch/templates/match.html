@@ -46,27 +46,26 @@
     width: 400px;
 }
 
-
-
-.card-front, .card-back {
-
- position: absolute;
+.card-page {
+    display: none;
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
-
-
+        text-align: center;
 }
 
-.card-front {
-    /* Front styling */
-    text-align: center;
-
+.card-page.active-page {
+    display: block;
 }
 
-.card-back {
-
+.left-arrow, .right-arrow {
+     background: #4e4376;
+    border: #4e4376;
+    border-radius: 80px;
+    height: 30px;
+    color: white;
 }
+
 
 .vibe_button {
     background: #4e4376;
@@ -90,7 +89,7 @@
             {% for user in neighbors %}
                 <div class="card-container">
                 <div class="card">
-                        <div class="card-front">
+                        <div class="card-page active-page">
                      {% if user.username.profile_image_url %}
                                 <img src="{{ user.username.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image" width="80" height="80">
                             {% else %}
@@ -99,18 +98,27 @@
     <h3>{{ user.username.username }}</h3>
     <p>{{ user.vibe.1 }} {{ user.vibe.0 }}</p>
                         <p>Vibe Similarity: {{ user.similarity }}%</p>
-                        {% if user.fav_track %}
-                    <p>Vibing to: </p>
-                        <img src="{{ user.fav_track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 30px; max-height: 30px;">
-                    <p>{{ user.fav_track.name }}</p>
-                        {%  endif %}
                         <p>{{ user.distance }} miles away</p>
                         <button class="vibe_button">Vibe</button>
                         </div>
 
-                        <div class="card-back">
-                            <!-- Back card content here -->
+        <div class="card-page">
+                    <h2>About me</h2>
+        <p>{{ user.username.user_bio }}</p>
+            {% for artist in user.top_artist.artists %}
+                           <img src="{{ artist.images.0.url }}" style=" width: 60px; height: 60px; object-fit: cover;" alt="Artist Image">
+                {% endfor %}
+        <br>
+         {% if user.fav_track %}
+                    <p>Vibing to: </p>
+                        <img src="{{ user.fav_track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 30px; max-height: 30px;">
+                    <p>{{ user.fav_track.name }}</p>
+                        {%  endif %}
                         </div>
+                        <div class="card-page">
+                        </div>
+                <button class="left-arrow">←</button>
+        <button class="right-arrow">→</button>
                     </div>
                 </div>
             {% endfor %}
@@ -128,11 +136,25 @@
 
     <script>
 document.querySelectorAll('.card-container .card').forEach(card => {
-    card.addEventListener('click', (event) => {
-        // Check if the clicked element is the card itself or one of its children
-        if (event.currentTarget === card) {
-            console.log('Card or child of card clicked');
-            card.classList.toggle('is-flipped');
+    const pages = card.querySelectorAll('.card-page');
+    let currentPageIndex = 0;
+
+    function showPage(index) {
+        pages.forEach(page => page.classList.remove('active-page'));
+        pages[index].classList.add('active-page');
+    }
+
+    card.querySelector('.left-arrow').addEventListener('click', () => {
+        if (currentPageIndex > 0) {
+            currentPageIndex--;
+            showPage(currentPageIndex);
+        }
+    });
+
+    card.querySelector('.right-arrow').addEventListener('click', () => {
+        if (currentPageIndex < pages.length - 1) {
+            currentPageIndex++;
+            showPage(currentPageIndex);
         }
     });
 });
