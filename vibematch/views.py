@@ -118,6 +118,7 @@ def distance_to_similarity(distance):
 
 def get_users(target_user_id, latest_vibes):
     today = timezone.localdate()
+    phys_distances = {}
 
     # Check if a location for today already exists
     if UserLocation.objects.filter(
@@ -125,7 +126,6 @@ def get_users(target_user_id, latest_vibes):
     ).exists():
         # Filter for users within 60 miles of the target user
         all_user_locations = UserLocation.objects.all()
-        phys_distances = {}
         nearby_users, phys_distances = get_nearby_users(
             all_user_locations, target_user_id
         )
