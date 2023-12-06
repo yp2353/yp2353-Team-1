@@ -1,0 +1,79 @@
+body {
+    margin-top: 10px;
+    background-color: #f8f9fa;
+}
+
+#chat-messages {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.incoming {
+    background-color: #d1e7dd;
+    text-align: left;
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    align-self: flex-start
+}
+
+.outgoing {
+    background-color: #cff4fc;
+    text-align: right;
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    width: fit-content;
+    align-self: flex-end
+}
+
+#room-list {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+#room-list > ul {
+    padding: 8px;
+    margin: 8px;
+    height: 75vh;
+    overflow-y: scroll;
+    list-style: circle;
+}
+
+.room-list-item {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+    transition: background-color 0.3s ease;
+}
+
+.room-list-item:hover {
+    background-color: #495057;
+}
+
+.card {
+    margin-top: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-footer {
+    border-top: 1px solid #dee2e6;
+}
+
+#room-container {
+    visibility: hidden;
+}

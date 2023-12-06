@@ -1,6 +1,5 @@
 
 {% extends 'base.html' %}
-
 {% load static %}
 {% block body_class %}background{% endblock %}
 {% block content %}
@@ -14,20 +13,10 @@
     <link rel="stylesheet" href="static/chatroom/css/style.css">
 </head>
 <body>
-
-
     
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> <!-- Full version of jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> <!-- Popper.js for Bootstrap -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="static/chatroom/js/startScript.js"></script>
-
-    <br>
     <div class="container">
         <div class="row">
-            
-            
-            <div id = "room-list" class="col-md-5">
+            <div id="room-list" class="col-md-5">
                 <br>
                 <form method="post" action="{% url 'chatroom:group_creation' %}"> <!-- Replace 'group_func_url' with the actual name of your URL -->
                     {% csrf_token %} <!-- Include the CSRF token for security -->
@@ -51,15 +40,16 @@
                 <ul>
                     {% for room in rooms_list %}
                         <li class="room-list-item" data-room-id="{{ room.roomID }}">
-                        <span class="room-name-display">{{ room.room_name }}</span>
-                        <!-- Only display if room_type is 'group' -->
-                            {% if room.room_type == 'group' %}
-                            <i class="bi bi-pencil-square edit-room-name" data-toggle="input" data-target="#room-name-input-{{ room.roomID }}"></i>
-                        <div class="input-group mb-3 edit-room-name-input" style="display:none;">
-                            <input type="text" class="form-control" id="room-name-input-{{ room.roomID }}" value="{{ room.room_name }}">
-                            <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" id="room-name-save-{{ room.roomID }}"><i class="bi bi-check2"></i></button>
-                        </div></li>
+                            {{ room.room_name }}
+                            <!-- Only display if room_type is 'group' -->
+                                {% if room.room_type == 'group' %}
+                                <i class="bi bi-pencil-square edit-room-name" data-toggle="input" data-target="#room-name-input-{{ room.roomID }}"></i>
+                            <div class="input-group mb-3 edit-room-name-input" style="display:none;">
+                                <input type="text" class="form-control" id="room-name-input-{{ room.roomID }}" value="{{ room.room_name }}">
+                                <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="room-name-save-{{ room.roomID }}"><i class="bi bi-check2"></i></button>
+                            </div>
+                        </li>
             
                             {% endif %}
      
@@ -85,50 +75,52 @@
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="{% static 'chatroom/js/startScript.js' %}"></script>
     
+    <script>
+        $(document).ready(function() {
+            // Toggle edit input
+            $('.edit-room-name').click(function() {
+                // Find the closest .room-list-item parent, then find the .room-name-display and .edit-room-name-input within it
+                var parentListItem = $(this).closest('.room-list-item');
+                var displayElement = parentListItem.find('.room-name-display');
+                var inputElement = parentListItem.find('.edit-room-name-input');
 
-    
-<script>
-    $(document).ready(function() {
-        // Toggle edit input
-        $('.edit-room-name').click(function() {
-        // Find the closest .room-list-item parent, then find the .room-name-display and .edit-room-name-input within it
-        var parentListItem = $(this).closest('.room-list-item');
-        var displayElement = parentListItem.find('.room-name-display');
-        var inputElement = parentListItem.find('.edit-room-name-input');
+                // Now toggle only the elements within the clicked item
+                displayElement.toggle();
+                inputElement.toggle();
 
-        // Now toggle only the elements within the clicked item
-        displayElement.toggle();
-        inputElement.toggle();
-        
-        // And focus the input field
-        inputElement.find('input').focus();
-        });
-    
-        // Save new room name
-        $('.btn-outline-secondary').click(function() {
-            var roomID = $(this).closest('.room-list-item').data('room-id');
-            var newName = $('#room-name-input-' + roomID).val();
-            console.log(roomID);
-            console.log(newName);
-            // Make an AJAX POST request to update the room name
-            $.post('{% url "chatroom:update_room_name" %}', {
-                'room_id': roomID,
-                'new_name': newName,
-                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-            }, function(data) {
-                if(data.success) {
-                    window.location.reload(true); 
-                } else {
-                    // Handle errors, e.g., display an error message
-                    alert("Error updating room name.");
-                }
+                // And focus the input field
+                inputElement.find('input').focus();
+            });
+
+            // Save new room name
+            $('.btn-outline-secondary').click(function() {
+                var roomID = $(this).closest('.room-list-item').data('room-id');
+                var newName = $('#room-name-input-' + roomID).val();
+                console.log(roomID);
+                console.log(newName);
+                // Make an AJAX POST request to update the room name
+                $.post('{% url "chatroom:update_room_name" %}', {
+                    'room_id': roomID,
+                    'new_name': newName,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                }, function(data) {
+                    if(data.success) {
+                        window.location.reload(true); 
+                    } else {
+                        // Handle errors, e.g., display an error message
+                        alert("Error updating room name.");
+                    }
+                });
             });
         });
-    });
     </script>
-    
-    <script src="static/chatroom/js/endScript.js"></script>
+    <script src="{% static 'chatroom/js/endScript.js' %}"></script>
+
     
 </body>
 </html>

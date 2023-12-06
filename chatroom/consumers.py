@@ -19,22 +19,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add(self.roomID, self.channel_name)
         await self.accept()
-
-        messages = await self.retrieve_room_messages(self.roomID)
-
-        async for message in messages:
-            sender_username = await database_sync_to_async(
-                lambda: message.sender.username
-            )()
-            await self.send(
-                text_data=json.dumps(
-                    {
-                        "type": "chat_message",
-                        "message": message.content,
-                        "sender": sender_username,
-                    }
-                )
-            )
+        
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.roomID, self.channel_name)
@@ -68,44 +53,64 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                 sender_username = await database_sync_to_async(
                     lambda: message.sender.username
                 )()
+                sender_id = await database_sync_to_async(
+                    lambda: message.sender.user_id
+                )()
+                
                 await self.send(
                     text_data=json.dumps(
                         {
                             "type": "chat_message",
                             "message": message.content,
                             "sender": sender_username,
+                            "sender_id": sender_id,
+                            "current_user_id": self.sender.user_id,
                         }
                     )
                 )
         elif message_type == "chat_message":
+            print("========insied receive func========")
             await self.save_chat_db()
             await self.channel_layer.group_send(
-                self.roomID,
-                {
-                    "type": "chat_message",
-                    "message": self.message,
-                    "sender": self.sender.username,
-                    "roomID": self.roomID,  # Include roomID in the event payload
-                },
+            self.roomID,
+            {
+                "type": "chat_message",
+                "message": self.message,
+                "sender": self.sender.username,
+                "roomID": self.roomID,  # Include roomID in the event payload
+                "sender_id": self.sender.user_id,
+            },    
+        )
+        elif message_type == "get_user_id":
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "user_id",
+                        "user_id": self.sender.user_id,  
+                    }
+                )
             )
 
+
     async def chat_message(self, event):
+        print("++++++insied chatmessage func+++++")
         message = event["message"]
         sender = event["sender"]
-        room_id = event["roomID"]  # Include roomID in the event payload
+        sender_id = event["sender_id"]  
+        room_id = event["roomID"]
 
         if self.roomID == room_id:
-            print("Room match")
             await self.send(
                 text_data=json.dumps(
                     {
                         "type": "chat_message",
                         "message": message,
                         "sender": sender,
+                        "sender_id": sender_id,  
                     }
                 )
             )
-            
+                
 
     @database_sync_to_async
     def get_user(self, user_id):
