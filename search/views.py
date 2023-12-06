@@ -59,14 +59,13 @@ def get_req_list(user_id):
 def user_search(request):
     from user_profile.models import User
 
-    token_info = get_spotify_token(request)
-    if token_info:
-        sp = spotipy.Spotify(auth=token_info["access_token"])
+    if request.user.is_authenticated:
+        user = request.user
 
-        user_info = sp.current_user()
-        current_user_id = user_info["id"]
+        
+        current_user_id = user.user_id
         # Pass username to navbar
-        current_username = user_info["display_name"]
+        current_username = user.username
 
         request_list = get_req_list(current_user_id)
 

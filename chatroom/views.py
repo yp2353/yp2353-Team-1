@@ -2,7 +2,7 @@
 from rich.console import Console
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-import spotipy
+
 
 
 console = Console(style="bold green")
@@ -80,12 +80,11 @@ def group_creation(request):
     from utils import get_spotify_token
     from chatroom.models import RoomModel
 
-    token_info = get_spotify_token(request)
-    if token_info:
-        sp = spotipy.Spotify(auth=token_info["access_token"])
+    if request.user.is_authenticated:
+        user = request.user
 
-        user_info = sp.current_user()
-        user_id = user_info["id"]
+        
+        user_id = user.user_id
 
         if request.method == "POST":
             selected_friends = request.POST.getlist(
