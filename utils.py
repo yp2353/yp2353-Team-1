@@ -21,7 +21,7 @@ REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 
 SCOPE = "user-top-read user-read-recently-played user-read-private"
 sp_oauth = SpotifyOAuth(
-    CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SCOPE, show_dialog=True
+    os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"), REDIRECT_URI, scope=SCOPE, show_dialog=True
 )
 
 vibe_calc_threads = {}
