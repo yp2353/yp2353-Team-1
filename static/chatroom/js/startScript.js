@@ -19,23 +19,37 @@ function initializeWebSocket(roomID) {
             // Handle chat messages
             const sender = data.sender || 'Anonymous';  // Default to 'Anonymous' if sender is not provided
             const message = data.message;
-    
-            // Check if the sender is the current user
-            const isCurrentUser = data.sender_id === currentUserID;
-    
-            // Appending the message to the chat interface
+            
+            console.log(data.sender_id + " - " + data.current_user_id);
+            const isCurrentUser = (data.sender_id === data.current_user_id);
+
+            // Append the message to the chat interface
             let chat_messages = document.querySelector('#chat-messages');
-            if (isCurrentUser) {
+            if (isCurrentUser){
                 chat_messages.innerHTML += (
                     '<div class="message outgoing">' +
-                    message + '<strong>: You</strong> </div>'
-                );
-            } else {
+                    message + '<strong>: You</strong> </div>');
+            }else{
                 chat_messages.innerHTML += (
                     '<div class="message incoming">' +
                     '<strong>' + sender + ':</strong> ' + message + '</div>'
                 );
             }
+            
+            chat_messages.scrollTop = chat_messages.scrollHeight;
+        }else if(data.type == 'chat_message_by_user'){
+            const sender = data.sender || 'Anonymous';  // Default to 'Anonymous' if sender is not provided
+            const message = data.message;
+            
+            let chat_messages = document.querySelector('#chat-messages');
+        
+            chat_messages.innerHTML += (
+                '<div class="message outgoing">' +
+                message + '<strong>: You</strong> </div>');
+
+            chat_messages.scrollTop = chat_messages.scrollHeight;
+
+        }
     
             chat_messages.scrollTop = chat_messages.scrollHeight;
         }else if (data.type === 'user_id') {
@@ -70,7 +84,8 @@ function initializeWebSocket(roomID) {
             'type': 'join_room',
             'roomID': currentRoomID
         }));
-        
+        senderID = event.sender_id;
+        currentUserID = event.current_user_id;
     };
     
     chatSocket.onerror = function (error) {

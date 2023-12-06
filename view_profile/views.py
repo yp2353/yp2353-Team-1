@@ -1,13 +1,15 @@
+from django.utils import timezone
 from django.shortcuts import render, redirect
+from utils import get_spotify_token
+import spotipy
 from django.contrib import messages
+from user_profile.models import User, Vibe, UserFriendRelation, UserTop
+from chatroom.models import RoomModel
+from django.db.models import Q
 
 
 # Create your views here.
 def compare(request, other_user_id):
-    from utils import get_spotify_token
-    import spotipy
-    from user_profile.models import User, Vibe, UserTop, UserFriendRelation
-    from django.db.models import Q
     token_info = get_spotify_token(request)
 
     if token_info:
@@ -129,7 +131,6 @@ def compare(request, other_user_id):
         }
 
         return render(request, "view_profile/index.html", context)
-
     else:
         # No token, redirect to login again
         messages.error(request, "View_profile failed, please log in.")
@@ -140,11 +141,10 @@ def generate_room_id(user_ids):
     sorted_user_ids = sorted(user_ids)
     room_id_hash = hash(tuple(sorted_user_ids))
     positive_hash = abs(room_id_hash)
-    return f"group_{positive_hash}"
+    return f"group_{positive_hash}" + str(timezone.now())
 
 
 def make_private_chatroom(user_id, other_user_id):
-    from chatroom.models import RoomModel
     room = (
         RoomModel.objects.filter(room_participants=user_id, room_type="direct_message")
         .filter(room_participants=other_user_id)
@@ -163,8 +163,6 @@ def make_private_chatroom(user_id, other_user_id):
 
 
 def process_fr(request):
-    from user_profile.models import User, UserFriendRelation
-    from django.db.models import Q
     if request.method == "POST":
         user_id = request.POST.get("user_id", None)
         other_user_id = request.POST.get("other_user_id", None)
