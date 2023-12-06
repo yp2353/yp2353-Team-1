@@ -24,21 +24,28 @@ def index(request):
         user_info = sp.current_user()
         username = user_info["display_name"]
 
-        # Get top tracks
-        top_tracks = get_top_tracks(sp)
-
-        # Get top artists and top genres based on artist
-        top_artists, top_genres = get_top_artist_and_genres(sp)
-
-        # Get recommendation based on tracks
-        recommendedtracks = get_recommendations(sp, top_tracks)
-
         user_id = user_info["id"]
         current_time = timezone.now().astimezone(timezone.utc)
         midnight = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
         recent_top = UserTop.objects.filter(user_id=user_id, time__gte=midnight).first()
         if not recent_top:
-            # If no top info for this user today, save new row to UserTop database
+            # If no top info for this user today, get and save new row to UserTop database
+
+            # Get top tracks
+            top_tracks = sp.current_user_top_tracks(limit=5, time_range="short_term")
+            top_tracks = get_track_info(top_tracks["items"])
+
+            # Get recommendation based on tracks
+            seed_tracks = [track["id"] for track in top_tracks]
+            recommendedtracks = []
+            if len(seed_tracks) > 0:
+                recommendedtracks = sp.recommendations(seed_tracks=seed_tracks, limit=5)
+                recommendedtracks = get_track_info(recommendedtracks["tracks"])
+
+            # Get top artists and top genres based on artist
+            top_artists = sp.current_user_top_artists(limit=5, time_range="short_term")
+            top_artists, top_genres = get_artist_and_genres(top_artists["items"])
+
             top_data = UserTop(
                 user_id=user_id,
                 time=current_time,
@@ -48,6 +55,30 @@ def index(request):
                 recommended_tracks=[track["id"] for track in recommendedtracks],
             )
             top_data.save()
+        else:
+            top_tracks = (
+                sp.tracks(recent_top.top_track) if len(recent_top.top_track) > 0 else []
+            )
+            if top_tracks:
+                top_tracks = get_track_info(top_tracks["tracks"])
+
+            recommendedtracks = (
+                sp.tracks(recent_top.recommended_tracks)
+                if len(recent_top.recommended_tracks) > 0
+                else []
+            )
+            if recommendedtracks:
+                recommendedtracks = get_track_info(recommendedtracks["tracks"])
+
+            top_artists = (
+                sp.artists(recent_top.top_artist)
+                if len(recent_top.top_artist) > 0
+                else []
+            )
+            if top_artists:
+                top_artists, _ = get_artist_and_genres(top_artists["artists"])
+
+            top_genres = recent_top.top_genre
 
         current_year = current_time.year
         vibe_history = Vibe.objects.filter(
@@ -101,38 +132,33 @@ def index(request):
         return redirect("login:index")
 
 
-def get_top_tracks(sp):
-    top_tracks = sp.current_user_top_tracks(limit=5, time_range="short_term")
+def get_track_info(tracks_list):
     tracks = []
-    for track in top_tracks["items"]:
+
+    for track in tracks_list:
         tracks.append(
             {
                 "name": track["name"],
                 "id": track["id"],
                 "artists": ", ".join([artist["name"] for artist in track["artists"]]),
                 "album": track["album"]["name"],
-                "uri": track["uri"],
                 "large_album_cover": track["album"]["images"][0]["url"]
                 if len(track["album"]["images"]) >= 1
-                else None,
-                "medium_album_cover": track["album"]["images"][1]["url"]
-                if len(track["album"]["images"]) >= 2
                 else None,
                 "small_album_cover": track["album"]["images"][2]["url"]
                 if len(track["album"]["images"]) >= 3
                 else None,
             }
         )
+
     return tracks
 
 
-def get_top_artist_and_genres(sp):
-    top_artists = sp.current_user_top_artists(limit=5, time_range="short_term")
-
+def get_artist_and_genres(top_artists):
     user_top_artists = []
     user_top_genres = set()  # Set to store unique genres
 
-    for artist in top_artists["items"]:
+    for artist in top_artists:
         artist_info = {
             "name": artist["name"],
             "id": artist["id"],
@@ -142,42 +168,6 @@ def get_top_artist_and_genres(sp):
         user_top_genres.update(artist["genres"])
 
     return user_top_artists, list(user_top_genres)
-
-
-def get_recommendations(sp, top_tracks):
-    seed_tracks = [track["id"] for track in top_tracks[:5]]
-    recommendedtracks = []
-
-    # Debug
-    # return recommendedtracks
-
-    try:
-        recommendations = sp.recommendations(seed_tracks=seed_tracks, limit=5)
-    except Exception:
-        # No tracks as seed to recommend
-        return recommendedtracks
-
-    for track in recommendations["tracks"]:
-        recommendedtracks.append(
-            {
-                "name": track["name"],
-                "id": track["id"],
-                "artists": ", ".join([artist["name"] for artist in track["artists"]]),
-                "album": track["album"]["name"],
-                "uri": track["uri"],
-                "large_album_cover": track["album"]["images"][0]["url"]
-                if len(track["album"]["images"]) >= 1
-                else None,
-                "medium_album_cover": track["album"]["images"][1]["url"]
-                if len(track["album"]["images"]) >= 2
-                else None,
-                "small_album_cover": track["album"]["images"][2]["url"]
-                if len(track["album"]["images"]) >= 3
-                else None,
-            }
-        )
-
-    return recommendedtracks
 
 
 def calculate_vibe(sp, midnight, recent_tracks):
