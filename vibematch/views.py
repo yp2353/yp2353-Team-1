@@ -28,10 +28,12 @@ def vibe_match(request):
         messages.error(request, "Vibe_match failed, please try again later.")
         return redirect("login:index")
 
+
 def k_nearest_neighbors(k, target_user_id):
     from user_profile.models import Vibe, User
     from dashboard.models import EmotionVector
     from django.db.models import OuterRef, Subquery, F
+
     # Fetch Emotion Vectors
     emotion_vectors = {
         str(emotion.emotion).lower(): vector_to_array(emotion.vector)
@@ -113,6 +115,7 @@ def euclidean_distance(user_1, user_2):
 
 def vector_to_array(vector_str):
     import re
+
     clean = re.sub(r"[\[\]\n\t]", "", vector_str)
     clean = clean.split()
     clean = [float(e) for e in clean]
@@ -141,5 +144,7 @@ def check_location_stored(request):
     from vibematch.models import UserLocation
 
     today = timezone.localdate()
-    location_exists = UserLocation.objects.filter(user=request.user, created_at__date=today).exists()
-    return JsonResponse({'locationStored': location_exists})
+    location_exists = UserLocation.objects.filter(
+        user=request.user, created_at__date=today
+    ).exists()
+    return JsonResponse({"locationStored": location_exists})
