@@ -44,3 +44,7 @@ roomListItems.forEach(function (roomListItem) {
 //         }
 //     });
 // });
+
+function room_list_click_handler(roomID) {
+    console.log("Room with ID ", roomID);
+}

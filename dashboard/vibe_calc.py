@@ -20,7 +20,13 @@ def calculate_vibe_async(
         vibe_result += " " + lyric_vibe
 
     current_time = timezone.now().astimezone(timezone.utc)
-    description = vibe_description(vibe_result)
+
+    if len(track_artists) > 1:
+        artist_string = ",".join(track_artists)
+    else:
+        artist_string = track_artists[0]
+    description = vibe_description(vibe_result, artist_string)
+
     vibe_data = Vibe(
         user_id=user_id,
         vibe_time=current_time,
@@ -368,11 +374,11 @@ def vibe_description(final_vibe):
                 {"role": "system", "content": "You are a helpful assistant."},
                 {
                     "role": "user",
-                    "content": f"This is the output of a program that takes listening history of a person (spotify "
-                    f"features) and their lyrics and classifies a daily final vibe. Take the daily final vibe, "
-                    f"this being: '{final_vibe}', and briefly describe today's person music vibe and energy as "
-                    f"if you were talking to them. Use pop culture terms, artists as references as be brief "
-                    f"but precise.",
+                    "content": f"This is the output of a program that takes Spotify listening history of a person "
+                    f"and their lyrics and classifies a daily vibe. Take the daily vibe, this being: '{final_vibe}', "
+                    f"and describe this person's music vibe and energy today as if you were talking to them. "
+                    f"We know this person listens to the following artists: '{artist_string}'. Only mention a few of the artists you actually have knowledge about. "
+                    f"Use pop culture terms and be brief but precise, under 185 words. Make sure to describe their daily vibe. ",
                 },
             ],
             request_timeout=50,
