@@ -5,7 +5,9 @@ let currentUserID = '';
 
 
 function initializeWebSocket(roomID) {
+    console.log("Socket Creation Started")
     if (chatSocket) {
+        console.log("Old Socket Closed")
         chatSocket.close();
     }
     
