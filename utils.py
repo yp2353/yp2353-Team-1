@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 # Load variables from .env
 load_dotenv()
 
-CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
-CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
+# CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
+# CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
+# REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 
 # Comment the below line while working on your local machine
 # REDIRECT_URI = (
@@ -21,7 +21,7 @@ REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 
 SCOPE = "user-top-read user-read-recently-played user-read-private"
 sp_oauth = SpotifyOAuth(
-    os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"), REDIRECT_URI, scope=SCOPE, show_dialog=True
+    os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"), os.getenv("SPOTIPY_REDIRECT_URI"), scope=SCOPE, show_dialog=True
 )
 
 vibe_calc_threads = {}
