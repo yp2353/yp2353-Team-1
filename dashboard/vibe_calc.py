@@ -363,6 +363,8 @@ def cosine_similarity(vec_a, vec_b):
 
 
 def vibe_description(final_vibe, artist_string):
+    import openai
+    import os
     openai.api_key = os.getenv("OPEN_AI_TOKEN")
 
     try:
