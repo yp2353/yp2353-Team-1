@@ -40,7 +40,7 @@ def vibe_match(request):
                 top_artist = sp.artists(user_top.top_artist[:5])
             else:
                 top_artist = None
-            
+
             if user_top and len(user_top.top_track) > 0:
                 top_track = sp.tracks(user_top.top_track[:3])
             else:
