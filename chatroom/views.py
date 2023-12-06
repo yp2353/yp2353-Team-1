@@ -3,9 +3,6 @@ from rich.console import Console
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import spotipy
-from search.views import current_friend_list
-from view_profile.views import generate_room_id, make_private_chatroom
-from chatroom.models import RoomModel
 
 
 console = Console(style="bold green")
@@ -14,6 +11,7 @@ user_exists = None
 
 
 def open_chatroom(request):
+    from search.views import current_friend_list
     from user_profile.models import User
     from utils import get_spotify_token
 
@@ -82,7 +80,9 @@ def get_user_exist(user_id):
 
 
 def group_creation(request):
+    from view_profile.views import generate_room_id, make_private_chatroom
     from utils import get_spotify_token
+    from chatroom.models import RoomModel
 
     token_info = get_spotify_token(request)
     if token_info:
@@ -129,6 +129,7 @@ def group_creation(request):
 
 def update_room_name(request):
     from django.http import JsonResponse
+    from chatroom.models import RoomModel
 
     if request.method == "POST":
         room_id = request.POST.get("room_id")

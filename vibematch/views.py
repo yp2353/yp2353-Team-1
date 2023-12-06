@@ -1,24 +1,17 @@
 from django.shortcuts import redirect, render
 from django.utils import timezone
-import spotipy
-from user_profile.models import Vibe, User, UserTop
-import numpy as np
-from vibematch.models import UserLocation
-import re
-from dashboard.models import EmotionVector
-from django.db.models import OuterRef, Subquery, F
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from math import radians, cos, sin, asin, sqrt
-import math
+
 
 
 def vibe_match(request):
     from utils import get_spotify_token
     import spotipy
+    
 
     token_info = get_spotify_token(request)
     if token_info:
@@ -38,7 +31,11 @@ def vibe_match(request):
 
 
 def k_nearest_neighbors(k, target_user_id, sp):
-    # Fetch Emotion Vectors
+    from user_profile.models import Vibe, User, UserTop
+    from dashboard.models import EmotionVector
+    from django.db.models import OuterRef, Subquery, F
+    import numpy as np
+    import math
     emotion_vectors = {
         str(emotion.emotion).lower(): vector_to_array(emotion.vector)
         for emotion in EmotionVector.objects.all()
@@ -129,10 +126,13 @@ def k_nearest_neighbors(k, target_user_id, sp):
 
 
 def distance_to_similarity(distance):
+    import math
     return math.ceil((1 / (1 + distance)) * 100)
 
 
 def get_users(target_user_id, latest_vibes):
+    from user_profile.models import User
+    from vibematch.models import UserLocation
     today = timezone.localdate()
     phys_distances = {}
 
@@ -175,6 +175,8 @@ def get_users(target_user_id, latest_vibes):
 
 
 def get_nearby_users(all_user_locations, target_user_id):
+    from vibematch.models import UserLocation
+    from user_profile.models import User
     today = timezone.localdate()
     # Get target user's location
     target_user_location = UserLocation.objects.get(
@@ -197,6 +199,7 @@ def get_nearby_users(all_user_locations, target_user_id):
 
 
 def euclidean_distance(user_1, user_2):
+    import numpy as np
     user_1 = np.array(user_1)
     user_2 = np.array(user_2)
     return np.sqrt(np.sum((user_1 - user_2) ** 2))
@@ -204,7 +207,7 @@ def euclidean_distance(user_1, user_2):
 
 def vector_to_array(vector_str):
     import re
-
+    import numpy as np
     clean = re.sub(r"[\[\]\n\t]", "", vector_str)
     clean = clean.split()
     clean = [float(e) for e in clean]
@@ -213,6 +216,7 @@ def vector_to_array(vector_str):
 
 # Haversine formula to calculate distance between two lat/long points
 def haversine(lon1, lat1, lon2, lat2):
+    from math import radians, cos, sin, asin, sqrt
     # Convert decimal degrees to radians
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
@@ -228,6 +232,7 @@ def haversine(lon1, lat1, lon2, lat2):
 @csrf_exempt
 @require_http_methods(["POST"])
 def store_location(request):
+    import json
     from vibematch.models import UserLocation
 
     if not request.user.is_authenticated:
