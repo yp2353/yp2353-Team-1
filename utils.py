@@ -1,8 +1,5 @@
 from spotipy.oauth2 import SpotifyOAuth
 import os
-import pandas as pd
-from collections import Counter
-from django.apps import apps
 from dotenv import load_dotenv
 
 # from decouple import config
@@ -47,66 +44,3 @@ def get_spotify_token(request):
     else:
         # Error getting saved token
         return None
-
-
-def deduce_audio_vibe(audio_features_list):
-    """
-    Function to format the Spotify audio features and predict the most common mood
-    using the provided model.
-
-    Parameters:
-    - audio_features_list: The audio features of the tracks as obtained from the Spotify API.
-
-    Returns:
-    - The most common mood from the predictions.
-    """
-
-    # Create a DataFrame from the list of audio features dictionaries
-    spotify_data = pd.DataFrame(audio_features_list)
-
-    # Rename 'duration_ms' to 'length' and normalize by dividing by the maximum value
-    spotify_data.rename(columns={"duration_ms": "length"}, inplace=True)
-    if not spotify_data["length"].empty:
-        max_length = spotify_data["length"].max()
-        spotify_data["length"] = spotify_data["length"] / max_length
-
-    # Reorder columns based on the model's expectations
-    ordered_features = [
-        "length",
-        "danceability",
-        "acousticness",
-        "energy",
-        "instrumentalness",
-        "liveness",
-        "valence",
-        "loudness",
-        "speechiness",
-        "tempo",
-        "key",
-        "time_signature",
-    ]
-
-    # Ensure the DataFrame has all the required columns in the correct order
-    spotify_data = spotify_data[ordered_features]
-
-    # Define the mood dictionary
-    mood_dict = {
-        0: "happy",
-        1: "sad",
-        2: "energetic",
-        3: "calm",
-        4: "anxious",
-        5: "cheerful",
-        6: "gloomy",
-        7: "content",
-    }
-
-    # Predict the moods using the model
-    model = apps.get_app_config("dashboard").model
-    pred = model.predict(spotify_data)
-
-    # Find the most common mood prediction
-    most_common_pred = Counter(pred).most_common(1)[0][0]
-    audio_vibe = mood_dict.get(most_common_pred, "Unknown")
-
-    return audio_vibe
