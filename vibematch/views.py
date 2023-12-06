@@ -2,12 +2,12 @@ from django.shortcuts import redirect, render
 from utils import get_spotify_token
 from django.utils import timezone
 import spotipy
-from user_profile.models import Vibe, User, UserTop
+from user_profile.models import Vibe, User, UserTop, UserFriendRelation
 import numpy as np
 from vibematch.models import UserLocation
 import re
 from dashboard.models import EmotionVector
-from django.db.models import OuterRef, Subquery, F
+from django.db.models import OuterRef, Subquery, F, Q
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
