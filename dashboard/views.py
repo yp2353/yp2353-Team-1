@@ -1,12 +1,6 @@
 from django.shortcuts import render, redirect
-import spotipy
-import threading
-
-# from dotenv import load_dotenv
 from utils import get_spotify_token, vibe_calc_threads
 from django.http import JsonResponse
-from dashboard.models import TrackVibe
-from user_profile.models import Vibe, UserTop
 from django.utils import timezone
 from django.contrib import messages
 
@@ -17,6 +11,8 @@ from .vibe_calc import calculate_vibe_async
 
 
 def index(request):
+    import spotipy
+    from user_profile.models import UserTop, Vibe
     token_info = get_spotify_token(request)
     # token_info = request.session.get('token_info', None)
 
@@ -186,6 +182,8 @@ def get_recommendations(sp, top_tracks):
 
 def calculate_vibe(sp, midnight, recent_tracks):
     # Check if user vibe already been calculated for today
+    import threading
+    from user_profile.models import Vibe
     user_info = sp.current_user()
     user_id = user_info["id"]
     recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=midnight).first()
@@ -245,6 +243,9 @@ def get_vector(word, model):
 
 
 def get_task_status(request, midnight):
+    import spotipy
+    from user_profile.models import Vibe
+    from dashboard.models import TrackVibe
     token_info = get_spotify_token(request)
 
     if token_info:
@@ -280,6 +281,8 @@ def get_task_status(request, midnight):
 
 
 def get_recent_tracks(sp, track_ids):
+    import spotipy
+    from dashboard.models import TrackVibe
     # In theory, all tracks in track_ids should exist in database already!
     existing_tracks = TrackVibe.objects.filter(track_id__in=track_ids)
 
@@ -332,7 +335,8 @@ def get_recent_tracks(sp, track_ids):
 
 
 @require_POST
-def upvote_track(request, track_id):
+def upvote_track(track_id):
+    from dashboard.models import TrackVibe
     track = get_object_or_404(TrackVibe, pk=track_id)
     track.upvote_count += 1
     track.save()
@@ -340,7 +344,8 @@ def upvote_track(request, track_id):
 
 
 @require_POST
-def cancel_upvote_track(request, track_id):
+def cancel_upvote_track(track_id):
+    from dashboard.models import TrackVibe
     track = get_object_or_404(TrackVibe, pk=track_id)
     if track.upvote_count > 0:
         track.upvote_count -= 1
@@ -349,7 +354,8 @@ def cancel_upvote_track(request, track_id):
 
 
 @require_POST
-def downvote_track(request, track_id):
+def downvote_track(track_id):
+    from dashboard.models import TrackVibe
     track = get_object_or_404(TrackVibe, pk=track_id)
     track.downvote_count += 1
     track.save()
@@ -357,7 +363,8 @@ def downvote_track(request, track_id):
 
 
 @require_POST
-def cancel_downvote_track(request, track_id):
+def cancel_downvote_track(track_id):
+    from dashboard.models import TrackVibe
     track = get_object_or_404(TrackVibe, pk=track_id)
     if track.downvote_count >= 0:
         track.downvote_count -= 1
