@@ -128,7 +128,12 @@ def compare(request, other_user_id):
             "default_image_path": "user_profile/blank_user_profile_image.jpeg",
         }
 
-        return render(request, "view_profile/index.html", context)
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            # Render the partial content for AJAX request
+            return render(request, "view_profile/compare_content.html", context)
+        else:
+            # Render the full page for a regular request
+            return render(request, "view_profile/index.html", context)
     else:
         # No token, redirect to login again
         messages.error(request, "View_profile failed, please log in.")
