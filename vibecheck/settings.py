@@ -31,6 +31,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'vcheck-env3.eba-v23ti7jb.us-east-1.elasticbeanstalk.com',
+    "127.0.0.1",
 ]
 
 
