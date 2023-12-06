@@ -25,7 +25,55 @@ def vibe_match(request):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
-        matches = k_nearest_neighbors(5, user_id, sp)
+        nearest_neighbors_ids, all_users, physical_distances = k_nearest_neighbors(
+            5, user_id, sp
+        )
+
+        matches = [
+            {
+                "user_id": uid,
+                "username": User.objects.get(user_id=uid),
+                "vibe": all_users.filter(user_id=uid)
+                .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
+                .first(),
+                "fav_track": sp.track(User.objects.get(user_id=uid).track_id)
+                if User.objects.get(user_id=uid).track_id
+                else None,
+                "distance": math.ceil(physical_distances.get(uid, None))
+                if physical_distances.get(uid) is not None
+                else None,
+                "similarity": distance_to_similarity(_),
+                "top_artist": sp.artists(
+                    UserTop.objects.filter(user_id=uid)
+                    .order_by("-time")
+                    .first()
+                    .top_artist[:5]
+                )
+                if len(
+                    UserTop.objects.filter(user_id=uid)
+                    .order_by("-time")
+                    .first()
+                    .top_artist
+                )
+                > 0
+                else None,
+                "top_tracks": sp.tracks(
+                    UserTop.objects.filter(user_id=uid)
+                    .order_by("-time")
+                    .first()
+                    .top_track[:3]
+                )
+                if len(
+                    UserTop.objects.filter(user_id=uid)
+                    .order_by("-time")
+                    .first()
+                    .top_track
+                )
+                > 0
+                else None,
+            }
+            for uid, _ in nearest_neighbors_ids
+        ]
 
         context = {"neighbors": matches}
 
@@ -92,39 +140,7 @@ def k_nearest_neighbors(k, target_user_id, sp):
     # Sort by distance and select top k
     nearest_neighbors_ids = sorted(distances, key=lambda x: x[1])[:k]
 
-    nearest_neighbors = [
-        {
-            "user_id": uid,
-            "username": User.objects.get(user_id=uid),
-            "vibe": all_users.filter(user_id=uid)
-            .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
-            .first(),
-            "fav_track": sp.track(User.objects.get(user_id=uid).track_id)
-            if User.objects.get(user_id=uid).track_id
-            else None,
-            "distance": math.ceil(physical_distances.get(uid, None))
-            if physical_distances.get(uid) is not None
-            else None,
-            "similarity": distance_to_similarity(_),
-            "top_artist": sp.artists(
-                UserTop.objects.filter(user_id=uid)
-                .order_by("-time")
-                .first()
-                .top_artist[:5]
-                if len(
-                    UserTop.objects.filter(user_id=uid)
-                    .order_by("-time")
-                    .first()
-                    .top_artist
-                )
-                > 0
-                else None,
-            ),
-        }
-        for uid, _ in nearest_neighbors_ids
-    ]
-
-    return nearest_neighbors
+    return nearest_neighbors_ids, all_users, physical_distances
 
 
 def distance_to_similarity(distance):
