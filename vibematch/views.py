@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from utils import get_spotify_token
 from django.utils import timezone
 import spotipy
-from user_profile.models import Vibe, User, UserTop
+from user_profile.models import Vibe, User, UserTop, UserFriendRelation
 import numpy as np
 from vibematch.models import UserLocation
 import re
@@ -16,6 +16,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from math import radians, cos, sin, asin, sqrt
 import math
+from django.db.models import Q
 
 
 def vibe_match(request):
@@ -25,57 +26,49 @@ def vibe_match(request):
 
         user_info = sp.current_user()
         user_id = user_info["id"]
+        # Pass username to navbar
+        username = user_info["display_name"]
+
         nearest_neighbors_ids, all_users, physical_distances = k_nearest_neighbors(
-            5, user_id, sp
+            5, user_id
         )
 
-        matches = [
-            {
-                "user_id": uid,
-                "username": User.objects.get(user_id=uid),
-                "vibe": all_users.filter(user_id=uid)
-                .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
-                .first(),
-                "fav_track": sp.track(User.objects.get(user_id=uid).track_id)
-                if User.objects.get(user_id=uid).track_id
-                else None,
-                "distance": math.ceil(physical_distances.get(uid, None))
-                if physical_distances.get(uid) is not None
-                else None,
-                "similarity": distance_to_similarity(_),
-                "top_artist": sp.artists(
-                    UserTop.objects.filter(user_id=uid)
-                    .order_by("-time")
-                    .first()
-                    .top_artist[:5]
-                )
-                if len(
-                    UserTop.objects.filter(user_id=uid)
-                    .order_by("-time")
-                    .first()
-                    .top_artist
-                )
-                > 0
-                else None,
-                "top_tracks": sp.tracks(
-                    UserTop.objects.filter(user_id=uid)
-                    .order_by("-time")
-                    .first()
-                    .top_track[:3]
-                )
-                if len(
-                    UserTop.objects.filter(user_id=uid)
-                    .order_by("-time")
-                    .first()
-                    .top_track
-                )
-                > 0
-                else None,
-            }
-            for uid, _ in nearest_neighbors_ids
-        ]
+        matches = []
+        for uid, _ in nearest_neighbors_ids:
+            user_top = UserTop.objects.filter(user_id=uid).order_by("-time").first()
+            if user_top and len(user_top.top_artist) > 0:
+                top_artist = sp.artists(user_top.top_artist[:5])
+            else:
+                top_artist = None
 
-        context = {"neighbors": matches}
+            if user_top and len(user_top.top_track) > 0:
+                top_track = sp.tracks(user_top.top_track[:3])
+            else:
+                top_track = None
+
+            matches.append(
+                {
+                    "user_id": uid,
+                    "username": User.objects.get(user_id=uid),
+                    "vibe": all_users.filter(user_id=uid)
+                    .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
+                    .first(),
+                    "fav_track": sp.track(User.objects.get(user_id=uid).track_id)
+                    if User.objects.get(user_id=uid).track_id
+                    else None,
+                    "distance": math.ceil(physical_distances.get(uid, None))
+                    if physical_distances.get(uid) is not None
+                    else None,
+                    "similarity": distance_to_similarity(_),
+                    "top_artist": top_artist,
+                    "top_tracks": top_track,
+                }
+            )
+
+        context = {
+            "neighbors": matches,
+            "username": username,
+        }
 
         return render(request, "match.html", context)
     else:
@@ -84,7 +77,7 @@ def vibe_match(request):
         return redirect("login:index")
 
 
-def k_nearest_neighbors(k, target_user_id, sp):
+def k_nearest_neighbors(k, target_user_id):
     # Fetch Emotion Vectors
     emotion_vectors = {
         str(emotion.emotion).lower(): vector_to_array(emotion.vector)
@@ -104,7 +97,6 @@ def k_nearest_neighbors(k, target_user_id, sp):
         latest_vibe_time=Subquery(latest_vibe_times)
     ).filter(vibe_time=F("latest_vibe_time"))
 
-    physical_distances = {}
     all_users, physical_distances = get_users(target_user_id, latest_vibes)
 
     all_users_array = []
@@ -112,7 +104,6 @@ def k_nearest_neighbors(k, target_user_id, sp):
 
     for user in all_users:
         user_id, lyrics_vibe, audio_vibe, *features = user
-        print(user_id)
         lyrics_vector = emotion_vectors.get(
             lyrics_vibe, np.zeros_like(next(iter(emotion_vectors.values())))
         )
@@ -122,9 +113,21 @@ def k_nearest_neighbors(k, target_user_id, sp):
         features = [float(feature) for feature in features]
 
         if user_id != target_user_id:
-            all_users_array.append(
-                (user_id, [*lyrics_vector, *audio_vector, *features])
-            )
+            # Check friend relation status here.
+            # Do not want to recommend people you are already friends
+            # or have a pending friend request with
+
+            friend_request = UserFriendRelation.objects.filter(
+                (Q(user1_id=user_id) & Q(user2_id=target_user_id))
+                | (Q(user2_id=user_id) & Q(user1_id=target_user_id))
+            ).first()
+
+            if not friend_request or friend_request.status == "not_friend":
+                # Friend request does not exist or there's a row in table but not friends anymore
+                all_users_array.append(
+                    (user_id, [*lyrics_vector, *audio_vector, *features])
+                )
+
         else:
             target_user_features = [*lyrics_vector, *audio_vector, *features]
 
@@ -158,7 +161,7 @@ def get_users(target_user_id, latest_vibes):
         # Filter for users within 60 miles of the target user
         all_user_locations = UserLocation.objects.all()
         nearby_users, phys_distances = get_nearby_users(
-            all_user_locations, target_user_id
+            all_user_locations, target_user_id, today
         )
 
         all_users = latest_vibes.filter(user_id__in=nearby_users).values_list(
@@ -173,9 +176,7 @@ def get_users(target_user_id, latest_vibes):
         )
     else:
         # If no location for the target user, use the existing method
-        all_users = latest_vibes.filter(
-            user_id__in=User.objects.all().values_list("user_id", flat=True)
-        ).values_list(
+        all_users = latest_vibes.values_list(
             "user_id",
             "user_lyrics_vibe",
             "user_audio_vibe",
@@ -189,8 +190,7 @@ def get_users(target_user_id, latest_vibes):
     return all_users, phys_distances
 
 
-def get_nearby_users(all_user_locations, target_user_id):
-    today = timezone.localdate()
+def get_nearby_users(all_user_locations, target_user_id, today):
     # Get target user's location
     target_user_location = UserLocation.objects.get(
         user=User.objects.get(user_id=target_user_id), created_at__date=today
