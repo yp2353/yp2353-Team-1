@@ -29,17 +29,17 @@ def open_chatroom(request):
         if not rooms_list:
             room = RoomModel.objects.get(roomID="global_room")
             room.room_participants.add(user_exists)
-            print("=====New User Added to global room +++++")
+            # # print("=====New User Added to global room +++++")
 
         for room in rooms_list:
             if room.room_type == "direct_message":
                 other_user = room.room_participants.exclude(user_id=user_id).first()
-                print(other_user)
+                # print(other_user)
                 room.room_name = other_user.username
-                print(room.room_name)
+                # print(room.room_name)
 
         form = SearchRoomFrom()
-        print(rooms_list)
+        # print(rooms_list)
 
         friends = current_friend_list(user_id)
 
@@ -100,7 +100,7 @@ def group_creation(request):
                 return redirect("chatroom:open_chatroom")
 
             selected_friends.append(user_id)
-            print(selected_friends)
+            # print(selected_friends)
 
             room_ID = generate_room_id(
                 selected_friends
@@ -130,8 +130,8 @@ def update_room_name(request):
     if request.method == "POST":
         room_id = request.POST.get("room_id")
         new_name = request.POST.get("new_name")
-        print(room_id)
-        print(new_name)
+        # print(room_id)
+        # print(new_name)
 
         try:
             room = RoomModel.objects.get(roomID=room_id)
