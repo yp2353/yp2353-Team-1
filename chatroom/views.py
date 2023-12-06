@@ -13,19 +13,15 @@ user_exists = None
 def open_chatroom(request):
     from search.views import current_friend_list
     from user_profile.models import User
-    from utils import get_spotify_token
 
     global user_exists
-    token_info = get_spotify_token(request)
     from chatroom.models import RoomModel
     from .forms import SearchRoomFrom
 
-    if token_info:
-        sp = spotipy.Spotify(auth=token_info["access_token"])
-
-        user_info = sp.current_user()
-        user_id = user_info["id"]
-        username = user_info["display_name"]
+    if request.user.is_authenticated:
+        user_info = request.user
+        user_id = user_info.user_id
+        username = user_info.username
 
         user_exists = User.objects.filter(user_id=user_id).first()
         rooms_list = RoomModel.objects.filter(room_participants=user_id)

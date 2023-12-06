@@ -1,6 +1,16 @@
 from django.utils import timezone
 from utils import vibe_calc_threads
+import lyricsgenius
+import os
+import openai
+import time
 from gradio_client import Client
+import numpy as np
+import re
+from dashboard.models import TrackVibe, EmotionVector
+from user_profile.models import Vibe
+import pandas as pd
+from collections import Counter
 from django.apps import apps
 
 MAX_RETRIES = 2
@@ -11,7 +21,6 @@ client = Client("https://alfredo273-vibecheck-fasttext.hf.space/", serialize=Fal
 def calculate_vibe_async(
     track_names, track_artists, track_ids, audio_features_list, user_id
 ):
-    from user_profile.models import Vibe
     audio_vibe, lyric_vibe = check_vibe(
         track_names, track_artists, track_ids, audio_features_list
     )
@@ -46,7 +55,6 @@ def calculate_vibe_async(
 
 
 def check_vibe(track_names, track_artists, track_ids, audio_features_list):
-    from dashboard.models import TrackVibe
     # Fetch existing vibes from the database
     existing_vibes = TrackVibe.objects.filter(track_id__in=track_ids)
     existing_vibes_dict = {vibe.track_id: vibe for vibe in existing_vibes}
@@ -95,8 +103,6 @@ def check_vibe(track_names, track_artists, track_ids, audio_features_list):
 
 def deduce_audio_vibe(track_ids, audio_features_list):
     # Create a DataFrame from the list of audio features dictionaries
-    import pandas as pd
-    from dashboard.models import TrackVibe
     spotify_data = pd.DataFrame(audio_features_list)
 
     # Rename 'duration_ms' to 'length' and normalize by dividing by the maximum value
@@ -159,18 +165,13 @@ def deduce_audio_vibe(track_ids, audio_features_list):
 
 def get_most_count(vibes):
     # Returns the most commonly appeared word in a list of words
-    from collections import Counter
+
     vibe_counts = Counter(vibes)
     most_common_vibe = vibe_counts.most_common(1)[0][0]
     return most_common_vibe
 
 
 def deduce_lyrics(track_names, track_artists, track_ids):
-    import lyricsgenius
-    import os
-    import openai
-    import time
-    from dashboard.models import TrackVibe
     genius = lyricsgenius.Genius(os.getenv("GENIUS_CLIENT_ACCESS_TOKEN"))
     genius.timeout = 15
 
@@ -257,7 +258,6 @@ def lyrics_vectorize(lyrics_vibes):
 
 
 def average_vector(words):
-    import numpy as np
     # Compute the average vector for a list of words.
     vectors = []
     for word in words:
@@ -276,7 +276,6 @@ def average_vector(words):
 
 
 def string_to_vector(str):
-    import re
     clean = re.sub(r"[\[\]\n\t]", "", str)
     clean = clean.split()
     clean = [float(e) for e in clean]
@@ -343,7 +342,6 @@ def find_closest_emotion(final_vibe):
 
 
 def get_emotion_vector(input_emotion):
-    from dashboard.models import EmotionVector
     input_emotion = input_emotion.lower()
     vector_str = EmotionVector.objects.filter(emotion=input_emotion).first()
 
@@ -358,13 +356,10 @@ def get_emotion_vector(input_emotion):
 
 
 def cosine_similarity(vec_a, vec_b):
-    import numpy as np
     return np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))
 
 
-def vibe_description(final_vibe):
-    import openai
-    import os
+def vibe_description(final_vibe, artist_string):
     openai.api_key = os.getenv("OPEN_AI_TOKEN")
 
     try:

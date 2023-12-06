@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from .forms import UsersearchForm
 from utils import get_spotify_token
 import spotipy
-from user_profile.models import User, UserFriendRelation
+
 from django.db.models import Q
 from django.contrib import messages
 
@@ -43,6 +43,8 @@ def open_search_page(request, username=""):
 
 
 def get_req_list(user_id):
+    from user_profile.models import UserFriendRelation
+
     request_list = []
     received_request = UserFriendRelation.objects.filter(
         (Q(user2_id=user_id)) & Q(status="pending")
@@ -55,6 +57,8 @@ def get_req_list(user_id):
 
 
 def user_search(request):
+    from user_profile.models import User
+
     token_info = get_spotify_token(request)
     if token_info:
         sp = spotipy.Spotify(auth=token_info["access_token"])
@@ -108,6 +112,8 @@ def user_search(request):
 
 
 def current_friend_list(user_id):
+    from user_profile.models import UserFriendRelation
+
     friendship_list = UserFriendRelation.objects.filter(
         (Q(user1_id=user_id) | Q(user2_id=user_id)) & Q(status="friends")
     )
