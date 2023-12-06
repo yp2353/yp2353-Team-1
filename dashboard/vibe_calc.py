@@ -35,7 +35,7 @@ def calculate_vibe_async(
     else:
         artist_string = track_artists[0]
     description = vibe_description(vibe_result, artist_string)
-    
+
     vibe_data = Vibe(
         user_id=user_id,
         vibe_time=current_time,

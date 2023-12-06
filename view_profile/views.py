@@ -129,7 +129,7 @@ def compare(request, other_user_id):
         }
 
         return render(request, "view_profile/index.html", context)
-    
+
     else:
         # No token, redirect to login again
         messages.error(request, "View_profile failed, please log in.")

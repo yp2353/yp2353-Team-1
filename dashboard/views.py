@@ -49,7 +49,7 @@ def index(request):
             # Get top artists and top genres based on artist
             top_artists = sp.current_user_top_artists(limit=5, time_range="short_term")
             top_artists, top_genres = get_artist_and_genres(top_artists["items"])
-            
+
             top_data = UserTop(
                 user_id=user_id,
                 time=current_time,
@@ -60,15 +60,25 @@ def index(request):
             )
             top_data.save()
         else:
-            top_tracks = sp.tracks(recent_top.top_track) if len(recent_top.top_track) > 0 else []
+            top_tracks = (
+                sp.tracks(recent_top.top_track) if len(recent_top.top_track) > 0 else []
+            )
             if top_tracks:
                 top_tracks = get_track_info(top_tracks["tracks"])
 
-            recommendedtracks = sp.tracks(recent_top.recommended_tracks) if len(recent_top.recommended_tracks) > 0 else []
+            recommendedtracks = (
+                sp.tracks(recent_top.recommended_tracks)
+                if len(recent_top.recommended_tracks) > 0
+                else []
+            )
             if recommendedtracks:
                 recommendedtracks = get_track_info(recommendedtracks["tracks"])
-            
-            top_artists = sp.artists(recent_top.top_artist) if len(recent_top.top_artist) > 0 else []
+
+            top_artists = (
+                sp.artists(recent_top.top_artist)
+                if len(recent_top.top_artist) > 0
+                else []
+            )
             if top_artists:
                 top_artists, _ = get_artist_and_genres(top_artists["artists"])
 
@@ -144,7 +154,7 @@ def get_track_info(tracks_list):
                 else None,
             }
         )
-    
+
     return tracks
 
 
