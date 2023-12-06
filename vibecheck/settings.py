@@ -95,18 +95,18 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            # "hosts": [("vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com:6379", 6379)],
-            "hosts": [("127.0.0.1", 6479)],
+            "hosts": [("redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com", 6379)],
+            # "hosts": [("127.0.0.1", 6479)],
         },
     },
 }
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-#         "LOCATION": "redis://vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com:6379:6379/1",
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis-server.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
+    }
+}
 
 
 # Database
