@@ -30,7 +30,7 @@ SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "*",
+    "vcheck.eba-xfip9tve.us-west-2.elasticbeanstalk.com",
 ]
 
 
@@ -96,7 +96,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com", 6379)],
-            # "hosts": [("127.0.0.1", 6479)],
+            # "hosts": [("127.0.0.1", 6579)],
         },
     },
 }
