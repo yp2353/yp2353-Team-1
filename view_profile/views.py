@@ -211,6 +211,8 @@ def process_fr(request):
 
             if where_from == "search_request_list":
                 return redirect("search:search_page")
+            elif where_from == "vibematch":
+                return redirect("vibematch:vibe_match")
             else:
                 # from "view_profile"
                 return redirect("view_profile:compare", other_user_id=other_user_id)
