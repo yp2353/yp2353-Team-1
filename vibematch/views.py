@@ -7,7 +7,7 @@ import numpy as np
 from vibematch.models import UserLocation
 import re
 from dashboard.models import EmotionVector
-from django.db.models import OuterRef, Subquery, F, Q
+from django.db.models import OuterRef, Subquery, F
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -16,6 +16,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from math import radians, cos, sin, asin, sqrt
 import math
+from django.db.models import Q
 
 
 def vibe_match(request):
@@ -76,7 +77,7 @@ def vibe_match(request):
         return redirect("login:index")
 
 
-def k_nearest_neighbors(k, target_user_id, sp):
+def k_nearest_neighbors(k, target_user_id):
     # Fetch Emotion Vectors
     emotion_vectors = {
         str(emotion.emotion).lower(): vector_to_array(emotion.vector)
@@ -189,15 +190,11 @@ def get_users(target_user_id, latest_vibes):
     return all_users, phys_distances
 
 
-def get_nearby_users(all_user_locations, target_user_id):
-    # today = timezone.localdate()
+def get_nearby_users(all_user_locations, target_user_id, today):
     # Get target user's location
-    target_user_location = (
-        UserLocation.objects.filter(user_id=target_user_id)
-        .order_by("-created_at")
-        .first()
+    target_user_location = UserLocation.objects.get(
+        user=User.objects.get(user_id=target_user_id), created_at__date=today
     )
-
     nearby_users = []
     user_distances = {}
     for location in all_user_locations:
