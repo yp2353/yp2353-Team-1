@@ -96,7 +96,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             # "hosts": [("vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com:6379", 6379)],
-            "hosts": [("127.0.0.1", 6579)],
+            "hosts": [("127.0.0.1", 6479)],
         },
     },
 }
