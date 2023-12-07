@@ -62,7 +62,6 @@ def user_search(request):
     if request.user.is_authenticated:
         user = request.user
 
-        
         current_user_id = user.user_id
         # Pass username to navbar
         current_username = user.username

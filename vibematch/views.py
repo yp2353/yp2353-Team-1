@@ -170,10 +170,12 @@ def get_users(target_user_id, latest_vibes):
         # Getting latest location for each user
         all_user_locations = UserLocation.objects.filter(
             created_at=Subquery(
-                UserLocation.objects.filter(user=OuterRef('user')).order_by('-created_at').values('created_at')[:1]
+                UserLocation.objects.filter(user=OuterRef("user"))
+                .order_by("-created_at")
+                .values("created_at")[:1]
             )
         )
- 
+
         nearby_users, phys_distances = get_nearby_users(
             all_user_locations, target_user_id
         )
@@ -206,7 +208,11 @@ def get_users(target_user_id, latest_vibes):
 
 def get_nearby_users(all_user_locations, target_user_id):
     # Get target user's location
-    target_user_location = UserLocation.objects.filter(user_id=target_user_id).order_by("-created_at").first()
+    target_user_location = (
+        UserLocation.objects.filter(user_id=target_user_id)
+        .order_by("-created_at")
+        .first()
+    )
 
     nearby_users = []
     user_distances = {}
