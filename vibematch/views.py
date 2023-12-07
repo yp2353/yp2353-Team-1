@@ -78,12 +78,6 @@ def vibe_match(request):
 
 
 def k_nearest_neighbors(k, target_user_id):
-    # Fetch Emotion Vectors
-    emotion_vectors = {
-        str(emotion.emotion).lower(): vector_to_array(emotion.vector)
-        for emotion in EmotionVector.objects.all()
-    }
-
     # Get the most recent vibe for each user
     # Subquery to get the latest vibe_time for each user
     latest_vibe_times = (
@@ -98,6 +92,20 @@ def k_nearest_neighbors(k, target_user_id):
     ).filter(vibe_time=F("latest_vibe_time"))
 
     all_users, physical_distances = get_users(target_user_id, latest_vibes)
+
+    # Fetch Emotion Vectors
+    lyrics_vibe_values = list(set(user[1] for user in all_users))
+    audio_vibe_values = list(set(user[2] for user in all_users))
+    all_vibe_values = list(set(lyrics_vibe_values + audio_vibe_values))
+
+    need_emotion_vectors = EmotionVector.objects.filter(
+        emotion__in=[value for value in all_vibe_values]
+    )
+
+    emotion_vectors = {
+        str(emotion.emotion): vector_to_array(emotion.vector)
+        for emotion in need_emotion_vectors
+    }
 
     all_users_array = []
     target_user_features = None
@@ -159,9 +167,15 @@ def get_users(target_user_id, latest_vibes):
         user=User.objects.get(user_id=target_user_id), created_at__date=today
     ).exists():
         # Filter for users within 60 miles of the target user
-        all_user_locations = UserLocation.objects.all()
+        # Getting latest location for each user
+        all_user_locations = UserLocation.objects.filter(
+            created_at=Subquery(
+                UserLocation.objects.filter(user=OuterRef('user')).order_by('-created_at').values('created_at')[:1]
+            )
+        )
+ 
         nearby_users, phys_distances = get_nearby_users(
-            all_user_locations, target_user_id, today
+            all_user_locations, target_user_id
         )
 
         all_users = latest_vibes.filter(user_id__in=nearby_users).values_list(
@@ -190,11 +204,10 @@ def get_users(target_user_id, latest_vibes):
     return all_users, phys_distances
 
 
-def get_nearby_users(all_user_locations, target_user_id, today):
+def get_nearby_users(all_user_locations, target_user_id):
     # Get target user's location
-    target_user_location = UserLocation.objects.get(
-        user=User.objects.get(user_id=target_user_id), created_at__date=today
-    )
+    target_user_location = UserLocation.objects.filter(user_id=target_user_id).order_by("-created_at").first()
+
     nearby_users = []
     user_distances = {}
     for location in all_user_locations:

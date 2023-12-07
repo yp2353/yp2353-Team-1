@@ -348,7 +348,11 @@ def get_emotion_vector(input_emotion):
     if not vector_str:
         # We should always get vector string stored in our database,
         # but if somehow is not in database..
-        vector_str = client.predict("get_vector", input_emotion, api_name="/predict")
+        try:
+            vector_str = client.predict("get_vector", input_emotion, api_name="/predict")
+        except Exception:
+            return np.zeros(300)
+        
     else:
         vector_str = vector_str.vector
 
