@@ -20,7 +20,7 @@ script:
   - black .
   - black --check .
   - flake8 .
-  # - coverage run --source=chatroom,vibematch,login,static,templates,dashboard,vibecheck,user_profile,search manage.py test --no-input
+  - coverage run --source='user_profile,dashboard,search,view_profile,vibematch' manage.py test user_profile dashboard search view_profile vibematch --no-input
 
 
 
