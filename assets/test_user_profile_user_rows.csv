@@ -1,6 +1,15 @@
-user_id,username,total_followers,profile_image_url,user_country,user_last_login,user_bio,user_city,user_total_friends
-ks9xm1v0vf1bsf4tny3pn8sfm,Joshua Alfred,0,,US,2023-11-08 00:59:46.237717+00,,,
-adel.delvalle,adel.delvalle,2,,US,2023-11-08 02:03:19.303826+00,,,
-l584nmd717fk2meevv14ng8og,khamse_affan,0,,US,2023-11-07 23:23:54.205673+00,,,
-6weuf4fyvq3ykx3hqrspsbm5i,Alicia,1,,US,2023-11-07 23:54:37.469959+00,,,
-31riwbvwvrsgadgrerv6llzlmbpi,Boyan,0,https://i.scdn.co/image/ab67757000003b822fc024bcaf58217c82249050,US,2023-11-08 01:45:40.206524+00,,,
+user_id,username,total_followers,profile_image_url,user_country,user_last_login,user_bio,user_city,user_total_friends,latitude,longitude,date_joined,email,first_name,is_active,is_staff,is_superuser,last_login,last_name,password,track_id
+ks9xm1v0vf1bsf4tny3pn8sfm,Joshua Alfred,0,,US,2023-12-06 23:15:15.132539+00,"Hello there! ",Birmingham,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,65r94rVdiMwqXyQFEr3tqT
+adel.delvalle,adel.delvalle,2,,US,2023-12-06 23:08:32.983112+00,wept,New York,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,4MjDJD8cW7iVeWInc2Bdyj
+6weuf4fyvq3ykx3hqrspsbm5i,Alicia,1,https://i.scdn.co/image/ab6775700000ee85e73818dc46532b9fe58abaa7,US,2023-12-06 23:26:33.537205+00,Hi vibecheck!,Alexandria,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,4HEOgBHRCExyYVeTyrXsnL
+31i6tgxytelu2my3v37q6v6qrto4,Priyadarshan Sriram,1,https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2215934862030745&height=300&width=300&ext=1704389464&hash=AfrH_HVk4y6Q5Q0gWP7i0KRBxNcyE1zFqES1UkXVllHnuw,US,2023-12-06 01:54:51.253921+00,,,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,
+12170098356,Andres Nicolas Zarta,23,,US,2023-11-08 17:29:46.320518+00,,,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,
+l584nmd717fk2meevv14ng8og,khamse_affan,0,,US,2023-12-06 23:19:01.19114+00,"Hello ",Albany,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,
+31rk2lp5qr3ep2t3bgojgsd2evam,Alc,0,,US,2023-12-05 23:59:31.898346+00,None,Albuquerque,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,6jjx1KvWK4OAzD0JimzHiY
+31riwbvwvrsgadgrerv6llzlmbpi,Boyan,0,https://i.scdn.co/image/ab6775700000ee852fc024bcaf58217c82249050,US,2023-12-06 23:54:47.545134+00,,,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,
+qdmgpy5ispv7b66qg5u0oku8u,Rishie,0,,IN,2023-11-19 21:15:06.916457+00,Let's vibe y'all!,New York City,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,
+31eni5py3yi4iafpnu4ct64sieqe,Chirangivi Bhat,6,,IN,2023-11-18 04:32:22.258149+00,,,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,
+22qc44gr5r6cypqfcdd2idvti,Ajay Krishnan,35,,IN,2023-11-28 20:01:57.089932+00,,,,,,2023-11-28 19:56:09.836252+00,,,true,false,false,,,,
+r4hr584c72i5xefrb3aorrcfk,Amarender Reddy,1,,IN,2023-12-05 18:44:20.865937+00,,,,,,2023-11-28 16:44:18.298926+00,,,true,false,false,,,,
+313iyoeox5wnelfnx6e5glxbl4wy,Tatestse,0,,US,2023-11-17 20:52:17.991273+00,,,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,
+31ivnnwyzvsl55sqdtvlftscasea,Prof Test,0,,US,2023-11-15 23:16:45.226067+00,None,Atlantic City,,,,2023-11-25 00:28:34.733712+00,,,true,false,false,,,passwordwillbeuserid,

@@ -1,8 +1,10 @@
+from django.utils import timezone
 from django.shortcuts import render, redirect
 from utils import get_spotify_token
 import spotipy
 from django.contrib import messages
 from user_profile.models import User, Vibe, UserFriendRelation, UserTop
+from chatroom.models import RoomModel
 from django.db.models import Q
 
 
@@ -129,11 +131,35 @@ def compare(request, other_user_id):
         }
 
         return render(request, "view_profile/index.html", context)
-
     else:
         # No token, redirect to login again
         messages.error(request, "View_profile failed, please log in.")
         return redirect("login:index")
+
+
+def generate_room_id(user_ids):
+    sorted_user_ids = sorted(user_ids)
+    room_id_hash = hash(tuple(sorted_user_ids))
+    positive_hash = abs(room_id_hash)
+    return f"group_{positive_hash}"+str(timezone.now())
+
+
+def make_private_chatroom(user_id, other_user_id):
+    room = (
+        RoomModel.objects.filter(room_participants=user_id, room_type="direct_message")
+        .filter(room_participants=other_user_id)
+        .first()
+    )
+    if room is None:
+        room_ID = generate_room_id([user_id, other_user_id])
+        room_name = f"{other_user_id}"
+        room = RoomModel.objects.create(
+            roomID=room_ID,
+            room_name=room_name,
+            room_type="direct_message",
+        )
+        room.room_participants.add(user_id, other_user_id)
+        room.save()
 
 
 def process_fr(request):
@@ -160,8 +186,8 @@ def process_fr(request):
                     raise UserFriendRelation.DoesNotExist
 
                 if action == "message":
-                    # Redirect to private message
-                    print("to be implemented...")
+                    make_private_chatroom(user_id, other_user_id)
+                    return redirect("chatroom:open_chatroom")
 
                 elif action == "cancel" or action == "unfriend":
                     friend_request.status = "not_friend"

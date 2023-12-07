@@ -3,7 +3,7 @@ var citiesArray = ["Aberdeen", "Abilene", "Akron", "Albany", "Albuquerque", "Ale
 
 document.addEventListener("DOMContentLoaded", function () {
     var citySelect = document.getElementById("user_city");
-    var citySearchInput = document.getElementById("city_search");
+    // var citySearchInput = document.getElementById("city_search");
 
     // Populate the select element with city options
     citiesArray.forEach(function (city) {
@@ -13,27 +13,27 @@ document.addEventListener("DOMContentLoaded", function () {
         citySelect.appendChild(option);
     });
 
-    // Add an event listener to the search input for real-time filtering
-    citySearchInput.addEventListener("input", function () {
-        var searchValue = citySearchInput.value.toLowerCase();
+    // // Add an event listener to the search input for real-time filtering
+    // citySearchInput.addEventListener("input", function () {
+    //     var searchValue = citySearchInput.value.toLowerCase();
 
-        // Clear the previous options
-        citySelect.innerHTML = "";
+    //     // Clear the previous options
+    //     citySelect.innerHTML = "";
 
-        // Populate the select element with filtered city options
-        citiesArray.forEach(function (city) {
-            if (city.toLowerCase().includes(searchValue)) {
-                var option = document.createElement("option");
-                option.value = city;
-                option.text = city;
-                citySelect.appendChild(option);
-            }
-        });
+    //     // Populate the select element with filtered city options
+    //     citiesArray.forEach(function (city) {
+    //         if (city.toLowerCase().includes(searchValue)) {
+    //             var option = document.createElement("option");
+    //             option.value = city;
+    //             option.text = city;
+    //             citySelect.appendChild(option);
+    //         }
+    //     });
 
-        // Add a default "Select a City" option
-        var defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.text = "Select a City";
-        citySelect.insertBefore(defaultOption, citySelect.firstChild);
-    });
+    //     // Add a default "Select a City" option
+    //     var defaultOption = document.createElement("option");
+    //     defaultOption.value = "";
+    //     defaultOption.text = "Select a City";
+    //     citySelect.insertBefore(defaultOption, citySelect.firstChild);
+    // });
 });

@@ -74,6 +74,25 @@ def load_test_data():
                 ),  # Assuming the genres are comma-separated
             )
 
+    with open(
+        os.path.join(assets_path, "test_dashboard_emotionvector_rows.csv"),
+    ) as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            Vibe.objects.create(
+                user_id=row["user_id"],
+                user_lyrics_vibe=row["user_lyrics_vibe"],
+                user_audio_vibe=row["user_audio_vibe"],
+                user_acousticness=parse_decimal(row["user_acousticness"]),
+                user_danceability=parse_decimal(row["user_danceability"]),
+                user_energy=parse_decimal(row["user_energy"]),
+                user_valence=parse_decimal(row["user_valence"]),
+                recent_track=row["recent_track"].split(
+                    ","
+                ),  # Assuming the tracks are comma-separated
+                vibe_time=row["vibe_time"],
+            )
+
 
 def parse_decimal(value):
     try:
