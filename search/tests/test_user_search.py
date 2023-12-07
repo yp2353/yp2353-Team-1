@@ -1,51 +1,86 @@
 from django.test import TestCase, RequestFactory
+from django.urls import reverse
+from django.contrib.messages import get_messages
+from django.contrib.messages.storage.fallback import FallbackStorage
+from unittest.mock import patch
+from user_profile.models import User
+from search.views import user_search
+import datetime
 
-# from django.urls import reverse
-# from unittest.mock import patch
-from unittest.mock import MagicMock
-
-# from search.views import user_search
-
-# from user_profile.models import User, Vibe, UserTop, UserFriendRelation
-# from search.forms import   # Replace with actual form import
+# Mock data and functions
+mock_spotify_token = {"access_token": "test_token"}
+mock_user_info = {"id": "123", "display_name": "testuser"}
 
 
-class UserSearchTest(TestCase):
+class UserSearchTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-        self.user_id = "12345"  # Mock user ID
+        self.user1 = User.objects.create_user(
+            username="testuser1",
+            password="12345",
+            user_id="test_user_id1",
+            total_followers=100,
+            profile_image_url="http://example.com/image.jpg",
+            user_country="Test Country",
+            user_last_login=datetime.datetime.now(),
+            user_bio="Test Bio",
+            user_city="Test City",
+            user_total_friends=50,
+            track_id="track123",
+            # other fields as required
+        )
+        self.user2 = User.objects.create_user(
+            username="testuser2",
+            password="12345",
+            user_id="test_user_id2",
+            total_followers=100,
+            profile_image_url="http://example.com/image.jpg",
+            user_country="Test Country",
+            user_last_login=datetime.datetime.now(),
+            user_bio="Test Bio",
+            user_city="Test City",
+            user_total_friends=50,
+            track_id="track123",
+            # other fields as required
+        )
 
-        # Mocking Spotify API response
-        self.spotify_user_info = {"id": self.user_id}
+    def _add_messages_storage_to_request(self, request):
+        setattr(request, "session", "session")
+        messages = FallbackStorage(request)
+        setattr(request, "_messages", messages)
+        return request
 
-        # Mocking the database models
-        self.mock_user = MagicMock()
-        self.mock_user_friend_relation = MagicMock()
-        self.mock_user.objects.filter.return_value = []
+    @patch("search.views.get_spotify_token", return_value=mock_spotify_token)
+    @patch("spotipy.Spotify.current_user", return_value=mock_user_info)
+    @patch("search.views.get_req_list", return_value=[])
+    @patch("search.views.current_friend_list", return_value=[])
+    def test_user_search_valid_input(
+        self, mock_friend_list, mock_req_list, mock_current_user, mock_get_token
+    ):
+        request = self.factory.get(
+            reverse("search:search_user"), {"username": "testuser"}
+        )
+        request = self._add_messages_storage_to_request(request)
+        response = user_search(request)
+        self.assertEqual(response.status_code, 200)
+        # Assertions for the response context and template
 
-    # def test_user_search_with_valid_token_and_form(self):
-    #     with patch("search.views.get_spotify_token") as mock_get_spotify_token, patch(
-    #         "search.views.spotipy.Spotify"
-    #     ) as mock_spotify, patch("user_profile.models.User", new=self.mock_user), patch(
-    #         "user_profile.models.UserFriendRelation", new=self.mock_user_friend_relation
-    #     ):
-    #         # Setup mock for Spotify token
-    #         mock_get_spotify_token.return_value = {"access_token": "mock_token"}
+    @patch("search.views.get_spotify_token", return_value=None)
+    def test_user_search_no_token(self, mock_get_token):
+        request = self.factory.get(
+            reverse("search:search_user"), {"username": "testuser"}
+        )
+        request = self._add_messages_storage_to_request(request)
+        response = user_search(request)
+        messages = list(get_messages(request))
+        self.assertTrue(
+            any(
+                message.message == "User_search failed, please try again later."
+                for message in messages
+            )
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("login:index"))
 
-    #         # Setup mock for Spotify API response
-    #         mock_spotify_instance = mock_spotify.return_value
-    #         mock_spotify_instance.current_user.return_value = self.spotify_user_info
 
-    #         # Create a request object
-    #         request = self.factory.get(
-    #             reverse("search:search_user"), {"username": "testuser"}
-    #         )
-    #         request.session = {}
-
-    #         # Call the view
-    #         response = user_search(request)
-
-    #         # Check the response
-    #         self.assertEqual(response.status_code, 200)
-    #         # self.assertIsInstance(response.context['UsersearchForm'], UsersearchForm)
-    #         # self.assertIn('results', response.context)
+# Add more tests as needed to cover different scenarios

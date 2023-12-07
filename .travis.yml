@@ -9,6 +9,8 @@ install:
   - pip install -r requirements.txt
 
 before_script:
+  - python manage.py makemigrations
+  - python manage.py migrate
 
 
 after_script:
@@ -18,19 +20,19 @@ script:
   - black .
   - black --check .
   - flake8 .
-  # - coverage run --source=chatroom,vibematch,login,static,templates,dashboard,vibecheck,user_profile,search manage.py test --no-input
+  - coverage run --source='user_profile,dashboard,search,view_profile,vibematch' manage.py test user_profile dashboard search view_profile vibematch --no-input
 
 
 
-deploy:
-  provider: elasticbeanstalk
-  access_key_id: $AWS_ACCESS_KEY_ID
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
-  region: "us-west-2"
-  app: "vcheck-app-1114b"
-  env: "vc-env-1114bb"
-  bucket_name: "elasticbeanstalk-us-west-2-284687301079"
-  bucket_path: "vcheck-app-1114b/"
-  on:
-    repo: gcivil-nyu-org/Wednesday-Fall2023-Team-1
-    branch: develop
+# deploy:
+#   provider: elasticbeanstalk
+#   access_key_id: $AWS_ACCESS_KEY_ID
+#   secret_access_key: $AWS_SECRET_ACCESS_KEY
+#   region: "us-west-2"
+#   app: "vcheck-app-1114b"
+#   env: "vc-env-1114bb"
+#   bucket_name: "elasticbeanstalk-us-west-2-284687301079"
+#   bucket_path: "vcheck-app-1114b/"
+#   on:
+#     repo: gcivil-nyu-org/Wednesday-Fall2023-Team-1
+#     branch: develop
