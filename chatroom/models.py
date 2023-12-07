@@ -6,7 +6,7 @@ class RoomModel(models.Model):
     roomID = models.TextField(primary_key=True)
     room_name = models.TextField()
     room_description = models.TextField()
-    room_type = models.CharField(max_length=30)  # Direct Message or Group Chat
+    room_type = models.CharField(max_length=30)  # direct_message or group_chat
     room_participants = models.ManyToManyField(User, blank=True)
 
     def __str__(self):
