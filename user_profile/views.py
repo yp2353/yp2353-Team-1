@@ -25,7 +25,9 @@ def check_and_store_profile(request):
             "username": user.username,
             "user": user,
             "SearchForm": form,
-            "track": Track.objects.filter(id=user.track_id).first() if user.track_id else None,
+            "track": Track.objects.filter(id=user.track_id).first()
+            if user.track_id
+            else None,
         }
         return render(request, "user_profile/user_profile.html", context)
     else:
@@ -197,8 +199,12 @@ def changeTrack(request):
                                 album_images_small=track["album"]["images"][2]["url"]
                                 if len(track["album"]["images"]) >= 3
                                 else None,
-                                artist_names=[artist["name"] for artist in track["artists"]],
-                                artist_ids=[artist["id"] for artist in track["artists"]],
+                                artist_names=[
+                                    artist["name"] for artist in track["artists"]
+                                ],
+                                artist_ids=[
+                                    artist["id"] for artist in track["artists"]
+                                ],
                                 acousticness=audio_features["acousticness"],
                                 danceability=audio_features["danceability"],
                                 energy=audio_features["energy"],
@@ -211,9 +217,12 @@ def changeTrack(request):
                             track_data.save()
 
                         else:
-                            messages.error(request, "Change track failed, please try again later. No token.")
+                            messages.error(
+                                request,
+                                "Change track failed, please try again later. No token.",
+                            )
                             return redirect("dashboard:index")
-                    
+
                     user.track_id = track_id
                     user.save()
 

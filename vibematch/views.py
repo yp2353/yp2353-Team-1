@@ -40,13 +40,19 @@ def vibe_match(request):
                     "vibe": all_users.filter(user_id=uid)
                     .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
                     .first(),
-                    "fav_track": Track.objects.filter(id=this_user.track_id).first() if this_user.track_id else None,
+                    "fav_track": Track.objects.filter(id=this_user.track_id).first()
+                    if this_user.track_id
+                    else None,
                     "distance": math.ceil(physical_distances.get(uid, None))
                     if physical_distances.get(uid) is not None
                     else None,
                     "similarity": distance_to_similarity(_),
-                    "top_artist": Artist.objects.filter(id__in=user_top.top_artist[:5]) if user_top and len(user_top.top_artist) > 0 else None,
-                    "top_tracks": Track.objects.filter(id__in=user_top.top_track[:3]) if user_top and len(user_top.top_track) > 0 else None,
+                    "top_artist": Artist.objects.filter(id__in=user_top.top_artist[:5])
+                    if user_top and len(user_top.top_artist) > 0
+                    else None,
+                    "top_tracks": Track.objects.filter(id__in=user_top.top_track[:3])
+                    if user_top and len(user_top.top_track) > 0
+                    else None,
                 }
             )
 

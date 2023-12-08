@@ -41,17 +41,24 @@ def index(request):
             recommendedtracks_ids = []
             if top_track_ids:
                 save_track_info(top_tracks["items"], sp.audio_features(top_track_ids))
-            
-                recommendedtracks = sp.recommendations(seed_tracks=top_track_ids, limit=5)
-                recommendedtracks_ids = [track["id"] for track in recommendedtracks["tracks"]]
-                save_track_info(recommendedtracks["tracks"], sp.audio_features(recommendedtracks_ids))
-                
+
+                recommendedtracks = sp.recommendations(
+                    seed_tracks=top_track_ids, limit=5
+                )
+                recommendedtracks_ids = [
+                    track["id"] for track in recommendedtracks["tracks"]
+                ]
+                save_track_info(
+                    recommendedtracks["tracks"],
+                    sp.audio_features(recommendedtracks_ids),
+                )
+
             # Get top artists and top genres based on artist
             top_artists = sp.current_user_top_artists(limit=5, time_range="short_term")
             top_artists_ids = [artist["id"] for artist in top_artists["items"]]
             save_artist_info(top_artists["items"])
             top_genres = get_genres(top_artists["items"])
-            
+
             top_data = UserTop(
                 user_id=user_id,
                 time=current_time,
@@ -68,20 +75,26 @@ def index(request):
             top_artists = Artist.objects.filter(id__in=top_artists_ids)
 
         else:
-            #Already have top data today
+            # Already have top data today
             top_tracks = Track.objects.filter(id__in=recent_top.top_track)
-            recommendedtracks = Track.objects.filter(id__in=recent_top.recommended_tracks)
+            recommendedtracks = Track.objects.filter(
+                id__in=recent_top.recommended_tracks
+            )
             top_artists = Artist.objects.filter(id__in=recent_top.top_artist)
             top_genres = recent_top.top_genre
 
         # Check if user vibe already been calculated for today
-        recent_vibe = Vibe.objects.filter(user_id=user_id, vibe_time__gte=midnight).first()
+        recent_vibe = Vibe.objects.filter(
+            user_id=user_id, vibe_time__gte=midnight
+        ).first()
         if recent_vibe:
             # Vibe already calculated within today
             vibe_or_not = "already_loaded"
         else:
             user_recent_tracks = sp.current_user_recently_played(limit=10)
-            recent_tracks_ids = [item["track"]["id"] for item in user_recent_tracks["items"]]
+            recent_tracks_ids = [
+                item["track"]["id"] for item in user_recent_tracks["items"]
+            ]
             recent_tracks_list = [item["track"] for item in user_recent_tracks["items"]]
             if recent_tracks_ids:
                 recent_tracks_audio = sp.audio_features(recent_tracks_ids)
@@ -91,7 +104,6 @@ def index(request):
             else:
                 # Uf user has 0 recent songs to analyze
                 vibe_or_not = "no_songs"
-
 
         current_year = current_time.year
         vibe_history = Vibe.objects.filter(
@@ -174,9 +186,9 @@ def save_track_info(tracks_list, audio_features_list):
                 valence=audio_features["valence"],
             )
             data_list.append(track_data)
-        
+
         processed_ids.add(track_id)
-    
+
     Track.objects.bulk_create(data_list)
 
 
@@ -191,7 +203,7 @@ def save_artist_info(artist_list):
             continue
 
         existing = Artist.objects.filter(id=artist_id).first()
-        
+
         if not existing:
             artist_info = Artist(
                 id=artist_id,
@@ -202,9 +214,9 @@ def save_artist_info(artist_list):
                 popularity=artist["popularity"],
             )
             data_list.append(artist_info)
-        
+
         processed_ids.add(artist_id)
-    
+
     Artist.objects.bulk_create(data_list)
 
 
@@ -286,7 +298,7 @@ def get_task_status(request, midnight):
             return JsonResponse(response_data)
         else:
             return JsonResponse({"status": "PENDING"})
-    
+
     else:
         # No token, redirect to login again
         messages.error(

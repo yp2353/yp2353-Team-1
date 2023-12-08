@@ -6,6 +6,7 @@ from chatroom.models import RoomModel
 from django.db.models import Q
 from dashboard.models import Track, Artist
 
+
 # Create your views here.
 def compare(request, other_user_id):
     if request.user.is_authenticated:
@@ -41,14 +42,20 @@ def compare(request, other_user_id):
         info = {
             "user": {
                 "recent_vibe": user_recent_vibe,
-                "fav_track": Track.objects.filter(id=user.track_id).first() if user.track_id else None,
-                "recent_tracks": Track.objects.filter(id__in=user_recent_vibe.recent_track[:5])
+                "fav_track": Track.objects.filter(id=user.track_id).first()
+                if user.track_id
+                else None,
+                "recent_tracks": Track.objects.filter(
+                    id__in=user_recent_vibe.recent_track[:5]
+                )
                 if user_recent_vibe and user_recent_vibe.recent_track
                 else None,
                 "top_tracks": Track.objects.filter(id__in=user_top_items.top_track[:5])
                 if user_top_items and user_top_items.top_track
                 else None,
-                "top_artists": Artist.objects.filter(id__in=user_top_items.top_artist[:5])
+                "top_artists": Artist.objects.filter(
+                    id__in=user_top_items.top_artist[:5]
+                )
                 if user_top_items and user_top_items.top_artist
                 else None,
                 "top_genres": user_top_items.top_genre[:5] if user_top_items else None,
@@ -66,14 +73,20 @@ def compare(request, other_user_id):
             },
             "other": {
                 "recent_vibe": other_recent_vibe,
-                "fav_track": Track.objects.filter(id=other_user.track_id).first() if other_user.track_id else None,
-                "recent_tracks": Track.objects.filter(id__in=other_recent_vibe.recent_track[:5])
+                "fav_track": Track.objects.filter(id=other_user.track_id).first()
+                if other_user.track_id
+                else None,
+                "recent_tracks": Track.objects.filter(
+                    id__in=other_recent_vibe.recent_track[:5]
+                )
                 if other_recent_vibe and other_recent_vibe.recent_track
                 else None,
                 "top_tracks": Track.objects.filter(id__in=other_top_items.top_track[:5])
                 if other_top_items and other_top_items.top_track
                 else None,
-                "top_artists": Artist.objects.filter(id__in=other_top_items.top_artist[:5])
+                "top_artists": Artist.objects.filter(
+                    id__in=other_top_items.top_artist[:5]
+                )
                 if other_top_items and other_top_items.top_artist
                 else None,
                 "top_genres": other_top_items.top_genre[:5]
