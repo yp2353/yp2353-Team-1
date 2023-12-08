@@ -1,11 +1,12 @@
 # from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import UsersearchForm
-from utils import get_spotify_token
-import spotipy
 
 from django.db.models import Q
 from django.contrib import messages
+
+from user_profile.models import UserFriendRelation
+from user_profile.models import User
 
 # Create your views here.
 """
@@ -14,15 +15,13 @@ for friends Relation User1 is sender and User2 is receiver
 
 
 def open_search_page(request, username=""):
-    token_info = get_spotify_token(request)
-    if token_info:
-        form = UsersearchForm()
-        sp = spotipy.Spotify(auth=token_info["access_token"])
-
-        user_info = sp.current_user()
-        user_id = user_info["id"]
+    if request.user.is_authenticated:
+        user_info = request.user
+        user_id = user_info.user_id
         # Pass username to navbar
-        username = user_info["display_name"]
+        username = user_info.username
+
+        form = UsersearchForm()
 
         request_list = get_req_list(user_id)
 
@@ -32,7 +31,6 @@ def open_search_page(request, username=""):
             "UsersearchForm": form,
             "request_list": request_list,
             "friends": current_friend_list(user_id),
-            "default_image_path": "user_profile/blank_user_profile_image.jpeg",
         }
 
         return render(request, "search/search.html", context)
@@ -43,8 +41,6 @@ def open_search_page(request, username=""):
 
 
 def get_req_list(user_id):
-    from user_profile.models import UserFriendRelation
-
     request_list = []
     received_request = UserFriendRelation.objects.filter(
         (Q(user2_id=user_id)) & Q(status="pending")
@@ -57,8 +53,6 @@ def get_req_list(user_id):
 
 
 def user_search(request):
-    from user_profile.models import User
-
     if request.user.is_authenticated:
         user = request.user
 
@@ -104,14 +98,11 @@ def user_search(request):
         "UsersearchForm": form,
         "request_list": request_list,
         "friends": current_friend_list(current_user_id),
-        "default_image_path": "user_profile/blank_user_profile_image.jpeg",
     }
     return render(request, "search/search.html", context)
 
 
 def current_friend_list(user_id):
-    from user_profile.models import UserFriendRelation
-
     friendship_list = UserFriendRelation.objects.filter(
         (Q(user1_id=user_id) | Q(user2_id=user_id)) & Q(status="friends")
     )

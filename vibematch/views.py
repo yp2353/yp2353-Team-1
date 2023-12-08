@@ -1,12 +1,10 @@
 from django.shortcuts import redirect, render
-from utils import get_spotify_token
 from django.utils import timezone
-import spotipy
 from user_profile.models import Vibe, User, UserTop, UserFriendRelation
 import numpy as np
 from vibematch.models import UserLocation
 import re
-from dashboard.models import EmotionVector
+from dashboard.models import EmotionVector, Track, Artist
 from django.db.models import OuterRef, Subquery, F
 from django.contrib import messages
 from django.http import JsonResponse
@@ -20,14 +18,11 @@ from django.db.models import Q
 
 
 def vibe_match(request):
-    token_info = get_spotify_token(request)
-    if token_info:
-        sp = spotipy.Spotify(auth=token_info["access_token"])
-
-        user_info = sp.current_user()
-        user_id = user_info["id"]
+    if request.user.is_authenticated:
+        user_info = request.user
+        user_id = user_info.user_id
         # Pass username to navbar
-        username = user_info["display_name"]
+        username = user_info.username
 
         nearest_neighbors_ids, all_users, physical_distances = k_nearest_neighbors(
             5, user_id
@@ -36,32 +31,22 @@ def vibe_match(request):
         matches = []
         for uid, _ in nearest_neighbors_ids:
             user_top = UserTop.objects.filter(user_id=uid).order_by("-time").first()
-            if user_top and len(user_top.top_artist) > 0:
-                top_artist = sp.artists(user_top.top_artist[:5])
-            else:
-                top_artist = None
-
-            if user_top and len(user_top.top_track) > 0:
-                top_track = sp.tracks(user_top.top_track[:3])
-            else:
-                top_track = None
+            this_user = User.objects.get(user_id=uid)
 
             matches.append(
                 {
                     "user_id": uid,
-                    "username": User.objects.get(user_id=uid),
+                    "username": this_user,
                     "vibe": all_users.filter(user_id=uid)
                     .values_list("user_lyrics_vibe", "user_audio_vibe", flat=False)
                     .first(),
-                    "fav_track": sp.track(User.objects.get(user_id=uid).track_id)
-                    if User.objects.get(user_id=uid).track_id
-                    else None,
+                    "fav_track": Track.objects.filter(id=this_user.track_id).first() if this_user.track_id else None,
                     "distance": math.ceil(physical_distances.get(uid, None))
                     if physical_distances.get(uid) is not None
                     else None,
                     "similarity": distance_to_similarity(_),
-                    "top_artist": top_artist,
-                    "top_tracks": top_track,
+                    "top_artist": Artist.objects.filter(id__in=user_top.top_artist[:5]) if user_top and len(user_top.top_artist) > 0 else None,
+                    "top_tracks": Track.objects.filter(id__in=user_top.top_track[:3]) if user_top and len(user_top.top_track) > 0 else None,
                 }
             )
 

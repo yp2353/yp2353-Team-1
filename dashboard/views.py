@@ -140,48 +140,70 @@ def index(request):
 
 def save_track_info(tracks_list, audio_features_list):
     data_list = []
+    processed_ids = set()  # To track processed track IDs
 
     for track, audio_features in zip(tracks_list, audio_features_list):
-        track_data = Track(
-            id=track["id"],
-            name=track["name"],
-            popularity=track["popularity"],
-            album_name=track["album"]["name"],
-            album_release_date=track["album"]["release_date"],
-            album_images_large=track["album"]["images"][0]["url"]
-            if len(track["album"]["images"]) >= 1
-            else None,
-            album_images_small=track["album"]["images"][2]["url"]
-            if len(track["album"]["images"]) >= 3
-            else None,
-            artist_names=[artist["name"] for artist in track["artists"]],
-            artist_ids=[artist["id"] for artist in track["artists"]],
-            acousticness=audio_features["acousticness"],
-            danceability=audio_features["danceability"],
-            energy=audio_features["energy"],
-            instrumentalness=audio_features["instrumentalness"],
-            loudness=audio_features["loudness"],
-            speechiness=audio_features["speechiness"],
-            valence=audio_features["valence"],
-        )
-        data_list.append(track_data)
+        track_id = track["id"]
+
+        if track_id in processed_ids:
+            continue
+
+        existing = Track.objects.filter(id=track_id).first()
+
+        if not existing:
+            track_data = Track(
+                id=track_id,
+                name=track["name"],
+                popularity=track["popularity"],
+                album_name=track["album"]["name"],
+                album_release_date=track["album"]["release_date"],
+                album_images_large=track["album"]["images"][0]["url"]
+                if len(track["album"]["images"]) >= 1
+                else None,
+                album_images_small=track["album"]["images"][2]["url"]
+                if len(track["album"]["images"]) >= 3
+                else None,
+                artist_names=[artist["name"] for artist in track["artists"]],
+                artist_ids=[artist["id"] for artist in track["artists"]],
+                acousticness=audio_features["acousticness"],
+                danceability=audio_features["danceability"],
+                energy=audio_features["energy"],
+                instrumentalness=audio_features["instrumentalness"],
+                loudness=audio_features["loudness"],
+                speechiness=audio_features["speechiness"],
+                valence=audio_features["valence"],
+            )
+            data_list.append(track_data)
+        
+        processed_ids.add(track_id)
     
     Track.objects.bulk_create(data_list)
 
 
 def save_artist_info(artist_list):
     data_list = []
+    processed_ids = set()
 
     for artist in artist_list:
-        artist_info = Artist(
-            id=artist["id"],
-            followers=artist["followers"]["total"],
-            genres=artist["genres"],
-            image=artist["images"][0]["url"] if artist["images"] else None,
-            name=artist["name"],
-            popularity=artist["popularity"],
-        )
-        data_list.append(artist_info)
+        artist_id = artist["id"]
+
+        if artist_id in processed_ids:
+            continue
+
+        existing = Artist.objects.filter(id=artist_id).first()
+        
+        if not existing:
+            artist_info = Artist(
+                id=artist_id,
+                followers=artist["followers"]["total"],
+                genres=artist["genres"],
+                image=artist["images"][0]["url"] if artist["images"] else None,
+                name=artist["name"],
+                popularity=artist["popularity"],
+            )
+            data_list.append(artist_info)
+        
+        processed_ids.add(artist_id)
     
     Artist.objects.bulk_create(data_list)
 
