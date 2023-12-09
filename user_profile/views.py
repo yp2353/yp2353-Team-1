@@ -7,6 +7,7 @@ from django.contrib import messages
 from .forms import SearchForm
 from utils import get_spotify_token
 import spotipy
+from dashboard.models import Track
 
 # Load variables from .env
 load_dotenv()
@@ -20,28 +21,17 @@ def check_and_store_profile(request):
         user = request.user
         form = SearchForm()
 
-        token_info = get_spotify_token(request)
-        if token_info:
-            sp = spotipy.Spotify(auth=token_info["access_token"])
-        else:
-            sp = None
-
-        if user.track_id is not None and sp is not None:
-            track = sp.track(user.track_id)
-        else:
-            track = None
-
         context = {
             "username": user.username,
             "user": user,
-            "default_image_path": "user_profile/blank_user_profile_image.jpeg",
             "SearchForm": form,
-            "track": track,
+            "track": Track.objects.filter(id=user.track_id).first()
+            if user.track_id
+            else None,
         }
         return render(request, "user_profile/user_profile.html", context)
     else:
         # No token, redirect to login again
-        print("User Missing!!!!!")
         messages.error(
             request,
             "Check_and_store_profile failed, please try again later. User unavailable.",
@@ -139,15 +129,18 @@ def search(request):
                 form = SearchForm()
                 results = None
 
-            if user.track_id is not None and sp is not None:
-                track = sp.track(user.track_id)
+            if user.track_id is not None:
+                try:
+                    track = Track.objects.get(id=user.track_id)
+
+                except Track.DoesNotExist:
+                    track = None
             else:
                 track = None
 
             context = {
                 "username": user.username,
                 "user": user,
-                "default_image_path": "user_profile/blank_user_profile_image.jpeg",
                 "SearchForm": form,
                 "results": results,
                 "track": track,
@@ -183,6 +176,53 @@ def changeTrack(request):
             elif action == "add":
                 track_id = request.POST.get("track_id", None)
                 if track_id:
+                    # Save track into database
+                    existing = Track.objects.filter(id=track_id).first()
+
+                    if not existing:
+                        token_info = get_spotify_token(request)
+                        if token_info:
+                            sp = spotipy.Spotify(auth=token_info["access_token"])
+                            track = sp.track(track_id)
+                            audio_features = sp.audio_features([track_id])
+                            audio_features = audio_features[0]
+
+                            track_data = Track(
+                                id=track_id,
+                                name=track["name"],
+                                popularity=track["popularity"],
+                                album_name=track["album"]["name"],
+                                album_release_date=track["album"]["release_date"],
+                                album_images_large=track["album"]["images"][0]["url"]
+                                if len(track["album"]["images"]) >= 1
+                                else None,
+                                album_images_small=track["album"]["images"][2]["url"]
+                                if len(track["album"]["images"]) >= 3
+                                else None,
+                                artist_names=[
+                                    artist["name"] for artist in track["artists"]
+                                ],
+                                artist_ids=[
+                                    artist["id"] for artist in track["artists"]
+                                ],
+                                acousticness=audio_features["acousticness"],
+                                danceability=audio_features["danceability"],
+                                energy=audio_features["energy"],
+                                instrumentalness=audio_features["instrumentalness"],
+                                loudness=audio_features["loudness"],
+                                speechiness=audio_features["speechiness"],
+                                valence=audio_features["valence"],
+                            )
+
+                            track_data.save()
+
+                        else:
+                            messages.error(
+                                request,
+                                "Change track failed, please try again later. No token.",
+                            )
+                            return redirect("dashboard:index")
+
                     user.track_id = track_id
                     user.save()
 

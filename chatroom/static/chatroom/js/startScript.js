@@ -41,24 +41,8 @@ function initializeWebSocket(roomID) {
         }else if (data.type === 'user_id') {
             // Set currentUserID after receiving user_id from the server
             currentUserID = data.user_id;
-            console.log('Current User ID:', currentUserID);
+            // console.log('Current User ID:', currentUserID);
         }
-    
-        // else if(data.type == 'chat_message_by_user'){
-        // const sender = data.sender || 'Anonymous';  // Default to 'Anonymous' if sender is not provided
-        //     const message = data.message;
-            
-        //     let chat_messages = document.querySelector('#chat-messages');
-        
-        //     chat_messages.innerHTML += (
-        //         '<div class="message outgoing">' +
-        //         message + '<strong>: You</strong> </div>');
-
-        //     chat_messages.scrollTop = chat_messages.scrollHeight;
-
-        // }
-    
-    
         
     };
     chatSocket.onopen = function (event) {
@@ -106,7 +90,7 @@ document.querySelector('#chat-message-input').onkeyup = function(e) {
 };
 
 function room_list_click_handler(roomID) {
-    console.log("Room with ID ", roomID);
+    // console.log("Room with ID ", roomID);
 
     
     initializeWebSocket(roomID);

@@ -14,7 +14,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         user_id = self.scope["session"].get("user_id")
         self.sender = await self.get_user(user_id)
-        print("USER ----> $", self.sender)
+        # print("USER ----> $", self.sender)
 
         await self.channel_layer.group_add(self.roomID, self.channel_name)
         await self.accept()
@@ -25,18 +25,18 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         user_id = self.scope["session"].get("user_id")
         self.sender = await self.get_user(user_id)
-        print("USER ----> $", self.sender)
+        # print("USER ----> $", self.sender)
 
         text_data_json = json.loads(text_data)
 
         message_type = text_data_json.get("type")
         self.message = text_data_json.get("message")
 
-        print("Message type", message_type)
+        # print("Message type", message_type)
 
         if message_type == "join_room":
             self.roomID = text_data_json.get("roomID")
-            print("Joining Room -> ", self.roomID)
+            # print("Joining Room -> ", self.roomID)
             await self.channel_layer.group_add(self.roomID, self.channel_name)
 
             messages = await self.retrieve_room_messages(self.roomID)
@@ -66,7 +66,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                     )
                 )
         elif message_type == "chat_message":
-            print("========insied receive func========")
+            # print("========insied receive func========")
             await self.save_chat_db()
             await self.channel_layer.group_send(
                 self.roomID,
@@ -89,7 +89,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
             )
 
     async def chat_message(self, event):
-        print("++++++insied chatmessage func+++++")
+        # print("++++++insied chatmessage func+++++")
         message = event["message"]
         sender = event["sender"]
         sender_id = event["sender_id"]
@@ -127,7 +127,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         user_id = self.scope["session"].get("user_id")
         self.sender = await self.get_user(user_id)
 
-        print("Before saving  room = ", self.roomID, " ,user = ", self.sender)
+        # print("Before saving  room = ", self.roomID, " ,user = ", self.sender)
 
         if self.sender:
             room = await database_sync_to_async(RoomModel.objects.get)(

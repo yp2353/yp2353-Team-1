@@ -2,7 +2,6 @@
 from rich.console import Console
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-import spotipy
 
 
 console = Console(style="bold green")
@@ -29,17 +28,17 @@ def open_chatroom(request):
         if not rooms_list:
             room = RoomModel.objects.get(roomID="global_room")
             room.room_participants.add(user_exists)
-            print("=====New User Added to global room +++++")
+            # # print("=====New User Added to global room +++++")
 
         for room in rooms_list:
             if room.room_type == "direct_message":
                 other_user = room.room_participants.exclude(user_id=user_id).first()
-                print(other_user)
+                # print(other_user)
                 room.room_name = other_user.username
-                print(room.room_name)
+                # print(room.room_name)
 
         form = SearchRoomFrom()
-        print(rooms_list)
+        # print(rooms_list)
 
         friends = current_friend_list(user_id)
 
@@ -77,15 +76,12 @@ def get_user_exist(user_id):
 
 def group_creation(request):
     from view_profile.views import generate_room_id, make_private_chatroom
-    from utils import get_spotify_token
     from chatroom.models import RoomModel
 
-    token_info = get_spotify_token(request)
-    if token_info:
-        sp = spotipy.Spotify(auth=token_info["access_token"])
+    if request.user.is_authenticated:
+        user = request.user
 
-        user_info = sp.current_user()
-        user_id = user_info["id"]
+        user_id = user.user_id
 
         if request.method == "POST":
             selected_friends = request.POST.getlist(
@@ -100,7 +96,7 @@ def group_creation(request):
                 return redirect("chatroom:open_chatroom")
 
             selected_friends.append(user_id)
-            print(selected_friends)
+            # print(selected_friends)
 
             room_ID = generate_room_id(
                 selected_friends
@@ -130,8 +126,8 @@ def update_room_name(request):
     if request.method == "POST":
         room_id = request.POST.get("room_id")
         new_name = request.POST.get("new_name")
-        print(room_id)
-        print(new_name)
+        # print(room_id)
+        # print(new_name)
 
         try:
             room = RoomModel.objects.get(roomID=room_id)

@@ -55,18 +55,18 @@
                         {% if info.user.fav_track %}
                         <div style="border: 1px solid #000; border-radius: 0; background: black;">
                             <div>
-                                <img src="{{ info.user.fav_track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
+                                <img src="{{ info.user.fav_track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
                             </div>
                             <br>
                             <div class="text-center">
                                 <h5 style="margin-bottom: 1rem;">{{ info.user.fav_track.name }}</h5>
                                 <p>
-                                    {% for artist in info.user.fav_track.artists %}
-                                    {{ artist.name }}
+                                    {% for artist in info.user.fav_track.artist_names %}
+                                    {{ artist }}
                                     {% if not forloop.last %}, {% endif %}
                                     {% endfor %}
                                 </p>
-                                <p>{{ info.user.fav_track.album.release_date }}</p>
+                                <p>{{ info.user.fav_track.album_release_date }}</p>
                             </div>
                         </div>
                         {% endif %}
@@ -120,21 +120,21 @@
 
                             <!-- Wrapper for slides -->
                             <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for track in info.user.recent_tracks.tracks %}
+                                {% for track in info.user.recent_tracks %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                         <div>
-                                            <img src="{{ track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image">
+                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
                                         </div>
                                         <br>
                                         <div>
                                             <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
                                             <p>
-                                                {% for artist in track.artists %}
-                                                {{ artist.name }}
+                                                {% for artist in track.artist_names %}
+                                                {{ artist }}
                                                 {% if not forloop.last %}, {% endif %}
                                                 {% endfor %}
                                             </p>
-                                            <p>{{ track.album.release_date }}</p>
+                                            <p>{{ track.album_release_date }}</p>
                                         </div>
                                         <br>
                                         <br>
@@ -164,21 +164,21 @@
 
                             <!-- Wrapper for slides -->
                             <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for track in info.user.top_tracks.tracks %}
+                                {% for track in info.user.top_tracks %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                         <div>
-                                            <img src="{{ track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image">
+                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
                                         </div>
                                         <br>
                                         <div>
                                             <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
                                             <p>
-                                                {% for artist in track.artists %}
-                                                {{ artist.name }}
+                                                {% for artist in track.artist_names %}
+                                                {{ artist }}
                                                 {% if not forloop.last %}, {% endif %}
                                                 {% endfor %}
                                             </p>
-                                            <p>{{ track.album.release_date }}</p>
+                                            <p>{{ track.album_release_date }}</p>
                                         </div>
                                         <br>
                                         <br>
@@ -211,11 +211,11 @@
 
                             <!-- Wrapper for slides -->
                             <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for artist in info.user.top_artists.artists %}
+                                {% for artist in info.user.top_artists %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
 
                                         <div style="position: relative; width: 100%; padding-top: 100%; overflow: hidden;">
-                                            <img src="{{ artist.images.0.url }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Artist Image">
+                                            <img src="{{ artist.image }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Artist Image">
                                         </div>
                                         <br>
                                         <div>
@@ -328,18 +328,18 @@
                         {% if info.other.fav_track %}
                         <div style="border: 1px solid #000; border-radius: 0; background: black;">
                             <div>
-                                <img src="{{ info.other.fav_track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
+                                <img src="{{ info.other.fav_track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
                             </div>
                             <br>
                             <div class="text-center">
                                 <h5 style="margin-bottom: 1rem;">{{ info.other.fav_track.name }}</h5>
                                 <p>
-                                    {% for artist in info.other.fav_track.artists %}
-                                    {{ artist.name }}
+                                    {% for artist in info.other.fav_track.artist_names %}
+                                    {{ artist }}
                                     {% if not forloop.last %}, {% endif %}
                                     {% endfor %}
                                 </p>
-                                <p>{{ info.other.fav_track.album.release_date }}</p>
+                                <p>{{ info.other.fav_track.album_release_date }}</p>
                             </div>
                         </div>
                         {% endif %}
@@ -394,21 +394,21 @@
 
                             <!-- Wrapper for slides -->
                             <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for track in info.other.recent_tracks.tracks %}
+                                {% for track in info.other.recent_tracks %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                         <div>
-                                            <img src="{{ track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image">
+                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
                                         </div>
                                         <br>
                                         <div>
                                             <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
                                             <p>
-                                                {% for artist in track.artists %}
-                                                {{ artist.name }}
+                                                {% for artist in track.artist_names %}
+                                                {{ artist }}
                                                 {% if not forloop.last %}, {% endif %}
                                                 {% endfor %}
                                             </p>
-                                            <p>{{ track.album.release_date }}</p>
+                                            <p>{{ track.album_release_date }}</p>
                                         </div>
                                         <br>
                                         <br>
@@ -438,21 +438,21 @@
 
                             <!-- Wrapper for slides -->
                             <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for track in info.other.top_tracks.tracks %}
+                                {% for track in info.other.top_tracks %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                         <div>
-                                            <img src="{{ track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image">
+                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
                                         </div>
                                         <br>
                                         <div>
                                             <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
                                             <p>
-                                                {% for artist in track.artists %}
-                                                {{ artist.name }}
+                                                {% for artist in track.artist_names %}
+                                                {{ artist }}
                                                 {% if not forloop.last %}, {% endif %}
                                                 {% endfor %}
                                             </p>
-                                            <p>{{ track.album.release_date }}</p>
+                                            <p>{{ track.album_release_date }}</p>
                                         </div>
                                         <br>
                                         <br>
@@ -486,11 +486,11 @@
 
                             <!-- Wrapper for slides -->
                             <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for artist in info.other.top_artists.artists %}
+                                {% for artist in info.other.top_artists %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
 
                                         <div style="position: relative; width: 100%; padding-top: 100%; overflow: hidden;">
-                                            <img src="{{ artist.images.0.url }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Artist Image">
+                                            <img src="{{ artist.image }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Artist Image">
                                         </div>
                                         <br>
                                         <div>

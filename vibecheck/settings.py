@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
+    # "daphne",
     "login",
     # "dashboard",
     "dashboard.apps.DashboardConfig",
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,11 @@ MIDDLEWARE = [
     "vibecheck.middleware.UserProfileMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+]
+CORS_ALLOWED_ORIGINS = [
+    "https://accounts.spotify.com",  # Spotify API domain
+    "https://init.eba-v23ti7jb.us-east-1.elasticbeanstalk.com",  # Elastic Beanstalk domain
 ]
 
 ROOT_URLCONF = "vibecheck.urls"

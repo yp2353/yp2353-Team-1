@@ -46,18 +46,18 @@
         <div class="row">
             <div class="col-md-11" style="border: 1px solid #000; border-radius: 0; background: black;">
                 <div>
-                    <img src="{{ track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
+                    <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
                 </div>
                 <br>
                 <div class="text-center">
                     <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
                     <p>
-                        {% for artist in track.artists %}
-                        {{ artist.name }}
+                        {% for artist in track.artist_names %}
+                        {{ artist }}
                         {% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </p>
-                    <p>{{ track.album.release_date }}</p>
+                    <p>{{ track.album_release_date }}</p>
                 </div>
             </div>
             <div class="col-md-1">
