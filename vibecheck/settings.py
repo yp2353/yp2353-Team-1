@@ -30,7 +30,7 @@ SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "vcheck.eba-xfip9tve.us-west-2.elasticbeanstalk.com",
+    "Vibecheck-app-env-1.eba-xfip9tve.us-west-2.elasticbeanstalk.com",
 ]
 
 
