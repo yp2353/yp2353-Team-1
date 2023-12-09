@@ -30,8 +30,8 @@ SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'init.eba-v23ti7jb.us-east-1.elasticbeanstalk.com',
-    'Vcheck-env2.eba-v23ti7jb.us-east-1.elasticbeanstalk.com',
+    "init.eba-v23ti7jb.us-east-1.elasticbeanstalk.com",
+    "Vcheck-env2.eba-v23ti7jb.us-east-1.elasticbeanstalk.com",
     "127.0.0.1",
 ]
 
@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    'corsheaders',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -68,7 +68,7 @@ MIDDLEWARE = [
     "vibecheck.middleware.UserProfileMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 CORS_ALLOWED_ORIGINS = [
     "https://accounts.spotify.com",  # Spotify API domain

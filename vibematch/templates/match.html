@@ -113,20 +113,20 @@
         {% if user.username.user_bio %}
         <p>{{ user.username.user_bio }}</p>
         {% endif %}
-            {% for artist in user.top_artist.artists %}
-                           <img src="{{ artist.images.0.url }}" style=" width: 60px; height: 60px; object-fit: cover;" alt="Artist Image">
+            {% for artist in user.top_artist %}
+                           <img src="{{ artist.image }}" style=" width: 60px; height: 60px; object-fit: cover;" alt="Artist Image">
                 {% endfor %}
         <br>
          {% if user.fav_track %}
                     <p>Vibing to: </p>
-                        <img src="{{ user.fav_track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 30px; max-height: 30px;">
+                        <img src="{{ user.fav_track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 30px; max-height: 30px;">
                     <p>{{ user.fav_track.name }}</p>
                         {%  endif %}
                         </div>
                         <div class="card-page">
                             <h2> Currently Hyperfixated with...</h2>
-                             {% for track in user.top_tracks.tracks %}
-                                 <p style="font-size: 15px;">                            <img src="{{ track.album.images.0.url }}" style=" width: 60px; height: 60px; object-fit: cover;" alt="Artist Image">
+                             {% for track in user.top_tracks %}
+                                 <p style="font-size: 15px;">                            <img src="{{ track.album_images_large }}" style=" width: 60px; height: 60px; object-fit: cover;" alt="Artist Image">
                     {{ track.name }}</p>
                 {% endfor %}
 

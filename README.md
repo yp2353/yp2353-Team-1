@@ -26,11 +26,12 @@ Ensure you have Python and pip installed. The following packages are required:
 - `gradio_client`
 - `rich`
 - `channels`
+- `django-cors-headers`
 
 Install the prerequisites using pip:
 
 ```bash
-pip install django psycopg2_binary spotipy lyricsgenius python-dotenv openai django-extensions supabase numpy joblib pandas gradio_client rich channels
+pip install django psycopg2_binary spotipy lyricsgenius python-dotenv openai django-extensions supabase numpy joblib pandas gradio_client rich channels django-cors-headers
 ```
 
 Install the Bootstrap-Icons using npm:

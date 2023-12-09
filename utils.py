@@ -21,7 +21,11 @@ load_dotenv()
 
 SCOPE = "user-top-read user-read-recently-played user-read-private"
 sp_oauth = SpotifyOAuth(
-    os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"), os.getenv("SPOTIPY_REDIRECT_URI"), scope=SCOPE, show_dialog=True
+    os.getenv("SPOTIPY_CLIENT_ID"),
+    os.getenv("SPOTIPY_CLIENT_SECRET"),
+    os.getenv("SPOTIPY_REDIRECT_URI"),
+    scope=SCOPE,
+    show_dialog=True,
 )
 
 vibe_calc_threads = {}
