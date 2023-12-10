@@ -63,6 +63,7 @@ function initializeWebSocket(roomID) {
     
     chatSocket.onclose = function(e) {
         console.log('Chat socket closed unexpectedly', e.log);
+        setTimeout(() => initializeWebSocket(roomID), 3000);
         // stoping roomlist observer
         // observer.disconnect();  
     };
