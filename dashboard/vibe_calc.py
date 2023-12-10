@@ -152,11 +152,13 @@ def deduce_audio_vibe(track_ids, audio_features_list):
     for track_id, prediction in zip(track_ids, pred):
         mood = mood_dict[prediction]
 
-        track_data = TrackVibe(
-            track_id=track_id,
-            track_audio_vibe=mood,
-        )
-        track_data.save()
+        existing = TrackVibe.objects.filter(track_id=track_id).first()
+        if not existing:
+            track_data = TrackVibe(
+                track_id=track_id,
+                track_audio_vibe=mood,
+            )
+            track_data.save()
 
         audio_vibes.append(mood)
 
@@ -348,7 +350,13 @@ def get_emotion_vector(input_emotion):
     if not vector_str:
         # We should always get vector string stored in our database,
         # but if somehow is not in database..
-        vector_str = client.predict("get_vector", input_emotion, api_name="/predict")
+        try:
+            vector_str = client.predict(
+                "get_vector", input_emotion, api_name="/predict"
+            )
+        except Exception:
+            return np.zeros(300)
+
     else:
         vector_str = vector_str.vector
 
