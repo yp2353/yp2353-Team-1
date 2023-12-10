@@ -1,8 +1,6 @@
 # from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import UsersearchForm
-from utils import get_spotify_token
-import spotipy
 from user_profile.models import Vibe
 from django.db.models import Q, OuterRef, Subquery, F
 from django.contrib import messages
