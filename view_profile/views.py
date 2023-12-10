@@ -146,7 +146,7 @@ def generate_room_id(user_ids):
     sorted_user_ids = sorted(user_ids)
     room_id_hash = hash(tuple(sorted_user_ids))
     positive_hash = abs(room_id_hash)
-    return f"group_{positive_hash}" + str(timezone.now())
+    return f"group_{positive_hash}" + str(timezone.now().hour) + str(timezone.now().minute) + str(timezone.now().second)
 
 
 def make_private_chatroom(user_id, other_user_id):
