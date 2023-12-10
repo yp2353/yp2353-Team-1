@@ -51,12 +51,11 @@ class UserSearchTests(TestCase):
         setattr(request, "_messages", messages)
         return request
 
-    @patch("search.views.get_spotify_token", return_value=mock_spotify_token)
     @patch("spotipy.Spotify.current_user", return_value=mock_user_info)
     @patch("search.views.get_req_list", return_value=[])
     @patch("search.views.current_friend_list", return_value=[])
     def test_user_search_valid_input(
-        self, mock_friend_list, mock_req_list, mock_current_user, mock_get_token
+        self, mock_friend_list, mock_req_list, mock_current_user
     ):
         login_successful = self.client.login(username="testuser1", password="12345")
         self.assertTrue(login_successful)
