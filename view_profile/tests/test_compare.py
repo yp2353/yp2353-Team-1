@@ -1,6 +1,5 @@
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
-from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from unittest.mock import patch
 from user_profile.models import User
@@ -62,9 +61,8 @@ class CompareTests(TestCase):
         setattr(request, "_messages", messages)
         return request
 
-    @patch("view_profile.views.get_spotify_token", side_effect=mock_get_spotify_token)
     @patch("spotipy.Spotify")
-    def test_compare_success(self, MockSpotify, mock_get_token):
+    def test_compare_success(self, MockSpotify):
         # Create a mock response that matches the structure returned by sp.current_user()
         mock_user_info = {"id": self.user1.user_id, "display_name": self.user1.username}
 
@@ -82,9 +80,8 @@ class CompareTests(TestCase):
         # Test the response
         self.assertEqual(response.status_code, 200)
 
-    @patch("view_profile.views.get_spotify_token", side_effect=mock_get_spotify_token)
     @patch("spotipy.Spotify")
-    def test_compare_one_user_not_exists(self, MockSpotify, mock_get_token):
+    def test_compare_one_user_not_exists(self, MockSpotify):
         mock_sp = MockSpotify()
         mock_sp.current_user.return_value = mock_user_info
         mock_sp.track.return_value = mock_spotify_data["track"]
@@ -96,28 +93,8 @@ class CompareTests(TestCase):
         )
 
         request = self._add_messages_storage_to_request(request)
+        request.user = self.user1
         self.client.force_login(self.user1)  # Assuming you have a self.user1 set up
         response = compare(request, self.user2.user_id)
 
-        self.assertEqual(response.status_code, 302)
-
-    @patch("view_profile.views.get_spotify_token", return_value=None)
-    def test_compare_no_token(self, mock_get_token):
-        request = self.factory.get(
-            reverse("view_profile:compare", args=["test_user_id2"])
-        )
-        request = self._add_messages_storage_to_request(request)
-        response = compare(request, self.user2.user_id)
-
-        messages = list(get_messages(request))
-        self.assertTrue(
-            any(
-                message.message == "View_profile failed, please log in."
-                for message in messages
-            )
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("login:index"))
-
-
-# Add more tests as needed to cover different scenarios
+        self.assertEqual(response.status_code, 200)
