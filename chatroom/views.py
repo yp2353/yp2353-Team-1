@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
 
-
 console = Console(style="bold green")
 
 user_exists = None
@@ -77,13 +76,11 @@ def get_user_exist(user_id):
 
 def group_creation(request):
     from view_profile.views import generate_room_id, make_private_chatroom
-    from utils import get_spotify_token
     from chatroom.models import RoomModel
 
     if request.user.is_authenticated:
         user = request.user
 
-        
         user_id = user.user_id
 
         if request.method == "POST":

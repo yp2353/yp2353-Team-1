@@ -93,11 +93,16 @@
                                     {% for track in top_tracks %}
                                     <div class="row mb-2 mb-md-0">
                                         <div class="col-2">
-                                            <img src="{{ track.small_album_cover }}" alt="Album Thumbnail" class="img-fluid">
+                                            <img src="{{ track.album_images_small }}" alt="Album Thumbnail" class="img-fluid">
                                         </div>
                                         <div class="col-10">
                                             <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
-                                            <p>{{ track.artists }}</p>
+                                            <p>
+                                                {% for artistname in track.artist_names %}
+                                                {{ artistname }}
+                                                {% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -111,7 +116,7 @@
                                     {% for artist in top_artists %}
                                     <div class="row mb-3">
                                         <div class="col-2">
-                                            <img src="{{ artist.image_url }}" alt="Artist Thumbnail" class="img-fluid">
+                                            <img src="{{ artist.image }}" alt="Artist Thumbnail" class="img-fluid">
                                         </div>
                                         <div class="col-10">
                                             <p>{{ artist.name }}</p>
@@ -140,11 +145,16 @@
                                     {% for track in recommendedtracks %}
                                     <div class="row mb-2 mb-md-0">
                                         <div class="col-2">
-                                            <img src="{{ track.small_album_cover }}" alt="Album Thumbnail" class="img-fluid">
+                                            <img src="{{ track.album_images_small }}" alt="Album Thumbnail" class="img-fluid">
                                         </div>
                                         <div class="col-10">
                                             <p style="margin-bottom: 0rem;"><strong>{{ track.name }}</strong></p>
-                                            <p>{{ track.artists }}</p>
+                                            <p>
+                                                {% for artistname in track.artist_names %}
+                                                {{ artistname }}
+                                                {% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
                                         </div>
                                     </div>
                                     {% endfor %}
