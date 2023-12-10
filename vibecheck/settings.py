@@ -31,6 +31,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     "Vibecheck-app-env-1.eba-xfip9tve.us-west-2.elasticbeanstalk.com",
+    "vcheck-app-env.eba-eai754zm.us-west-2.elasticbeanstalk.com",
 ]
 
 
@@ -69,8 +70,8 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
 ]
 CORS_ALLOWED_ORIGINS = [
-    "https://accounts.spotify.com",  # Spotify API domain
-    "https://init.eba-v23ti7jb.us-east-1.elasticbeanstalk.com",  # Elastic Beanstalk domain
+    "https://accounts.spotify.com",  # Spotify API domain  # Elastic Beanstalk domain
+    "https://vcheck-app-env.eba-eai754zm.us-west-2.elasticbeanstalk.com"
 ]
 
 ROOT_URLCONF = "vibecheck.urls"
