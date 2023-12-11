@@ -29,11 +29,7 @@ SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    "init.eba-v23ti7jb.us-east-1.elasticbeanstalk.com",
-    "Vcheck-env2.eba-v23ti7jb.us-east-1.elasticbeanstalk.com",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -71,8 +67,8 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
 ]
 CORS_ALLOWED_ORIGINS = [
-    "https://accounts.spotify.com",  # Spotify API domain
-    "https://init.eba-v23ti7jb.us-east-1.elasticbeanstalk.com",  # Elastic Beanstalk domain
+    "https://accounts.spotify.com",  # Spotify API domain  # Elastic Beanstalk domain
+    "https://vcheck.eba-xfip9tve.us-west-2.elasticbeanstalk.com"
 ]
 
 ROOT_URLCONF = "vibecheck.urls"
@@ -103,8 +99,8 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis-ser.ki72ah.ng.0001.use1.cache.amazonaws.com", 6379)],
-            # "hosts": [("127.0.0.1", 6479)],
+            "hosts": [("vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com", 6379)],
+            # "hosts": [("127.0.0.1", 6579)],
         },
     },
 }
@@ -112,7 +108,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://redis-ser.ki72ah.ng.0001.use1.cache.amazonaws.com:6379/1",
+        "LOCATION": "redis://vibecheck-redis.wcuycs.ng.0001.usw2.cache.amazonaws.com:6379/1",
     }
 }
 

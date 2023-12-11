@@ -15,6 +15,7 @@ function initializeWebSocket(roomID) {
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
     
+    
         if (data.type === 'chat_message') {
             // Handle chat messages
             const sender = data.sender || 'Anonymous';  // Default to 'Anonymous' if sender is not provided

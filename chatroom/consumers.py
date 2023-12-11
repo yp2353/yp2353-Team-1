@@ -117,7 +117,9 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         from chatroom.models import ChatMessage
 
         room_messages = (
-            ChatMessage.objects.filter(room=roomID).order_by("timestamp").distinct()
+            ChatMessage.objects.filter(room=roomID)
+            .select_related("sender")
+            .order_by("timestamp")
         )
         return room_messages
 
