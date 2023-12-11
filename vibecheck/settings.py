@@ -29,10 +29,7 @@ SECRET_KEY = "0%mn4bp$ofc*%rt)vo)1s!0=@e#$@ni^sa$okg2e1aw59j*skz"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    "Vibecheck-app-env-1.eba-xfip9tve.us-west-2.elasticbeanstalk.com",
-    "vcheck.eba-xfip9tve.us-west-2.elasticbeanstalk.com",
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -71,7 +68,7 @@ MIDDLEWARE = [
 ]
 CORS_ALLOWED_ORIGINS = [
     "https://accounts.spotify.com",  # Spotify API domain  # Elastic Beanstalk domain
-    "https://vcheck.eba-xfip9tve.us-west-2.elasticbeanstalk.com "
+    "https://vcheck.eba-xfip9tve.us-west-2.elasticbeanstalk.com"
 ]
 
 ROOT_URLCONF = "vibecheck.urls"
