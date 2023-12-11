@@ -4,7 +4,41 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.messages import get_messages
 from user_profile.models import User
 from user_profile.views import changeTrack
+
 import datetime
+from unittest.mock import patch
+
+
+def mock_get_spotify_token(*args, **kwargs):
+    return {"access_token": "test_token"}
+
+
+def mock_spotify_track(*args, **kwargs):
+    return {
+        "id": "track_id",
+        "name": "track_name",
+        "popularity": 50,
+        "artists": [{"name": "artist_name", "id": "artist_id"}],
+        "album": {
+            "name": "album_name",
+            "images": [{"url": "image_url"}],
+            "release_date": "release_date",
+        },
+    }
+
+
+def mock_audio_features(*args, **kwargs):
+    return [
+        {
+            "acousticness": 0.5,
+            "danceability": 0.6,
+            "energy": 0.7,
+            "instrumentalness": 0.1,
+            "valence": 0.3,
+            "loudness": -10,
+            "speechiness": 1,
+        }
+    ]
 
 
 class ChangeTrackViewTests(TestCase):
@@ -45,7 +79,12 @@ class ChangeTrackViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("user_profile:profile_page"))
 
-    def test_change_track_add_existing_user(self):
+    @patch("user_profile.views.get_spotify_token", side_effect=mock_get_spotify_token)
+    @patch("spotipy.Spotify.track", side_effect=mock_spotify_track)
+    @patch("spotipy.Spotify.audio_features", side_effect=mock_audio_features)
+    def test_change_track_add_existing_user(
+        self, mock_get_spotify_token, mock_track, mock_audio_features
+    ):
         request = self.factory.post(
             reverse("user_profile:changeTrack"),
             {"user_id": "123", "action": "add", "track_id": "new_track_id"},
