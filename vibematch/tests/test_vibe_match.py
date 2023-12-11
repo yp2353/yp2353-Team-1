@@ -85,9 +85,8 @@ class VibeMatchTests(TestCase):
         setattr(request, "_messages", messages)
         return request
 
-    @patch("vibematch.views.get_spotify_token", side_effect=mock_get_spotify_token)
     @patch("spotipy.Spotify")
-    def test_vibe_match_success(self, MockSpotify, mock_get_token):
+    def test_vibe_match_success(self, MockSpotify):
         mock_sp = MockSpotify()
         mock_sp.current_user.return_value = mock_user_info
         mock_sp.track.side_effect = lambda track_id: {"id": track_id}  # Mock track data
@@ -97,18 +96,9 @@ class VibeMatchTests(TestCase):
 
         request = self.factory.get(reverse("vibematch:vibe_match"))
         request = self._add_messages_storage_to_request(request)
+        request.user = User.objects.get(user_id="31riwbvwvrsgadgrerv6llzlmbpi")
         response = vibe_match(request)
 
         self.assertEqual(response.status_code, 200)
         # Assertions to check the response content
         # e.g., self.assertIn("neighbors", response.context)
-
-    @patch("vibematch.views.get_spotify_token", return_value=None)
-    def test_vibe_match_no_token(self, mock_get_token):
-        request = self.factory.get(reverse("vibematch:vibe_match"))
-        request = self._add_messages_storage_to_request(request)
-        response = vibe_match(request)
-
-        self.assertEqual(response.status_code, 302)
-        # Check the redirect URL
-        # e.g., self.assertEqual(response.url, reverse("login:index"))

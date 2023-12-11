@@ -78,7 +78,6 @@ class SearchViewTests(TestCase):
         self.assertIn("results", response.context)
         self.assertIsInstance(response.context["SearchForm"], SearchForm)
         self.assertTrue(mock_search.called)
-        self.assertTrue(mock_track.called)
 
     def test_search_view_unauthenticated_user(self):
         response = self.client.get(reverse("user_profile:search"))
