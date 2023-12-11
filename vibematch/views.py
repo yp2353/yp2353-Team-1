@@ -150,11 +150,12 @@ def distance_to_similarity(distance):
 
 
 def get_users(target_user_id, latest_vibes):
+    today = timezone.localdate()
     phys_distances = {}
 
     # Check if a location for today already exists
     if UserLocation.objects.filter(
-        user=User.objects.get(user_id=target_user_id), created_at__date=timezone.localdate()
+        user=User.objects.get(user_id=target_user_id), created_at__date=today
     ).exists():
         # Filter for users within 60 miles of the target user
         # Getting latest location for each user
@@ -198,9 +199,12 @@ def get_users(target_user_id, latest_vibes):
 
 def get_nearby_users(all_user_locations, target_user_id):
     # Get target user's location
-    target_user_location = UserLocation.objects.get(
-        user=User.objects.get(user_id=target_user_id), created_at__date=timezone.localdate()
+    target_user_location = (
+        UserLocation.objects.filter(user_id=target_user_id)
+        .order_by("-created_at")
+        .first()
     )
+
     nearby_users = []
     user_distances = {}
     for location in all_user_locations:
@@ -251,10 +255,10 @@ def store_location(request):
         return JsonResponse({"status": "unauthorized"}, status=401)
 
     # Get today's date
-
+    today = timezone.localdate()
 
     # Check if a location for today already exists
-    if UserLocation.objects.filter(user=request.user, created_at__date=timezone.localdate()).exists():
+    if UserLocation.objects.filter(user=request.user, created_at__date=today).exists():
         # If it does, return a success response without creating a new entry
         return JsonResponse({"status": "location already stored for today"}, status=200)
 
@@ -276,7 +280,8 @@ def store_location(request):
 
 @login_required
 def check_location_stored(request):
+    today = timezone.localdate()
     location_exists = UserLocation.objects.filter(
-        user=request.user, created_at__date=timezone.localdate()
+        user=request.user, created_at__date=today
     ).exists()
     return JsonResponse({"locationStored": location_exists})
