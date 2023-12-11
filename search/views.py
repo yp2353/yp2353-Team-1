@@ -1,12 +1,9 @@
 # from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import UsersearchForm
-from utils import get_spotify_token
-import spotipy
 from user_profile.models import Vibe
 from django.db.models import Q, OuterRef, Subquery, F
 from django.contrib import messages
-
 from user_profile.models import UserFriendRelation
 from user_profile.models import User
 
@@ -31,15 +28,14 @@ def open_search_page(request, username=""):
         latest_vibes = get_latest_vibes()
 
         all_users = latest_vibes.filter(
-            user_id__in=[user.user_id for user in friends]
+            Q(user_id__in=[user.user_id for user in friends])
+            & (Q(user_lyrics_vibe__isnull=False) | Q(user_audio_vibe__isnull=False))
         ).values_list(
             "user_id",
             "user_lyrics_vibe",
             "user_audio_vibe",
             flat=False,
         )
-
-        print(all_users)
 
         context = {
             "username": username,
@@ -48,7 +44,9 @@ def open_search_page(request, username=""):
             "request_list": request_list,
             "friends": friends,
             "default_image_path": "user_profile/blank_user_profile_image.jpeg",
-            "recent_vibe": zip(friends, all_users),
+            "recent_vibe": zip(
+                [User.objects.get(user_id=user[0]) for user in all_users], all_users
+            ),
         }
 
         return render(request, "search/search.html", context)
