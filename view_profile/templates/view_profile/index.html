@@ -291,23 +291,6 @@
                         <h4 class="username_gradient text-center" style="margin-top: 20px;">
                             Vibing to...
                         </h4>
-<<<<<<< HEAD
-                        {% if info.user.fav_track %}
-                        <div style="border: 1px solid #000; border-radius: 0; background: black;">
-                            <div>
-                                <img src="{{ info.user.fav_track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
-                            </div>
-                            <br>
-                            <div class="text-center">
-                                <h5 style="margin-bottom: 1rem;">{{ info.user.fav_track.name }}</h5>
-                                <p>
-                                    {% for artist in info.user.fav_track.artist_names %}
-                                    {{ artist }}
-                                    {% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                </p>
-                                <p>{{ info.user.fav_track.album_release_date }}</p>
-=======
 
 
                         <div class="col-6 col-md-6 square-container">
@@ -317,7 +300,7 @@
                                     {% if info.user.fav_track %}
                                         <div style="">
                                             <div>
-                                                <img src="{{ info.user.fav_track.album.images.0.url }}"
+                                                <img src="{{ info.user.fav_track.album_images_large }}"
                                                      class="d-block mx-auto img-fluid" alt="Album Image"
                                                      style="max-width: 250px; max-height: 250px;">
                                             </div>
@@ -325,12 +308,12 @@
                                             <div class="paragraph_gradient text-center">
                                                 <h5 style="margin-bottom: 1rem;">{{ info.user.fav_track.name }}</h5>
                                                 <p>
-                                                    {% for artist in info.user.fav_track.artists %}
-                                                        {{ artist.name }}
+                                                    {% for artist in info.user.fav_track.artist_names %}
+                                                        {{ artist }}
                                                         {% if not forloop.last %}, {% endif %}
                                                     {% endfor %}
                                                 </p>
-                                                <p>{{ info.user.fav_track.album.release_date }}</p>
+                                                <p>{{ info.user.fav_track.album_release_date }}</p>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -353,7 +336,6 @@
                                     <div id="energyBar" class="bar-filled"></div>
                                 </div>
                                 <p></p>
-                                <div class="col-md-6">
                                     <h4>
                                         Energy
                                     </h4>
@@ -365,9 +347,7 @@
                                     <h4>
                                         Valence
                                     </h4>
-                                    <p></p>
-                                </div>
->>>>>>> 67d5e17 (redisigned shared dashboard)
+
                             </div>
                         </div>
                         <div class="col-6 col-md-6 square-container">
@@ -377,7 +357,7 @@
                                     {% if info.other.fav_track %}
                                         <div>
                                             <div>
-                                                <img src="{{ info.other.fav_track.album.images.0.url }}"
+                                                <img src="{{ info.other.fav_track.album_images_large }}"
                                                      class="d-block mx-auto img-fluid" alt="Album Image"
                                                      style="max-width: 250px; max-height: 250px;">
                                             </div>
@@ -385,12 +365,12 @@
                                             <div class="paragraph_gradient text-center">
                                                 <h5 style="margin-bottom: 1rem;">{{ info.other.fav_track.name }}</h5>
                                                 <p>
-                                                    {% for artist in info.other.fav_track.artists %}
-                                                        {{ artist.name }}
+                                                    {% for artist in info.other.fav_track.artist_names %}
+                                                        {{ artist }}
                                                         {% if not forloop.last %}, {% endif %}
                                                     {% endfor %}
                                                 </p>
-                                                <p>{{ info.other.fav_track.album.release_date }}</p>
+                                                <p>{{ info.other.fav_track.album_release_date }}</p>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -413,48 +393,19 @@
                                     <div id="energy_otheruser_Bar" class="bar-filled"></div>
                                 </div>
                                 <p></p>
-                                <div class="col-md-6">
                                     <h4>
                                         Energy
                                     </h4>
                                     <div class="bar-container">
                                     <div id="valence_otheruser_Bar" class="bar-filled"></div>
                                 </div>
-                                    <p></p>
+
                                     <br>
                                     <h4>
                                         Valence
                                     </h4>
-                                    <p></p>
-                                </div>
                             </div>
 
-<<<<<<< HEAD
-                            <!-- Wrapper for slides -->
-                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for track in info.user.recent_tracks %}
-                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                        <div>
-                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
-                                        </div>
-                                        <br>
-                                        <div>
-                                            <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-                                            <p>
-                                                {% for artist in track.artist_names %}
-                                                {{ artist }}
-                                                {% if not forloop.last %}, {% endif %}
-                                                {% endfor %}
-                                            </p>
-                                            <p>{{ track.album_release_date }}</p>
-                                        </div>
-                                        <br>
-                                        <br>
-                                    </div>
-                                {% endfor %}
-                            </div>
-=======
->>>>>>> 67d5e17 (redisigned shared dashboard)
                         </div>
 
                         <br>
@@ -464,51 +415,8 @@
                     <br>
                     <br>
 
-<<<<<<< HEAD
-                    <div class="col-md-6">
-                        <h4>
-                            Top Tracks
-                        </h4>
-                        
-                        {% if info.user.top_tracks%}
-                        <div id="topTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
-                            <!-- Buttons for navigation -->
-                            <div class="carousel-indicators">
-                                {% for i in info.user.iteratorTopTracks %}
-                                    <button type="button" data-bs-target="#topTracksCarousel" data-bs-slide-to="{{ i }}"
-                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Wrapper for slides -->
-                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for track in info.user.top_tracks %}
-                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                        <div>
-                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
-                                        </div>
-                                        <br>
-                                        <div>
-                                            <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-                                            <p>
-                                                {% for artist in track.artist_names %}
-                                                {{ artist }}
-                                                {% if not forloop.last %}, {% endif %}
-                                                {% endfor %}
-                                            </p>
-                                            <p>{{ track.album_release_date }}</p>
-                                        </div>
-                                        <br>
-                                        <br>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-=======
                     <div>
                         <p class="username_gradient2" style="text-align:center"> Unlock full profile by becoming friends! </p>
->>>>>>> 67d5e17 (redisigned shared dashboard)
                     </div>
 
                     </div>
@@ -537,22 +445,22 @@
                                         <!-- Wrapper for slides -->
                                         <div class="carousel-inner"
                                              style="border: 1px solid #000; border-radius: 0; background: black;">
-                                            {% for track in info.user.recent_tracks.tracks %}
+                                            {% for track in info.user.recent_tracks %}
                                                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                                     <div>
-                                                        <img src="{{ track.album.images.0.url }}"
+                                                        <img src="{{ track.album_images_large }}"
                                                              class="d-block mx-auto img-fluid" alt="Album Image">
                                                     </div>
                                                     <br>
                                                     <div>
                                                         <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
                                                         <p>
-                                                            {% for artist in track.artists %}
-                                                                {{ artist.name }}
+                                                            {% for artist in track.artist_names %}
+                                                                {{ artist }}
                                                                 {% if not forloop.last %}, {% endif %}
                                                             {% endfor %}
                                                         </p>
-                                                        <p>{{ track.album.release_date }}</p>
+                                                        <p>{{ track.album_release_date }}</p>
                                                     </div>
                                                     <br>
                                                     <br>
@@ -563,38 +471,35 @@
                                 {% endif %}
                             <h4> Top tracks </h4>
 
-                            {% if info.user.top_tracks %}
-                                <div id="other_topTracksCarousel" class="carousel slide mt-4 w-100"
-                                     data-bs-ride="carousel" data-bs-touch="true">
-                                    <!-- Buttons for navigation -->
-                                    <div class="carousel-indicators">
-                                        {% for i in info.user.iteratorTopTracks %}
-                                            <button type="button" data-bs-target="#topTracksCarousel"
-                                                    data-bs-slide-to="{{ i }}"
-                                                    class="{% if forloop.first %}active{% endif %}"
-                                                    aria-label="Slide {{ i }}"></button>
-                                        {% endfor %}
-                                    </div>
+                           {% if info.user.top_tracks%}
+                        <div id="topTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
+                            <!-- Buttons for navigation -->
+                            <div class="carousel-indicators">
+                                {% for i in info.user.iteratorTopTracks %}
+                                    <button type="button" data-bs-target="#topTracksCarousel" data-bs-slide-to="{{ i }}"
+                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
+                                {% endfor %}
+                            </div>
 
                                     <!-- Wrapper for slides -->
                                     <div class="carousel-inner"
                                          style="border: 1px solid #000; border-radius: 0; background: black;">
-                                        {% for track in info.user.top_tracks.tracks %}
+                                        {% for track in info.user.top_tracks %}
                                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                                 <div>
-                                                    <img src="{{ track.album.images.0.url }}"
+                                                    <img src="{{ track.album_images_large }}"
                                                          class="d-block mx-auto img-fluid" alt="Album Image">
                                                 </div>
                                                 <br>
                                                 <div>
                                                     <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
                                                     <p>
-                                                        {% for artist in track.artists %}
-                                                            {{ artist.name }}
+                                                        {% for artist in track.artist_names %}
+                                                            {{ artist }}
                                                             {% if not forloop.last %}, {% endif %}
                                                         {% endfor %}
                                                     </p>
-                                                    <p>{{ track.album.release_date }}</p>
+                                                    <p>{{ track.album_release_date }}</p>
                                                 </div>
                                                 <br>
                                                 <br>
@@ -603,33 +508,29 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            </div>
                     <h4>
                                     Top Artists
                                 </h4>
 
 <div>
-    {% if info.user.top_artists %}
-                            <div id="other_topArtistsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel"
-                                 data-bs-touch="true">
-                                <!-- Buttons for navigation -->
-                                <div class="carousel-indicators">
-                                    {% for i in info.other.iteratorTopArtists %}
-                                        <button type="button" data-bs-target="#topArtistsCarousel"
-                                                data-bs-slide-to="{{ i }}"
-                                                class="{% if forloop.first %}active{% endif %}"
-                                                aria-label="Slide {{ i }}"></button>
-                                    {% endfor %}
-                                </div>
+    {% if info.user.top_artists%}
+                        <div id="topArtistsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
+                            <!-- Buttons for navigation -->
+                            <div class="carousel-indicators">
+                                {% for i in info.user.iteratorTopArtists %}
+                                    <button type="button" data-bs-target="#topArtistsCarousel" data-bs-slide-to="{{ i }}"
+                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
+                                {% endfor %}
+                            </div>
 
                                 <!-- Wrapper for slides -->
                                 <div class="carousel-inner"
                                      style="border: 1px solid #000; border-radius: 0; background: black;">
-                                    {% for artist in info.user.top_artists.artists %}
+                                    {% for artist in info.user.top_artists %}
                                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
 
                                             <div style="position: relative; width: 100%; padding-top: 100%; overflow: hidden;">
-                                                <img src="{{ artist.images.0.url }}"
+                                                <img src="{{ artist.image }}"
                                                      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
                                                      alt="Artist Image">
                                             </div>
@@ -665,155 +566,130 @@
                                 {% endif %}
 
 </div>
+                    </div>
 
 
 
                     <div class="col-6 col-md-6 square-container">
                             <div class="square">
-                                <h4>
-                                Recent Tracks
-                            </h4>
+                              <h4>
+                            Recent Tracks
+                        </h4>
 
-                            {% if info.other.recent_tracks %}
-                                <div id="other_recentTracksCarousel" class="carousel slide mt-4 w-100"
-                                     data-bs-ride="carousel" data-bs-touch="true">
-                                    <!-- Buttons for navigation -->
-                                    <div class="carousel-indicators">
-                                        {% for i in info.other.iteratorRecentTracks %}
-                                            <button type="button" data-bs-target="#other_recentTracksCarousel"
-                                                    data-bs-slide-to="{{ i }}"
-                                                    class="{% if forloop.first %}active{% endif %}"
-                                                    aria-label="Slide {{ i }}"></button>
-                                        {% endfor %}
+                        {% if info.other.recent_tracks%}
+                        <div id="other_recentTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
+                            <!-- Buttons for navigation -->
+                            <div class="carousel-indicators">
+                                {% for i in info.other.iteratorRecentTracks %}
+                                    <button type="button" data-bs-target="#other_recentTracksCarousel" data-bs-slide-to="{{ i }}"
+                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
+                                {% for track in info.other.recent_tracks %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <div>
+                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
+                                        </div>
+                                        <br>
+                                        <div>
+                                            <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
+                                            <p>
+                                                {% for artist in track.artist_names %}
+                                                {{ artist }}
+                                                {% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                            <p>{{ track.album_release_date }}</p>
+                                        </div>
+                                        <br>
+                                        <br>
                                     </div>
+                                {% endfor %}
+                            </div>
+                        </div>
 
-                                    <!-- Wrapper for slides -->
-                                    <div class="carousel-inner"
-                                         style="border: 1px solid #000; border-radius: 0; background: black;">
-                                        {% for track in info.other.recent_tracks.tracks %}
-                                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                                <div>
-                                                    <img src="{{ track.album.images.0.url }}"
-                                                         class="d-block mx-auto img-fluid" alt="Album Image">
-                                                </div>
-                                                <br>
-                                                <div>
-                                                    <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-                                                    <p>
-                                                        {% for artist in track.artists %}
-                                                            {{ artist.name }}
-                                                            {% if not forloop.last %}, {% endif %}
-                                                        {% endfor %}
-                                                    </p>
-                                                    <p>{{ track.album.release_date }}</p>
-                                                </div>
-                                                <br>
-                                                <br>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                            {% endif %}
-
+                        {% endif %}
                             <h4>
-                                Top Tracks
-                            </h4>
+                            Top Tracks
+                        </h4>
 
-                            {% if info.other.top_tracks %}
-                                <div id="other_topTracksCarousel" class="carousel slide mt-4 w-100"
-                                     data-bs-ride="carousel" data-bs-touch="true">
-                                    <!-- Buttons for navigation -->
-                                    <div class="carousel-indicators">
-                                        {% for i in info.other.iteratorTopTracks %}
-                                            <button type="button" data-bs-target="#other_topTracksCarousel"
-                                                    data-bs-slide-to="{{ i }}"
-                                                    class="{% if forloop.first %}active{% endif %}"
-                                                    aria-label="Slide {{ i }}"></button>
-                                        {% endfor %}
-                                    </div></div>
+                        {% if info.other.top_tracks%}
+                        <div id="other_topTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
+                            <!-- Buttons for navigation -->
+                            <div class="carousel-indicators">
+                                {% for i in info.other.iteratorTopTracks %}
+                                    <button type="button" data-bs-target="#other_topTracksCarousel" data-bs-slide-to="{{ i }}"
+                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
+                                {% endfor %}
+                            </div>
 
-                                    <!-- Wrapper for slides -->
-                                    <div class="carousel-inner"
-                                         style="border: 1px solid #000; border-radius: 0; background: black;">
-                                        {% for track in info.other.top_tracks.tracks %}
-                                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                                <div>
-                                                    <img src="{{ track.album.images.0.url }}"
-                                                         class="d-block mx-auto img-fluid" alt="Album Image">
-                                                </div>
-                                                <br>
-                                                <div>
-                                                    <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-                                                    <p>
-                                                        {% for artist in track.artists %}
-                                                            {{ artist.name }}
-                                                            {% if not forloop.last %}, {% endif %}
-                                                        {% endfor %}
-                                                    </p>
-                                                    <p>{{ track.album.release_date }}</p>
-                                                </div>
-                                                <br>
-                                                <br>
-                                            </div>
-                                        {% endfor %}
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
+                                {% for track in info.other.top_tracks %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <div>
+                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
+                                        </div>
+                                        <br>
+                                        <div>
+                                            <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
+                                            <p>
+                                                {% for artist in track.artist_names %}
+                                                {{ artist }}
+                                                {% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                            <p>{{ track.album_release_date }}</p>
+                                        </div>
+                                        <br>
+                                        <br>
                                     </div>
-                            {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
 
 
 
 
-
-
-                            <h4>
+                           <h4>
                             Top Artists
                         </h4>
 
-<<<<<<< HEAD
+                        {% if info.other.top_artists%}
+                        <div id="other_topArtistsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
+                            <!-- Buttons for navigation -->
+                            <div class="carousel-indicators">
+                                {% for i in info.other.iteratorTopArtists %}
+                                    <button type="button" data-bs-target="#other_topArtistsCarousel" data-bs-slide-to="{{ i }}"
+                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
+                                {% endfor %}
+                            </div>
+
                             <!-- Wrapper for slides -->
                             <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for artist in info.user.top_artists %}
+                                {% for artist in info.other.top_artists %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
 
                                         <div style="position: relative; width: 100%; padding-top: 100%; overflow: hidden;">
                                             <img src="{{ artist.image }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Artist Image">
-=======
-                        {% if info.other.top_artists %}
-                            <div id="other_topArtistsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel"
-                                 data-bs-touch="true">
-                                <!-- Buttons for navigation -->
-                                <div class="carousel-indicators">
-                                    {% for i in info.other.iteratorTopArtists %}
-                                        <button type="button" data-bs-target="#other_topArtistsCarousel"
-                                                data-bs-slide-to="{{ i }}"
-                                                class="{% if forloop.first %}active{% endif %}"
-                                                aria-label="Slide {{ i }}"></button>
-                                    {% endfor %}
-                                </div>
-
-                                <!-- Wrapper for slides -->
-                                <div class="carousel-inner"
-                                     style="border: 1px solid #000; border-radius: 0; background: black;">
-                                    {% for artist in info.other.top_artists.artists %}
-                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-
-                                            <div style="position: relative; width: 100%; padding-top: 100%; overflow: hidden;">
-                                                <img src="{{ artist.images.0.url }}"
-                                                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
-                                                     alt="Artist Image">
-                                            </div>
-                                            <br>
-                                            <div>
-                                                <h5 style="margin-bottom: 1rem;">{{ artist.name }}</h5>
-                                                <p>
-                                                    {{ artist.popularity }} popularity
-                                                </p>
-                                            </div>
-                                            <br>
-                                            <br>
->>>>>>> 67d5e17 (redisigned shared dashboard)
                                         </div>
-                                    {% endfor %}
-                                </div>
+                                        <br>
+                                        <div>
+                                            <h5 style="margin-bottom: 1rem;">{{ artist.name }}</h5>
+                                            <p>
+                                                {{ artist.popularity }} popularity
+                                            </p>
+                                        </div>
+                                        <br>
+                                        <br>
+                                    </div>
+                                {% endfor %}
                             </div>
+                        </div>
                         {% endif %}
 
                             <h4>
@@ -868,249 +744,6 @@
                             </form>
                         </div>
                     </div>
-<<<<<<< HEAD
-                </div>
-
-                <br>
-
-                <div class="row">
-                    <div>
-                        <h4>
-                            Current Vibe
-                        </h4>
-                        
-                        <p> {{ info.other.recent_vibe.user_audio_vibe }} {% if info.other.recent_vibe.user_lyrics_vibe %}{{ info.other.recent_vibe.user_lyrics_vibe }}{% endif %} </p>
-                    </div>
-                </div>
-
-                <br>
-
-                <div class="row">
-                    <div>
-                        <h4>
-                            Vibing to...
-                        </h4>
-                        {% if info.other.fav_track %}
-                        <div style="border: 1px solid #000; border-radius: 0; background: black;">
-                            <div>
-                                <img src="{{ info.other.fav_track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
-                            </div>
-                            <br>
-                            <div class="text-center">
-                                <h5 style="margin-bottom: 1rem;">{{ info.other.fav_track.name }}</h5>
-                                <p>
-                                    {% for artist in info.other.fav_track.artist_names %}
-                                    {{ artist }}
-                                    {% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                </p>
-                                <p>{{ info.other.fav_track.album_release_date }}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                {% if status == 'friends' %}
-                <br>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>
-                            Acousticness
-                        </h4>
-                        <p>{{ info.other.recent_vibe.user_acousticness }}</p>
-                        <br>
-                        <h4>
-                            Danceability
-                        </h4>
-                        <p>{{ info.other.recent_vibe.user_danceability }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>
-                            Energy
-                        </h4>
-                        <p>{{ info.other.recent_vibe.user_energy }}</p>
-                        <br>
-                        <h4>
-                            Valence
-                        </h4>
-                        <p>{{ info.other.recent_vibe.user_valence }}</p>
-                    </div>
-                </div>
-
-                <br>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>
-                            Recent Tracks
-                        </h4>
-                        
-                        {% if info.other.recent_tracks%}
-                        <div id="other_recentTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
-                            <!-- Buttons for navigation -->
-                            <div class="carousel-indicators">
-                                {% for i in info.other.iteratorRecentTracks %}
-                                    <button type="button" data-bs-target="#other_recentTracksCarousel" data-bs-slide-to="{{ i }}"
-                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Wrapper for slides -->
-                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for track in info.other.recent_tracks %}
-                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                        <div>
-                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
-                                        </div>
-                                        <br>
-                                        <div>
-                                            <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-                                            <p>
-                                                {% for artist in track.artist_names %}
-                                                {{ artist }}
-                                                {% if not forloop.last %}, {% endif %}
-                                                {% endfor %}
-                                            </p>
-                                            <p>{{ track.album_release_date }}</p>
-                                        </div>
-                                        <br>
-                                        <br>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <br>
-
-                    <div class="col-md-6">
-                        <h4>
-                            Top Tracks
-                        </h4>
-                        
-                        {% if info.other.top_tracks%}
-                        <div id="other_topTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
-                            <!-- Buttons for navigation -->
-                            <div class="carousel-indicators">
-                                {% for i in info.other.iteratorTopTracks %}
-                                    <button type="button" data-bs-target="#other_topTracksCarousel" data-bs-slide-to="{{ i }}"
-                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Wrapper for slides -->
-                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for track in info.other.top_tracks %}
-                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                        <div>
-                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
-                                        </div>
-                                        <br>
-                                        <div>
-                                            <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-                                            <p>
-                                                {% for artist in track.artist_names %}
-                                                {{ artist }}
-                                                {% if not forloop.last %}, {% endif %}
-                                                {% endfor %}
-                                            </p>
-                                            <p>{{ track.album_release_date }}</p>
-                                        </div>
-                                        <br>
-                                        <br>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                </div>
-                {% endif %}
-                
-                <br>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>
-                            Top Artists
-                        </h4>
-                        
-                        {% if info.other.top_artists%}
-                        <div id="other_topArtistsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
-                            <!-- Buttons for navigation -->
-                            <div class="carousel-indicators">
-                                {% for i in info.other.iteratorTopArtists %}
-                                    <button type="button" data-bs-target="#other_topArtistsCarousel" data-bs-slide-to="{{ i }}"
-                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Wrapper for slides -->
-                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for artist in info.other.top_artists %}
-                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-
-                                        <div style="position: relative; width: 100%; padding-top: 100%; overflow: hidden;">
-                                            <img src="{{ artist.image }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Artist Image">
-                                        </div>
-                                        <br>
-                                        <div>
-                                            <h5 style="margin-bottom: 1rem;">{{ artist.name }}</h5>
-                                            <p>
-                                                {{ artist.popularity }} popularity
-                                            </p>
-                                        </div>
-                                        <br>
-                                        <br>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <br>
-
-                    <div class="col-md-6">
-                        <h4>
-                            Top Genres
-                        </h4>
-
-                        {% if info.other.top_genres%}
-                        <br>
-                        
-                        <div style="border: 1px solid #000; border-radius: 0; background: black;">
-                            {% for genre in info.other.top_genres %}
-                                <div class="row mb-2">
-                                    <p>{{ genre }}</p>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-
-                </div>
-
-                {% if status != 'friends' %}
-                <br>
-                <br>
-                <br>
-
-                <div>
-                    <p style="text-align:center"> Unlock full profile by becoming friends! </p>
-                </div>
-                
-                {% endif %}
-
-
-            </div>
-        </div>
-=======
->>>>>>> 67d5e17 (redisigned shared dashboard)
     </div>
 </div>
 

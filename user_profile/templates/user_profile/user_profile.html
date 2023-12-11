@@ -87,37 +87,23 @@ background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 2
 
         {% if track %}
         <div class="row">
-<<<<<<< HEAD
-            <div class="col-md-11" style="border: 1px solid #000; border-radius: 0; background: black;">
-                <div>
-                    <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
-                </div>
-                <br>
-                <div class="text-center">
-                    <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-=======
             <div class="col-md-11" style="margin-top: 50px;">
                 <div class="username_gradient", style="text-align: center;">
                         <h3 style="text-align: center;width: 50%; align-content: center; justify-content: center;margin: auto; display: block; ">Vibing to... </h3>
 
->>>>>>> 67d5e17 (redisigned shared dashboard)
                     <p>
                         {% for artist in track.artist_names %}
                         {{ artist }}
                         {% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </p>
-<<<<<<< HEAD
-                    <p>{{ track.album_release_date }}</p>
-=======
                                     <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
 
->>>>>>> 67d5e17 (redisigned shared dashboard)
                 </div>
                 <div>
-                    <img src="{{ track.album.images.0.url }}" class="d-block mx-auto img-fluid" alt="Album Image" style=" max-width: 250px; max-height: 250px;">
+                    <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style=" max-width: 250px; max-height: 250px;">
                 </div>
-            <h5 class="username_gradient", style="font-size: 20px; text-align: center;">{{ track.album.release_date }}</h5>
+            <h5 class="username_gradient", style="font-size: 20px; text-align: center;">{{ track.album_release_date }}</h5>
                 <br>
             </div>
             <div class="col-md-1">
