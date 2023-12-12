@@ -40,7 +40,7 @@
 
         <div class="col-md-8">
             <!-- Description content start -->
-            <div class="row my-4 px-3">
+            <div id="description-div" class="row my-4 px-3" style="display: none;">
                 <div id="description" class="container px-3 py-3">
                 </div>
             </div>
@@ -235,12 +235,16 @@
                             updateCarouselInnerAndIndicators(data.recent_tracks);
                             $('#recentTracksCarousel').addClass('recentTracks-loaded');
                             var dataAsH1 = $('<h1>').text(data.result);
-                            var dataAsP = $('<h4>').text(data.description);
                             $('#vibe-status .vibe-loaded-text').append(dataAsH1).show();
-                            $('#description').append(dataAsP).show();
-                            $('#description').addClass('description-loaded');
                             $('#vibe-status').removeClass('vibe-loading').addClass('vibe-loaded');
                             $('#vibe-status .vibe-loading-text').hide();
+
+                            var dataAsP = $('<h4>').text(data.description);
+                            if (data.description !== null){
+                                $('#description-div').show();
+                                $('#description').append(dataAsP).show();
+                                $('#description').addClass('description-loaded');
+                            }
 
                             if (vibe_or_not === "asyn_started") {
                                 // Trigger alert and effects if vibe newly loaded
