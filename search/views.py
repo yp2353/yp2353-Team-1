@@ -43,7 +43,6 @@ def open_search_page(request, username=""):
             "UsersearchForm": form,
             "request_list": request_list,
             "friends": friends,
-            "default_image_path": "user_profile/blank_user_profile_image.jpeg",
             "recent_vibe": zip(
                 [User.objects.get(user_id=user[0]) for user in all_users], all_users
             ),
@@ -77,6 +76,19 @@ def user_search(request):
         current_username = user.username
 
         request_list = get_req_list(current_user_id)
+
+        friends = current_friend_list(current_user_id)
+        latest_vibes = get_latest_vibes()
+
+        all_users = latest_vibes.filter(
+            Q(user_id__in=[user.user_id for user in friends])
+            & (Q(user_lyrics_vibe__isnull=False) | Q(user_audio_vibe__isnull=False))
+        ).values_list(
+            "user_id",
+            "user_lyrics_vibe",
+            "user_audio_vibe",
+            flat=False,
+        )
 
         if request.method == "GET":
             form = UsersearchForm(request.GET)
@@ -113,7 +125,10 @@ def user_search(request):
         "results": results,
         "UsersearchForm": form,
         "request_list": request_list,
-        "friends": current_friend_list(current_user_id),
+        "friends": friends,
+        "recent_vibe": zip(
+            [User.objects.get(user_id=user[0]) for user in all_users], all_users
+        ),
     }
     return render(request, "search/search.html", context)
 
