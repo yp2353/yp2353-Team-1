@@ -108,4 +108,4 @@ redis-server --port 6579
 
 [![asciicast](https://asciinema.org/a/BqGf7cpmVyexCGKc767nvnYYp.svg)](https://asciinema.org/a/BqGf7cpmVyexCGKc767nvnYYp)
 
-1. Create environemnt
+1. Create environment
