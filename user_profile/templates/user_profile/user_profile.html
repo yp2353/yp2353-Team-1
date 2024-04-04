@@ -4,75 +4,31 @@
 {% block body_class %}background{% endblock %}
 
 {% block content%}
-    <style>
-     .username_gradient {
-background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 222, 248) 21.8%, rgb(189, 250, 205) 35.6%, rgb(243, 250, 189) 52.9%, rgb(250, 227, 189) 66.8%, rgb(248, 172, 172) 90%, rgb(254, 211, 252) 99.7%);
-         background-clip: text;
-    color: transparent; /* Makes the text color transparent */
-         font-size: 50px;
-}
-
-     .paragraph_gradient {
-background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 222, 248) 21.8%, rgb(189, 250, 205) 35.6%, rgb(243, 250, 189) 52.9%, rgb(250, 227, 189) 66.8%, rgb(248, 172, 172) 90%, rgb(254, 211, 252) 99.7%);    background-clip: text;
-    color: transparent; /* Makes the text color transparent */
-              font-size: 1rem;
-
-     }
-
-     @media (min-width: 768px) {
-    .username_gradient {
-        text-align: left;
-    }
-}
-
-     .gradient-border {
-    border-radius: 50%; /* To maintain circular shape */
-    padding: 4px 4px 0px 4px; /* Adjust for border width */
-background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 222, 248) 21.8%, rgb(189, 250, 205) 35.6%, rgb(243, 250, 189) 52.9%, rgb(250, 227, 189) 66.8%, rgb(248, 172, 172) 90%, rgb(254, 211, 252) 99.7%);}
-
-     .black-border {
-    border-radius: 50%; /* Maintain circular shape */
-    padding: 7px; /* Black border width */
-    background: black; /* Black border */
-    display: inline-block; /* Fit the size of the inner image */
-}
-
-    </style>
-
     <div class="user-profile container-fluid col-md-8 p-5">
         <div class="row">
             <!-- Profile Picture -->
-
-            <div class="col-md-4 d-flex align-items-center justify-content-center">
-                <div class="img-container rounded-circle" style="margin-bottom: 10px;">
+            <div class="col-md-4">
+                <div class="img-container rounded-circle">
                     {% if user.profile_image_url %}
-<div class="gradient-border">
-    <div class="black-border">
-        <img src="{{ user.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image" width="200" height="200">
-    </div>
+                        <img src="{{ user.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image" width="200" height="200">
                     {% else %}
                         <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image" width="200" height="200">
                     {% endif %}
                 </div>
-                </div>
-
             </div>
 
             <!-- User Content -->
-            <div class="col-md-7 text-left text-center">
-            <h1 class="username_gradient">{{ user.username }}</h1>
-                <p class="username_gradient" style="font-size: 3rem;">{{ user.total_followers}}<br> Followers</p>
-            <p class="username_gradient" style="font-size: 1rem;">
+            <div class="col-md-7">
+                <h1>{{ user.username }}</h1>
+                <p>{{ user.total_followers}} Followers{% if user.user_country %} · {{ user.user_country }}{% endif %}{% if user.user_city %} · {{ user.user_city }}{% endif %}</p>
 
-
-            {% if user.user_country %}  {{ user.user_country }}{% endif %}{% if user.user_city %} · {{ user.user_city }}{% endif %}
-            {% if user.user_bio %}</p>
-                <p class="username_gradient" style="font-size: 1rem;"><i>{{ user.user_bio }}</i></p>
+                {% if user.user_bio %}
+                <p><i>{{ user.user_bio }}</i></p>    
                 {% endif %}
             </div>
 
             <!-- Edit -->
-            <div class="col-md-1 content-center">
+            <div class="col-md-1">
                 <form action="{% url 'user_profile:edit' %}" method="post">
                     {% csrf_token %}
                     <div >
@@ -85,28 +41,26 @@ background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 2
 
         <br>
 
+        <h3>Vibing to...</h3>
         {% if track %}
         <div class="row">
-            <div class="col-md-11" style="margin-top: 50px;">
-                <div class="username_gradient", style="text-align: center;">
-                        <h3 style="text-align: center;width: 50%; align-content: center; justify-content: center;margin: auto; display: block; ">Vibing to... </h3>
-
+            <div class="col-sm-11" style="padding-top: 1rem; border: 1px solid #000; border-radius: 0; background: black;">
+                <div>
+                    <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
+                </div>
+                <br>
+                <div class="text-center">
+                    <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
                     <p>
                         {% for artist in track.artist_names %}
                         {{ artist }}
                         {% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </p>
-                                    <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-
+                    <p>{{ track.album_release_date }}</p>
                 </div>
-                <div>
-                    <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style=" max-width: 250px; max-height: 250px;">
-                </div>
-            <h5 class="username_gradient", style="font-size: 20px; text-align: center;">{{ track.album_release_date }}</h5>
-                <br>
             </div>
-            <div class="col-md-1">
+            <div class="col-sm-1">
                 <form method="post" action="{% url 'user_profile:changeTrack' %}">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{ user.user_id }}">
@@ -120,16 +74,16 @@ background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 2
         <br>
 
         <div class="row">
-        <div class="col-md-12 d-flex align-items-center justify-content-center">
+            <div>
+                <p>Listening to something?</p>
                 <form method="get" action="{% url 'user_profile:search' %}">
                     {% for field in SearchForm %}
                         <div class="form-field" style="display: inline-block;">
                             <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
-                        <input type="text" id="{{ field.id_for_label }}" name="{{ field.name }}" style="background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 222, 248) 21.8%, rgb(189, 250, 205) 35.6%, rgb(243, 250, 189) 52.9%, rgb(250, 227, 189) 66.8%, rgb(248, 172, 172) 90%, rgb(254, 211, 252) 99.7%);" />
-
+                            {{ field }}
                         </div>
                     {% endfor %}
-
+                
                     <button class="btn btn-dark default-btn" type="submit">Search</button>
                 </form>
                 {% if results %}
@@ -149,7 +103,7 @@ background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 2
                                         {% csrf_token %}
                                         <input type="hidden" name="user_id" value="{{ user.user_id }}">
                                         <input type="hidden" name="track_id" value="{{ track.id }}">
-
+                    
                                         <button class="btn btn-dark default-btn" type="submit" name="action" value="add">+</button>
                                     </form>
                                 </div>

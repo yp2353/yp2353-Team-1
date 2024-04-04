@@ -3,475 +3,188 @@
 {% load static %}
 {% block body_class %}background{% endblock %}
 
-{% block content %}
+{% block content%}
+<style>
+    .current_vibe {
+        text-align: center;
+        background-color: black;
+    }
 
-    <style>
+    .bar-container {
+        background-color: #404040;
+        border-radius: 5px;
+        height: 20px;
+        margin-bottom: 10px;
+    }
 
+    .bar-filled {
+        height: 100%;
+        background: #091c9b;
+        border-radius: 5px;
+    }
+</style>
 
-
-        .square-container {
-            padding: 0; /* Remove padding to ensure the squares touch in the middle */
-        }
-
-        .square {
-            width: 100%; /* Full width of the container */
-            padding-top: 20px; /* Padding-top as a percentage of the width creates a square */
-            background-color: #121212; /* Example color - use your own color here */
-        }
-
-        /* For smaller devices, you might want to stack them instead of side by side */
-        @media (max-width: 576px) {
-            .square {
-                padding-top: 50%; /* Adjust the padding-top to change the size on smaller screens */
-            }
-        }
-
-
-        .content-section {
-            text-align: center;
-            opacity: 1;
-            width: 80px; /* Adjust as needed */
-            height: 80px; /* Adjust as needed */
-        }
-
-
-        .line-container {
-            margin-top: 30px;
-            position: relative;
-            height: 80px; /* Adjust based on your needs */
-            overflow: hidden; /* Hide anything that goes outside this container */
-        }
-
-        .line {
-            position: absolute;
-            width: 100%; /* Set to 100% of the container's width */
-            height: 2px; /* Thickness of the line */
-            background: white; /* Base color */
-            border-radius: 50px; /* To create rounded lines */
-            animation: moveLine 5s infinite linear; /* Animation for moving effect */
-
-        }
-
-        .blue-line, .pink-line, .yellow-line {
-            left: 0; /* Start from the left edge of the container */
-        }
-
-
-        .blue-line {
-            top: 20px;
-            background: linear-gradient(to right, #FF69B4, #FFC0CB); /* Gradient for pink line */
-        }
-
-        .pink-line {
-            top: 40px;
-            background: linear-gradient(to right, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);
-        }
-
-        .yellow-line {
-            top: 60px;
-            background: linear-gradient(to right, rgb(222, 168, 248), rgb(168, 222, 248));
-        }
-
-        @keyframes moveLine {
-            0% {
-                left: -100%;
-            }
-            100% {
-                left: 100%;
-            }
-        }
-
-
-        @keyframes moveLineBlue {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        @keyframes moveLinePink {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
-        }
-
-        /* Apply the animations to the lines */
-        .blue-line {
-            animation: moveLineBlue 8s infinite linear;
-        }
-
-        .pink-line {
-            animation: moveLinePink 10s infinite linear;
-        }
-
-
-        .profile-images-container {
-            position: relative;
-            width: 250px; /* Adjust as needed */
-            height: 200px; /* Adjust as needed */
-            margin-top: 50px;
-
-        }
-
-        .paragraph_gradient {
-            background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 222, 248) 21.8%, rgb(189, 250, 205) 35.6%, rgb(243, 250, 189) 52.9%, rgb(250, 227, 189) 66.8%, rgb(248, 172, 172) 90%, rgb(254, 211, 252) 99.7%);
-            background-clip: text;
-            color: transparent; /* Makes the text color transparent */
-            font-size: 1rem;
-
-        }
-
-        .user-image {
-            position: absolute;
-            top: 0;
-            border-radius: 50%;
-            width: 200px; /* Same as your image width */
-            height: 200px; /* Same as your image height */
-        }
-
-        .user-image:first-child {
-            left: 0;
-            z-index: 1;
-        }
-
-        .user-image:last-child {
-            left: 130px; /* Adjust for overlap */
-        }
-
-
-        .bar-container {
-            width: 80%; /* Full width to represent the max value */
-            background-color: #e0e0e0; /* Light grey background */
-            border-radius: 5px; /* Optional: for rounded corners */
-            height: 20px; /* Adjust as needed */
-            margin-bottom: 10px; /* Space below each bar */
-        }
-
-        .bar-filled {
-            height: 100%; /* Full height of the container */
-            background: linear-gradient(to right, rgb(222, 168, 248), rgb(168, 222, 248));
-            border-radius: 5px; /* Rounded corners */
-        }
-
-
-        .username_gradient {
-            background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 222, 248) 21.8%, rgb(189, 250, 205) 35.6%, rgb(243, 250, 189) 52.9%, rgb(250, 227, 189) 66.8%, rgb(248, 172, 172) 90%, rgb(254, 211, 252) 99.7%);
-            background-clip: text;
-            color: transparent; /* Makes the text color transparent */
-            font-size: 50px;
-        }
-
-        .username_gradient2 {
-            background: radial-gradient(circle at 0.4% -0.6%, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);
-            background-clip: text;
-            color: transparent; /* Makes the text color transparent */
-            font-size: 50px;
-        }
-
-        .gradient-border {
-            border-radius: 50%; /* To maintain circular shape */
-            padding: 4px 4px 4px 4px; /* Adjust for border width */
-            background: radial-gradient(circle at 10% 20%, rgb(222, 168, 248) 0%, rgb(168, 222, 248) 21.8%, rgb(189, 250, 205) 35.6%, rgb(243, 250, 189) 52.9%, rgb(250, 227, 189) 66.8%, rgb(248, 172, 172) 90%, rgb(254, 211, 252) 99.7%);
-        }
-
-        .black-border {
-            border-radius: 50%; /* Maintain circular shape */
-            padding: 7px; /* Black border width */
-            background: #121212; /* Black border */
-            display: inline-block; /* Fit the size of the inner image */
-        }
-
-        .gradient-border2 {
-            border-radius: 50%; /* To maintain circular shape */
-            padding: 4px 4px 0px 4px; /* Adjust for border width */
-            background: radial-gradient(circle at 0.4% -0.6%, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);
-
-        }
-    </style>
-
-            <!-- Your profile -->
-                <div class="container">
-                    <div class="row">
-                        <!-- Profile Picture -->
-                        <div class="col-md-12 d-flex align-items-center justify-content-center p-5">
-                            <div class="profile-images-container" style="margin-right: 80px;">
-                                <div class="gradient-border user-image">
-                                    <!-- User Image -->
-                                    <div class="black-border">
-                                        <div class="img-container rounded-circle">
-                                            {% if user.profile_image_url %}
-                                                <img src="{{ user.profile_image_url }}"
-                                                     class="img-fluid rounded-circle mx-auto d-block" alt="User Image"
-                                                     width="200" height="200">
-                                            {% else %}
-                                                <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}"
-                                                     class="img-fluid rounded-circle mx-auto d-block"
-                                                     alt="Default Image" width="200" height="200">
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="gradient-border2 user-image">
-                                    <div class="black-border">
-                                        <div class="img-container rounded-circle">
-                                            {% if other_user.profile_image_url %}
-                                                <img src="{{ other_user.profile_image_url }}"
-                                                     class="img-fluid rounded-circle mx-auto d-block" alt="User Image"
-                                                     width="200" height="200">
-                                            {% else %}
-                                                <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}"
-                                                     class="img-fluid rounded-circle mx-auto d-block"
-                                                     alt="Default Image" width="200" height="200">
-                                            {% endif %}
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Your profile -->
+        <div class="col-md-6 p-5">
+            <div class="container">
+                <div class="row">
+                    <!-- Profile Picture -->
+                    <div class="col-md-4">
+                        <div class="img-container rounded-circle">
+                            {% if user.profile_image_url %}
+                                <img src="{{ user.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image" width="200" height="200">
+                            {% else %}
+                                <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image" width="200" height="200">
+                            {% endif %}
                         </div>
                     </div>
+            
+                    <!-- User Content -->
+                    <div class="col-md-8">
+                        <h1>{{ user.username }}</h1>
+                        <p>{{ user.total_followers}} Followers{% if user.user_country %} · {{ user.user_country }}{% endif %}{% if user.user_city %} · {{ user.user_city }}{% endif %}</p>
 
-
-                </div>
-
-
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12 d-flex align-items-center justify-content-center ">
-                            <h1 class="username_gradient2" style="margin-top: 40px;">{{ other_user.username }} and you</h1>
-                        </div>
-                    </div> </div>
-    <div class="line-container">
-                    <div class="line blue-line"></div>
-                    <div class="line pink-line"></div>
-                    <div class="line yellow-line"></div>
-                    <!-- Add more lines as needed -->
-                </div>
-    <div class="container" style="margin-top: 20px;">
-                    <div class="row">
-
-                                            <div class="col-md-12 d-flex align-items-center justify-content-center ">
-
-                            <div id="sectionContainer">
-                                <!-- Content that changes with scrolling can go here -->
-                                <div><p
-                                        class="username_gradient" style="text-align: left;">{{ info.user.recent_vibe.user_audio_vibe }}
-                                    {% if info.user.recent_vibe.user_lyrics_vibe %}
-                                        {{ info.user.recent_vibe.user_lyrics_vibe }}{% endif %}</p></div>
-                            <p class="paragraph_gradient text-center">vs. </p>
-                                <div><p class="username_gradient2">{{ info.other.recent_vibe.user_audio_vibe }}
-                                    {% if info.other.recent_vibe.user_lyrics_vibe %}
-                                        {{ info.other.recent_vibe.user_lyrics_vibe }}{% endif %}</p></div>
-                                <!-- More sections as needed -->
-                            </div>
-                        </div>
+                        {% if user.user_bio %}
+                        <p><i>{{ user.user_bio }}</i></p>    
+                        {% endif %}
                     </div>
                 </div>
 
+                <br>
 
-
-<div class="line-container">
-                    <div class="line blue-line"></div>
-                    <div class="line pink-line"></div>
-                    <div class="line yellow-line"></div>
-                    <!-- Add more lines as needed -->
-                </div>
-
-
-                <div class="container">
-
-
-                    <div class="row">
-                        <h4 class="username_gradient text-center" style="margin-top: 20px;">
-                            Vibing to...
+                <div class="row">
+                    <div>
+                        <h4>
+                            Current Vibe
                         </h4>
 
-
-                        <div class="col-6 col-md-6 square-container">
-                            <div class="square">
-                                <div>
-
-                                    {% if info.user.fav_track %}
-                                        <div style="">
-                                            <div>
-                                                <img src="{{ info.user.fav_track.album_images_large }}"
-                                                     class="d-block mx-auto img-fluid" alt="Album Image"
-                                                     style="max-width: 250px; max-height: 250px;">
-                                            </div>
-                                            <br>
-                                            <div class="paragraph_gradient text-center">
-                                                <h5 style="margin-bottom: 1rem;">{{ info.user.fav_track.name }}</h5>
-                                                <p>
-                                                    {% for artist in info.user.fav_track.artist_names %}
-                                                        {{ artist }}
-                                                        {% if not forloop.last %}, {% endif %}
-                                                    {% endfor %}
-                                                </p>
-                                                <p>{{ info.user.fav_track.album_release_date }}</p>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                <div class="bar-container">
-                                    <div id="acousticnessBar"
-                                         class="bar-filled"> </div>
-                                </div>
-                                <h4>
-                                    Acousticness
-                                </h4>
-                                <br>
-                                <div class="bar-container">
-                                    <div id="danceabilityBar" class="bar-filled"></div>
-                                </div>
-                                <h4>
-                                    Danceability
-                                </h4>
-                            <div class="bar-container">
-                                    <div id="energyBar" class="bar-filled"></div>
-                                </div>
-                                <p></p>
-                                    <h4>
-                                        Energy
-                                    </h4>
-                                    <div class="bar-container">
-                                    <div id="valenceBar" class="bar-filled"></div>
-                                </div>
-                                    <p></p>
-                                    <br>
-                                    <h4>
-                                        Valence
-                                    </h4>
-
-                            </div>
+                        {% if info.user.recent_vibe.user_audio_vibe %}
+                        <div class="container current_vibe p-3">
+                            <h5 style="text-transform: capitalize;" class="friendmood-{{ info.user.recent_vibe.user_audio_vibe }}"> {{ info.user.recent_vibe.user_audio_vibe}} {% if info.user.recent_vibe.user_lyrics_vibe %}{{ info.user.recent_vibe.user_lyrics_vibe }}{% endif %} </h5>
                         </div>
-                        <div class="col-6 col-md-6 square-container">
-                            <div class="square">
-                                <div>
-
-                                    {% if info.other.fav_track %}
-                                        <div>
-                                            <div>
-                                                <img src="{{ info.other.fav_track.album_images_large }}"
-                                                     class="d-block mx-auto img-fluid" alt="Album Image"
-                                                     style="max-width: 250px; max-height: 250px;">
-                                            </div>
-                                            <br>
-                                            <div class="paragraph_gradient text-center">
-                                                <h5 style="margin-bottom: 1rem;">{{ info.other.fav_track.name }}</h5>
-                                                <p>
-                                                    {% for artist in info.other.fav_track.artist_names %}
-                                                        {{ artist }}
-                                                        {% if not forloop.last %}, {% endif %}
-                                                    {% endfor %}
-                                                </p>
-                                                <p>{{ info.other.fav_track.album_release_date }}</p>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                <div class="bar-container">
-                                    <div id="acousticness_otheruser_Bar"
-                                         class="bar-filled"> </div>
-                                </div>
-                                <h4>
-                                    Acousticness
-                                </h4>
-                                <br>
-                                <div class="bar-container">
-                                    <div id="danceability_otheruser_Bar" class="bar-filled"></div>
-                                </div>
-                                <h4>
-                                    Danceability
-                                </h4>
-                            <div class="bar-container">
-                                    <div id="energy_otheruser_Bar" class="bar-filled"></div>
-                                </div>
-                                <p></p>
-                                    <h4>
-                                        Energy
-                                    </h4>
-                                    <div class="bar-container">
-                                    <div id="valence_otheruser_Bar" class="bar-filled"></div>
-                                </div>
-
-                                    <br>
-                                    <h4>
-                                        Valence
-                                    </h4>
-                            </div>
-
-                        </div>
-
-                        <br>
-                        {% if status != 'friends' %}
-                    <div class="column-md-12">
-                    <br>
-                    <br>
-                    <br>
-
-                    <div>
-                        <p class="username_gradient2" style="text-align:center"> Unlock full profile by becoming friends! </p>
-                    </div>
-
-                    </div>
                         {% endif %}
 
-                        {% if status == 'friends' %}
-                    <div class="col-6 col-md-6 square-container">
-                            <div class="square">
-                                <h4>
-                                    Recent Tracks
-                                </h4>
+                    </div>
+                </div>
 
-                                {% if info.user.recent_tracks %}
-                                    <div id="recentTracksCarousel" class="carousel slide mt-4 w-100"
-                                         data-bs-ride="carousel" data-bs-touch="true">
-                                        <!-- Buttons for navigation -->
-                                        <div class="carousel-indicators">
-                                            {% for i in info.user.iteratorRecentTracks %}
-                                                <button type="button" data-bs-target="#recentTracksCarousel"
-                                                        data-bs-slide-to="{{ i }}"
-                                                        class="{% if forloop.first %}active{% endif %}"
-                                                        aria-label="Slide {{ i }}"></button>
-                                            {% endfor %}
-                                        </div>
+                <br>
 
-                                        <!-- Wrapper for slides -->
-                                        <div class="carousel-inner"
-                                             style="border: 1px solid #000; border-radius: 0; background: black;">
-                                            {% for track in info.user.recent_tracks %}
-                                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                                    <div>
-                                                        <img src="{{ track.album_images_large }}"
-                                                             class="d-block mx-auto img-fluid" alt="Album Image">
-                                                    </div>
-                                                    <br>
-                                                    <div>
-                                                        <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-                                                        <p>
-                                                            {% for artist in track.artist_names %}
-                                                                {{ artist }}
-                                                                {% if not forloop.last %}, {% endif %}
-                                                            {% endfor %}
-                                                        </p>
-                                                        <p>{{ track.album_release_date }}</p>
-                                                    </div>
-                                                    <br>
-                                                    <br>
-                                                </div>
-                                            {% endfor %}
+                <div class="row">
+                    <div>
+                        <h4>
+                            Vibing to...
+                        </h4>
+                        {% if info.user.fav_track %}
+                        <div style="border: 1px solid #000; border-radius: 0; background: black;">
+                            <div>
+                                <img src="{{ info.user.fav_track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
+                            </div>
+                            <br>
+                            <div class="text-center">
+                                <h5 style="margin-bottom: 1rem;">{{ info.user.fav_track.name }}</h5>
+                                <p>
+                                    {% for artist in info.user.fav_track.artist_names %}
+                                    {{ artist }}
+                                    {% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                                <p>{{ info.user.fav_track.album_release_date }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h4>
+                            Acousticness
+                        </h4>
+                        <div class="bar-container">
+                            <div id="acousticnessBar" class="bar-filled"> </div>
+                        </div>
+                        <br>
+                        <h4>
+                            Danceability
+                        </h4>
+                        <div class="bar-container">
+                            <div id="danceabilityBar" class="bar-filled"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>
+                            Energy
+                        </h4>
+                        <div class="bar-container">
+                            <div id="energyBar" class="bar-filled"></div>
+                        </div>
+                        <br>
+                        <h4>
+                            Valence
+                        </h4>
+                        <div class="bar-container">
+                            <div id="valenceBar" class="bar-filled"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>
+                            Recent Tracks
+                        </h4>
+                        
+                        {% if info.user.recent_tracks%}
+                        <div id="recentTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
+                            <!-- Buttons for navigation -->
+                            <div class="carousel-indicators">
+                                {% for i in info.user.iteratorRecentTracks %}
+                                    <button type="button" data-bs-target="#recentTracksCarousel" data-bs-slide-to="{{ i }}"
+                                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ i }}"></button>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
+                                {% for track in info.user.recent_tracks %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <div>
+                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
                                         </div>
+                                        <br>
+                                        <div>
+                                            <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
+                                            <p>
+                                                {% for artist in track.artist_names %}
+                                                {{ artist }}
+                                                {% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                            <p>{{ track.album_release_date }}</p>
+                                        </div>
+                                        <br>
+                                        <br>
                                     </div>
-                                {% endif %}
-                            <h4> Top tracks </h4>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
 
-                           {% if info.user.top_tracks%}
+                    <br>
+
+                    <div class="col-md-6">
+                        <h4>
+                            Top Tracks
+                        </h4>
+                        
+                        {% if info.user.top_tracks%}
                         <div id="topTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
                             <!-- Buttons for navigation -->
                             <div class="carousel-indicators">
@@ -481,39 +194,44 @@
                                 {% endfor %}
                             </div>
 
-                                    <!-- Wrapper for slides -->
-                                    <div class="carousel-inner"
-                                         style="border: 1px solid #000; border-radius: 0; background: black;">
-                                        {% for track in info.user.top_tracks %}
-                                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                                <div>
-                                                    <img src="{{ track.album_images_large }}"
-                                                         class="d-block mx-auto img-fluid" alt="Album Image">
-                                                </div>
-                                                <br>
-                                                <div>
-                                                    <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
-                                                    <p>
-                                                        {% for artist in track.artist_names %}
-                                                            {{ artist }}
-                                                            {% if not forloop.last %}, {% endif %}
-                                                        {% endfor %}
-                                                    </p>
-                                                    <p>{{ track.album_release_date }}</p>
-                                                </div>
-                                                <br>
-                                                <br>
-                                            </div>
-                                        {% endfor %}
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
+                                {% for track in info.user.top_tracks %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <div>
+                                            <img src="{{ track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image">
+                                        </div>
+                                        <br>
+                                        <div>
+                                            <h5 style="margin-bottom: 1rem;">{{ track.name }}</h5>
+                                            <p>
+                                                {% for artist in track.artist_names %}
+                                                {{ artist }}
+                                                {% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                            <p>{{ track.album_release_date }}</p>
+                                        </div>
+                                        <br>
+                                        <br>
                                     </div>
-                                </div>
-                            {% endif %}
-                    <h4>
-                                    Top Artists
-                                </h4>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
 
-<div>
-    {% if info.user.top_artists%}
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>
+                            Top Artists
+                        </h4>
+                        
+                        {% if info.user.top_artists%}
                         <div id="topArtistsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
                             <!-- Buttons for navigation -->
                             <div class="carousel-indicators">
@@ -523,59 +241,191 @@
                                 {% endfor %}
                             </div>
 
-                                <!-- Wrapper for slides -->
-                                <div class="carousel-inner"
-                                     style="border: 1px solid #000; border-radius: 0; background: black;">
-                                    {% for artist in info.user.top_artists %}
-                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner" style="border: 1px solid #000; border-radius: 0; background: black;">
+                                {% for artist in info.user.top_artists %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
 
-                                            <div style="position: relative; width: 100%; padding-top: 100%; overflow: hidden;">
-                                                <img src="{{ artist.image }}"
-                                                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
-                                                     alt="Artist Image">
-                                            </div>
-                                            <br>
-                                            <div>
-                                                <h5 style="margin-bottom: 1rem;">{{ artist.name }}</h5>
-                                                <p>
-                                                    {{ artist.popularity }} popularity
-                                                </p>
-                                            </div>
-                                            <br>
-                                            <br>
+                                        <div style="position: relative; width: 100%; padding-top: 100%; overflow: hidden;">
+                                            <img src="{{ artist.image }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Artist Image">
                                         </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
-                            </div>
-                    <h4>
-                                    Top Genres
-                                </h4>
-
-                                {% if info.user.top_genres %}
-                                    <br>
-
-                                    <div style="border: 1px solid #000; border-radius: 0; background: black;">
-                                        {% for genre in info.user.top_genres %}
-                                            <div class="row mb-2">
-                                                <p>{{ genre }}</p>
-                                            </div>
-                                        {% endfor %}
+                                        <br>
+                                        <div>
+                                            <h5 style="margin-bottom: 1rem;">{{ artist.name }}</h5>
+                                            <p>
+                                                {{ artist.popularity }} popularity
+                                            </p>
+                                        </div>
+                                        <br>
+                                        <br>
                                     </div>
-                                {% endif %}
-
-</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
 
+                    <br>
 
-
-                    <div class="col-6 col-md-6 square-container">
-                            <div class="square">
-                              <h4>
-                            Recent Tracks
+                    <div class="col-md-6">
+                        <h4>
+                            Top Genres
                         </h4>
 
+                        {% if info.user.top_genres%}
+                        <br>
+
+                        <div style="border: 1px solid #000; border-radius: 0; background: black;">
+                            {% for genre in info.user.top_genres %}
+                                <div class="row mb-2">
+                                    <p>{{ genre }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Other profile -->
+        <div class="col-md-6 p-5">
+            <div class="container">
+                <div class="row">
+                    <!-- Profile Picture -->
+                    <div class="col-md-4">
+                        <div class="img-container rounded-circle">
+                            {% if other_user.profile_image_url %}
+                                <img src="{{ other_user.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image" width="200" height="200">
+                            {% else %}
+                                <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image" width="200" height="200">
+                            {% endif %}
+                        </div>
+                    </div>
+            
+                    <!-- User Content -->
+                    <div class="col-md-8">
+                        <h1>{{ other_user.username }}</h1>
+                        <p>{{ other_user.total_followers}} Followers{% if other_user.user_country %} · {{ other_user.user_country }}{% endif %}{% if other_user.user_city %} · {{ other_user.user_city }}{% endif %}</p>
+
+                        {% if other_user.user_bio %}
+                        <p><i>{{ other_user.user_bio }}</i></p>    
+                        {% endif %}
+
+                        <div class="button-container">
+                            <form method="post" action="{% url 'view_profile:process_fr' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.user_id }}">
+                                <input type="hidden" name="where_from" value="view_profile">
+                                <input type="hidden" name="other_user_id" value="{{other_user.user_id}}">
+
+                                {% if status == 'user_sent_fr' %}
+                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="cancel">Cancel Request</button>
+                                {% elif status == 'pending' %}
+                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="accept">Accept</button>
+                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="decline">Decline</button>
+                                {% elif status == 'friends' %}
+                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="unfriend">Unfriend</button>
+                                    <!-- <button class="btn btn-dark default-btn" type="submit" name="action" value="message">Message</button> -->
+                                {% else %}
+                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="send">Add</button>
+                                {% endif %}
+                                
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div>
+                        <h4>
+                            Current Vibe
+                        </h4>
+                        {% if info.other.recent_vibe.user_audio_vibe %}
+                        <div class="container current_vibe p-3">
+                            <h5 style="text-transform: capitalize;" class="friendmood-{{ info.other.recent_vibe.user_audio_vibe }}"> {{ info.other.recent_vibe.user_audio_vibe }} {% if info.other.recent_vibe.user_lyrics_vibe %}{{ info.other.recent_vibe.user_lyrics_vibe }}{% endif %} </h5>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div>
+                        <h4>
+                            Vibing to...
+                        </h4>
+                        {% if info.other.fav_track %}
+                        <div style="border: 1px solid #000; border-radius: 0; background: black;">
+                            <div>
+                                <img src="{{ info.other.fav_track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 250px; max-height: 250px;">
+                            </div>
+                            <br>
+                            <div class="text-center">
+                                <h5 style="margin-bottom: 1rem;">{{ info.other.fav_track.name }}</h5>
+                                <p>
+                                    {% for artist in info.other.fav_track.artist_names %}
+                                    {{ artist }}
+                                    {% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                                <p>{{ info.other.fav_track.album_release_date }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if status == 'friends' %}
+                <br>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h4>
+                            Acousticness
+                        </h4>
+                        <div class="bar-container">
+                            <div id="acousticness_otheruser_Bar"
+                                 class="bar-filled"> </div>
+                        </div>
+                        <br>
+                        <h4>
+                            Danceability
+                        </h4>
+                        <div class="bar-container">
+                            <div id="danceability_otheruser_Bar" class="bar-filled"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>
+                            Energy
+                        </h4>
+                        <div class="bar-container">
+                            <div id="energy_otheruser_Bar" class="bar-filled"></div>
+                        </div>
+                        <br>
+                        <h4>
+                            Valence
+                        </h4>
+                        <div class="bar-container">
+                            <div id="valence_otheruser_Bar" class="bar-filled"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>
+                            Recent Tracks
+                        </h4>
+                        
                         {% if info.other.recent_tracks%}
                         <div id="other_recentTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
                             <!-- Buttons for navigation -->
@@ -610,12 +460,16 @@
                                 {% endfor %}
                             </div>
                         </div>
-
                         {% endif %}
-                            <h4>
+                    </div>
+
+                    <br>
+
+                    <div class="col-md-6">
+                        <h4>
                             Top Tracks
                         </h4>
-
+                        
                         {% if info.other.top_tracks%}
                         <div id="other_topTracksCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
                             <!-- Buttons for navigation -->
@@ -651,14 +505,19 @@
                             </div>
                         </div>
                         {% endif %}
+                    </div>
 
+                </div>
+                {% endif %}
+                
+                <br>
 
-
-
-                           <h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>
                             Top Artists
                         </h4>
-
+                        
                         {% if info.other.top_artists%}
                         <div id="other_topArtistsCarousel" class="carousel slide mt-4 w-100" data-bs-ride="carousel" data-bs-touch="true">
                             <!-- Buttons for navigation -->
@@ -691,136 +550,67 @@
                             </div>
                         </div>
                         {% endif %}
+                    </div>
 
-                            <h4>
+                    <br>
+
+                    <div class="col-md-6">
+                        <h4>
                             Top Genres
                         </h4>
 
-                        {% if info.other.top_genres %}
-                            <br>
-
-                            <div style="border: 1px solid #000; border-radius: 0; background: black;">
-                                {% for genre in info.other.top_genres %}
-                                    <div class="row mb-2">
-                                        <p>{{ genre }}</p>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                               {% endif %}
-
-
-
-
-
-
-                            </div>
-                             </div>
-
-                            </div>
-    <div class="row">
-    <div class="column-md-12 d-flex align-items-center justify-content-center">
-        <div class="button-container">
-                            <form method="post" action="{% url 'view_profile:process_fr' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="user_id" value="{{ user.user_id }}">
-                                <input type="hidden" name="where_from" value="view_profile">
-                                <input type="hidden" name="other_user_id" value="{{other_user.user_id}}">
-
-                                {% if status == 'user_sent_fr' %}
-                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="cancel" style="background: radial-gradient(circle at 0.4% -0.6%, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);
-">Cancel Request</button>
-                                {% elif status == 'pending' %}
-                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="accept" style="background: radial-gradient(circle at 0.4% -0.6%, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);">Accept</button>
-                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="decline" style="background: radial-gradient(circle at 0.4% -0.6%, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);">Decline</button>
-                                {% elif status == 'friends' %}
-                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="unfriend" style="background: radial-gradient(circle at 0.4% -0.6%, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);">Unfriend</button>
-
-                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="message" style="background: radial-gradient(circle at 0.4% -0.6%, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);">Message</button>
-                                {% else %}
-                                    <button class="btn btn-dark default-btn" type="submit" name="action" value="send" style="background: radial-gradient(circle at 0.4% -0.6%, rgb(143, 170, 210) 0%, rgb(255, 177, 177) 90%);">Add</button>
-                                {% endif %}
-
-                            </form>
+                        {% if info.other.top_genres%}
+                        <br>
+                        
+                        <div style="border: 1px solid #000; border-radius: 0; background: black;">
+                            {% for genre in info.other.top_genres %}
+                                <div class="row mb-2">
+                                    <p>{{ genre }}</p>
+                                </div>
+                            {% endfor %}
                         </div>
+                        {% endif %}
                     </div>
+
+                </div>
+
+                {% if status != 'friends' %}
+                <br>
+                <br>
+                <br>
+
+                <div>
+                    <p style="text-align:center"> Unlock full profile by becoming friends! </p>
+                </div>
+                
+                {% endif %}
+
+
+            </div>
+        </div>
     </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-                    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <script>
-        function updateBarWidth(barId, value) {
-            var numericValue = parseFloat(value);
-            if (!isNaN(numericValue)) {
-                document.getElementById(barId).style.width = (numericValue * 100) + '%';
-            }
-        }
-
-        updateBarWidth("acousticnessBar", "{{ info.user.recent_vibe.user_acousticness }}");
-        updateBarWidth("danceabilityBar", "{{ info.user.recent_vibe.user_danceability }}");
-        updateBarWidth("energyBar", "{{ info.user.recent_vibe.user_energy }}");
-        updateBarWidth("valenceBar", "{{ info.user.recent_vibe.user_valence }}");
-
-
-        updateBarWidth("danceability_otheruser_Bar", "{{ info.other.recent_vibe.user_danceability }}");
-        updateBarWidth("acousticness_otheruser_Bar", "{{ info.other.recent_vibe.user_acousticness }}");
-         updateBarWidth("energy_otheruser_Bar", "{{ info.other.recent_vibe.user_energy }}");
-        updateBarWidth("valence_otheruser_Bar", "{{ info.other.recent_vibe.user_valence }}");
-
-        // Repeat for other attributes
-    </script>
 <script>
-function zoomCircle(element) {
-    // Reset any previously zoomed circles
-    document.querySelectorAll('.small-circle').forEach(function(circle) {
-        circle.style.transform = `rotate(${getComputedStyle(circle).getPropertyValue('--rotation-angle')}) translateX(150px)`;
-    });
+    function updateBarWidth(barId, value) {
+        var numericValue = parseFloat(value);
+        if (!isNaN(numericValue)) {
+            document.getElementById(barId).style.width = (numericValue * 100) + '%';
+        } else {
+            document.getElementById(barId).style.width = (0) + '%';
+        }
+    }
 
-    // Zoom the clicked circle
-    element.style.transform = `rotate(${getComputedStyle(element).getPropertyValue('--rotation-angle')}) translateX(150px) scale(1.5)`;
-}
+    updateBarWidth("acousticnessBar", "{{ info.user.recent_vibe.user_acousticness }}");
+    updateBarWidth("danceabilityBar", "{{ info.user.recent_vibe.user_danceability }}");
+    updateBarWidth("energyBar", "{{ info.user.recent_vibe.user_energy }}");
+    updateBarWidth("valenceBar", "{{ info.user.recent_vibe.user_valence }}");
+
+    updateBarWidth("acousticness_otheruser_Bar", "{{ info.other.recent_vibe.user_acousticness }}");
+    updateBarWidth("danceability_otheruser_Bar", "{{ info.other.recent_vibe.user_danceability }}");
+    updateBarWidth("energy_otheruser_Bar", "{{ info.other.recent_vibe.user_energy }}");
+    updateBarWidth("valence_otheruser_Bar", "{{ info.other.recent_vibe.user_valence }}");
 
 </script>
 
-
-
-
-
 {% endblock %}
-
-
-
-

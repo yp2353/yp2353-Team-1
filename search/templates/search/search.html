@@ -4,80 +4,58 @@
 {% block body_class %}background{% endblock %}
 
 {% block content %}
-    <style>
-    /*SEARCH PAGE*/
-
+<style>
+/*SEARCH PAGE*/
 
     .friend_bar {
         display: flex;
-    flex-wrap: wrap;
-background: linear-gradient(68.2deg, rgb(7, 3, 98) -0.1%, rgb(179, 26, 132) 47.7%, rgb(239, 186, 83) 100.2%);
+        flex-wrap: wrap;
         padding: 10px;
-    border-radius: 20px; /* Optional for rounded corners */
         margin-bottom: 10px;
-            animation: moveGradient 20s ease infinite;
-            background-size: 200% 200%;
-
-
+        border-radius: 30px;
+        background-color: #1A1A1A;
     }
-        .search_user_container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
 
-        .search_user_image {
-            border-radius: 50%;
-            margin-right: 20px;
-            overflow: hidden;
-            width: 50px;
-            height: 50px;
-        }
-
-        .search_user_image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .search_user_info {
-            flex-grow: 1;
-        }
-
-        .search_user_info a {
-            text-decoration: none;
-            color: white;
-            transition: text-decoration 0.3s;
-        }
-
-        .search_user_info a:hover {
-            text-decoration: underline;
-        }
-
-        .friend-container {
-    display: flex;
-    flex-wrap: wrap;
-     background: linear-gradient(63deg, rgb(242, 168, 168) 2.9%, rgb(94, 46, 165) 80.1%);
-    padding: 10px;
-    border-radius: 10px;
-
-
-    /* Animation */
-}
-
-        @keyframes moveGradient {
-    0% {
-        background-position: 0% 50%;
+    .search_user_container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
     }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
 
+    .search_user_image {
+        border-radius: 50%;
+        margin-right: 20px;
+        overflow: hidden;
+        width: 50px;
+        height: 50px;
+    }
 
+    .search_user_image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .search_user_info {
+        flex-grow: 1;
+    }
+
+    .search_user_info a {
+        text-decoration: none;
+        color: white;
+        transition: text-decoration 0.3s;
+    }
+
+    .search_user_info a:hover {
+        text-decoration: underline;
+    }
+
+    .friend-container {
+        display: flex;
+        flex-wrap: wrap;
+        background: #1A1A1A;
+        padding: 10px;
+    }
 
     @media (min-width: 768px) {
         .friend-container {
@@ -89,151 +67,136 @@ background: linear-gradient(68.2deg, rgb(7, 3, 98) -0.1%, rgb(179, 26, 132) 47.7
         }
     }
 
+    .friend {
+        padding: 20px;
+        text-align: center;
+    }
 
+    .friend img {
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
 
+    .friend a {
+        text-decoration: none;
+        color: white;
+        transition: text-decoration 0.3s;
+        display: block;
+    }
 
-        .friend {
-            padding: 20px;
-            text-align: center;
-        }
+    .friend a:hover {
+        text-decoration: underline;
+    }
 
-        .friend img {
-            border-radius: 50%;
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            margin-bottom: 10px;
+</style>
 
-        }
-
-        .friend a {
-            text-decoration: none;
-            color: white;
-            transition: text-decoration 0.3s;
-            display: block;
-        }
-
-        .friend a:hover {
-            text-decoration: underline;
-        }
-
-        .user_search_container {
-            align-content: center;
-            text-align: center;
-        }
-        /*SEARCH PAGE END*/
-    </style>
-
-            <div class="container">
-    <h2 style=" padding: 20px 0px 20px 0px;">Friends</h2>
-            </div>
 
 <div class="currentFriends container">
-<div class="row">
+    <div class="row mt-5">
         <!-- Main Content (Left Side) -->
-        <div class="col-md-8">
-    {% if friends %}
-        <div class="friend-container">
-            {% for user in friends %}
-                <div class="friend">
-                    {% if user.profile_image_url %}
-                        <img src="{{ user.profile_image_url }}" alt="Profile Image">
-                    {% else %}
-                        <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Profile Image">
-                    {% endif %}
-                    <a href="{% url 'view_profile:compare' user.user_id %}">{{ user.username }}</a>
+        <div class="col-md-8 pt-3">
+            <h3 style="text-align: left;">Friends</h3>
+            {% if friends %}
+                <div class="friend-container">
+                    {% for user in friends %}
+                        <div class="friend">
+                            {% if user.profile_image_url %}
+                                <img src="{{ user.profile_image_url }}" alt="Profile Image">
+                            {% else %}
+                                <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Profile Image">
+                            {% endif %}
+                            <a href="{% url 'view_profile:compare' user.user_id %}">{{ user.username }}</a>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
+            {% else %}
+                <div class="container">
+                    <p>Sorry to say, You have NO FRIENDS!!!</p>
+                </div>
+            {% endif %}
         </div>
-    {% else %}
-        <div class="container">
-            <p>Sorry to say, You have NO FRIENDS!!!</p>
+
+        <div class="col-md-4 pt-3">
+            <div class="friend_request container">
+                <h3>Friend Requests</h3>
+                <div class="container pt-3">
+                    {% if request_list%}
+                        {% for user in request_list %}
+                            <div class="search_user_container">
+                                <div class="search_user_image">
+                                    {% if user.profile_image_url %}
+                                        <img src="{{ user.profile_image_url }}" alt="Profile Image">
+                                    {% else %}
+                                        <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Profile Image">
+                                    {% endif %}
+                                </div>
+                                <div class="search_user_info">
+                                    <a href="{% url 'view_profile:compare' user.user_id %}">
+                                        {{ user.username }}
+                                    </a>
+                                    <form method="post" action="{% url 'view_profile:process_fr' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="user_id" value="{{current_user_id}}">
+                                        <input type="hidden" name="where_from" value="search_request_list">
+                                        <input type="hidden" name="other_user_id" value="{{user.user_id}}">
+                                        <button class="btn btn-dark default-btn" type="submit" name="action" value="accept">Accept</button>
+                                        <button class="btn btn-dark default-btn" type="submit" name="action" value="decline">Decline</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    {% endif %}
+
+    </div>
 </div>
 
-        <div class="col-md-4">
 
-<div class="user_search_container container">
-        <!-- Main Content (Left Side) -->
-    <h3 style="text-align: left;">Search User</h3>
-    <form method="get" action="{% url 'search:search_user' %}">
-        {% for field in UsersearchForm %}
-    <div class="form-field">
-        <p> Username</p>
-        <label for="{{ field.id_for_label }}"> </label>
-        <input type="text" id="{{ field.id_for_label }}" name="{{ field.name }}" style="width: 50%;" />
-    </div>
-{% endfor %}
+<div class="vibes_feed container">
+    <div class="row mt-5">
+        <div class="col-md-8 pt-3">
+            <h3>Vibesfeed</h3>
 
-        <button class="btn btn-dark default-btn" type="submit" style="margin-top:20px;">Search</button>
-    </form>
-        </div></div></div>
-
-</div></div>
-
-
-
-    <div class="vibes_feed container">
-    <div class="row">
-            <div class="col-md-8">
-            <h3 style="padding-top: 30px;">Vibesfeed</h3>
-
-
-
-                <div class="friend">
+            <div class="friend" style="padding: 0px">
                 {% for user, vibe in recent_vibe %}
-        <!-- Use user and vibe as needed -->
-                <div class="friend_bar">
-                    {% if user.profile_image_url %}
-
-                        <img src="{{ user.profile_image_url }}" style="height: 5%; width: 5%;" alt="Profile Image">
-                    {% else %}
-                        <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}"  style="height: 5%; width: 5%;" alt="Profile Image">
-                    {% endif %}
-                    <p style="padding-left: 20px;">      {{ user.username }} latest vibe is... </p>
-                    <p style="padding-left:3px;">  {{ vibe.2 }}  </p> {% if vibe.1 %} <p style="padding-left:3px;">{{ vibe.1 }}</p> {% endif %}
-                </div>
-            {% endfor %}
-            </div>
-            </div>
-
-    <div class="col-md-4 mt-4">
-    <div class="friend_request container">
-        <h3>Friend Requests</h3>
-    {% if request_list%}
-            {% for user in request_list %}
-                <div class="search_user_container">
-                    <div class="search_user_image">
+                    <div class="friend_bar">
                         {% if user.profile_image_url %}
-                            <img src="{{ user.profile_image_url }}" alt="Profile Image">
+                            <img src="{{ user.profile_image_url }}" style="height: 5%; width: 5%;" alt="Profile Image">
                         {% else %}
-                            <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" alt="Profile Image">
+                            <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}"  style="height: 5%; width: 5%;" alt="Profile Image">
                         {% endif %}
+                        <p style="padding-left: 20px;"> {{ user.username }}'s latest vibe is </p>
+                        <p style="padding-left:3px;" class="friendmood-{{ vibe.2|lower }}">  {{ vibe.2 }} {% if vibe.1 %} {{ vibe.1 }} {% endif %} </p> 
                     </div>
-                    <div class="search_user_info">
-                        <a href="{% url 'view_profile:compare' user.user_id %}">
-                            {{ user.username }}
-                        </a>
-                        <form method="post" action="{% url 'view_profile:process_fr' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="user_id" value="{{current_user_id}}">
-                            <input type="hidden" name="where_from" value="search_request_list">
-                            <input type="hidden" name="other_user_id" value="{{user.user_id}}">
-                            <button class="btn btn-dark default-btn" type="submit" name="action" value="accept">Accept</button>
-                            <button class="btn btn-dark default-btn" type="submit" name="action" value="decline">Decline</button>
-                        </form>
-                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4 pt-3">
+            <div class="user_search_container container">
+                <h3 style="text-align: left;">Search User</h3>
+                <div class="container pt-3">
+                    <form method="get" action="{% url 'search:search_user' %}">
+                        {% for field in UsersearchForm %}
+                        <div class="form-field">
+                            <p> Username</p>
+                            <label for="{{ field.id_for_label }}"> </label>
+                            <input type="text" id="{{ field.id_for_label }}" name="{{ field.name }}" style="width: 50%;" />
+                        </div>
+                        {% endfor %}
+    
+                        <button class="btn btn-dark default-btn" type="submit" style="margin-top:20px;">Search</button>
+                    </form>
                 </div>
-            {% endfor %}
-    {% endif %}
-</div>
+            </div>
+        </div>
     </div>
 </div>
-    </div>
-
-
-
 
 
 <div class="search_result container">

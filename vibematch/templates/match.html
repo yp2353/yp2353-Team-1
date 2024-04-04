@@ -5,91 +5,37 @@
 
 {% block content %}
 <style>
+    .container
+    {
+        display: flex;
+        justify-content: center; /* This centers the cards horizontally */
+    }
 
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around; /* Ensures even spacing around items */
+        align-items: flex-start; /* Aligns items to the start of the flex container */
+    }
 
+    .card-container {
+        width: 400px;
+        margin: 20px;
+    }
 
-/* Add this CSS to your existing stylesheet or within a <style> tag in your HTML head */
-
-.container
-{
-    display: flex;
-    justify-content: center; /* This centers the cards horizontally */
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around; /* Ensures even spacing around items */
-    align-items: flex-start; /* Aligns items to the start of the flex container */
-}
-
-.is-flipped {
-    transform: rotateY(180deg);
-}
-
-
-.card-container {
-    width: 400px; /* Fixed width for each card */
-    margin: 20px; /* Space between cards */
-    perspective: 1000px; /* Perspective for 3D rotation */
-
-}
-
-.card {
-    background: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%);
-    border-radius: 20px;
-    color: white;
-    padding-top: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    height: 400px;
-    transform-style: preserve-3d;
-    transition: transform 0.6s;
-    transform-origin: center;
-    cursor: pointer;
-    width: 400px;
-}
-
-.card-page {
-    display: none;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
+    .card {
+        background: #1A1A1A;
+        color: white;
+        height: 400px;
+        width: 400px;
         text-align: center;
-}
-
-.card-page.active-page {
-    display: block;
-}
-
-.left-arrow, .right-arrow {
-     background: #4e4376;
-    border: #4e4376;
-    height: 30px;
-    color: white;
-}
-
-.right-arrow {
-     border-bottom-right-radius: 20px;
-    border-bottom-left-radius: 20px;
-}
-
-
-.vibe_button {
-    background: #4e4376;
-    border: #4e4376;
-    border-radius: 60px;
-    height: 30px;
-    width: 60px;
-    color: white;
-    display: inline-block;
-    text-decoration: none;
-}
+        justify-content: center;
+    }
 
 </style>
+
 <div class="container mt-5">
-    <h1>VibeMatch</h1>
-    <!-- A button or link that triggers the location prompt -->
-    
+    <h3>VibeMatch</h3>
 </div>
 
 <div class="container mt-5">
@@ -97,85 +43,30 @@
         {% if neighbors %}
             {% for user in neighbors %}
                 <div class="card-container">
-                <div class="card">
-                        <div class="card-page active-page">
-                     {% if user.username.profile_image_url %}
-                                <img src="{{ user.username.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image" width="80" height="80">
-                            {% else %}
-                                <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image" width="80" height="80">
-                            {% endif %}
-    <h3>{{ user.username.username }}</h3>
-    <p>{{ user.vibe.1 }} {% if user.vibe.0 %} {{ user.vibe.0 }} {% endif %}</p>
-                        <p>Vibe Similarity: {{ user.similarity }}%</p>
-                        <p>{{ user.distance }} miles away</p>
-                        <a href="{% url 'view_profile:compare' user.user_id %}" class="vibe_button">Vibe</a>
-                        </div>
+                    <div class="card p-5">
+                        {% if user.username.profile_image_url %}
+                            <img src="{{ user.username.profile_image_url }}" class="img-fluid rounded-circle mx-auto d-block" alt="User Image" width="80" height="80">
+                        {% else %}
+                            <img src="{% static 'user_profile/blank_user_profile_image.jpeg' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image" width="80" height="80">
+                        {% endif %}
 
-        <div class="card-page">
-                    <h2>About me</h2>
-        {% if user.username.user_bio %}
-        <p>{{ user.username.user_bio }}</p>
-        {% endif %}
-            {% for artist in user.top_artist %}
-                           <img src="{{ artist.image }}" style=" width: 60px; height: 60px; object-fit: cover;" alt="Artist Image">
-                {% endfor %}
-        <br>
-         {% if user.fav_track %}
-                    <p>Vibing to: </p>
-                        <img src="{{ user.fav_track.album_images_large }}" class="d-block mx-auto img-fluid" alt="Album Image" style="max-width: 30px; max-height: 30px;">
-                    <p>{{ user.fav_track.name }}</p>
-                        {%  endif %}
-                        </div>
-                        <div class="card-page">
-                            <h2> Currently Hyperfixated with...</h2>
-                             {% for track in user.top_tracks %}
-                                 <p style="font-size: 15px;">                            <img src="{{ track.album_images_large }}" style=" width: 60px; height: 60px; object-fit: cover;" alt="Artist Image">
-                    {{ track.name }}</p>
-                {% endfor %}
-
-                        </div>
-                <button class="left-arrow">←</button>
-        <button class="right-arrow">→</button>
+                        <br>
+                        
+                        <h4 style="margin-bottom: 16px;">{{ user.username.username }}</h4>
+                            
+                        <p style="text-transform: capitalize;">{{ user.vibe.1 }} {% if user.vibe.0 %} {{ user.vibe.0 }} {% endif %}</p>
+                        <p>{{ user.similarity }}% vibe similarity</p>
+                        {% if user.distance %}
+                            <p>{{ user.distance }} miles away</p>
+                        {% endif %}
+                        
+                        <a href="{% url 'view_profile:compare' user.user_id %}" class="btn default-btn btn-light">Vibe</a>
                     </div>
                 </div>
             {% endfor %}
         {% endif %}
-</div>
-
-
     </div>
-    <div id="compareViewModal" style="display:none;">
-    <div id="compareViewContainer"></div>
 </div>
-
-
-
-
-    <script>
-document.querySelectorAll('.card-container .card').forEach(card => {
-    const pages = card.querySelectorAll('.card-page');
-    let currentPageIndex = 0;
-
-    function showPage(index) {
-        pages.forEach(page => page.classList.remove('active-page'));
-        pages[index].classList.add('active-page');
-    }
-
-    card.querySelector('.left-arrow').addEventListener('click', () => {
-        if (currentPageIndex > 0) {
-            currentPageIndex--;
-            showPage(currentPageIndex);
-        }
-    });
-
-    card.querySelector('.right-arrow').addEventListener('click', () => {
-        if (currentPageIndex < pages.length - 1) {
-            currentPageIndex++;
-            showPage(currentPageIndex);
-        }
-    });
-});
-    </script>
 
 
 {% endblock %}
